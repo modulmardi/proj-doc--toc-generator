@@ -1,15 +1,15 @@
-import * as React from 'react';
-import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
   IPropertyPaneConfiguration,
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
-
 import * as strings from 'ProjDocTocGeneratorWebPartStrings';
-import ProjDocTocGenerator from './components/ProjDocTocGenerator';
-import { IProjDocTocGeneratorProps } from './components/IProjDocTocGeneratorProps';
+import * as React from 'react';
+import * as ReactDom from 'react-dom';
+import { IProjDocTocGeneratorAppProps } from './components/IProjDocTocGeneratorAppProps';
+import ProjDocTocGeneratorApp from './components/ProjDocTocGeneratorApp';
+
 
 export interface IProjDocTocGeneratorWebPartProps {
   description: string;
@@ -18,8 +18,8 @@ export interface IProjDocTocGeneratorWebPartProps {
 export default class ProjDocTocGeneratorWebPart extends BaseClientSideWebPart<IProjDocTocGeneratorWebPartProps> {
 
   public render(): void {
-    const element: React.ReactElement<IProjDocTocGeneratorProps> = React.createElement(
-      ProjDocTocGenerator,
+    const element: React.ReactElement<IProjDocTocGeneratorAppProps> = React.createElement(
+      ProjDocTocGeneratorApp,
       {
         description: this.properties.description
       }
