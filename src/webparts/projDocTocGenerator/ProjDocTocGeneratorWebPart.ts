@@ -7,7 +7,7 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import * as strings from 'ProjDocTocGeneratorWebPartStrings';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
-import { IProjDocTocGeneratorAppProps } from './components/IProjDocTocGeneratorAppProps';
+import { IProjDocTocGeneratorAppProps } from './components/props/IProjDocTocGeneratorAppProps';
 import ProjDocTocGeneratorApp from './components/ProjDocTocGeneratorApp';
 
 
@@ -21,7 +21,7 @@ export default class ProjDocTocGeneratorWebPart extends BaseClientSideWebPart<IP
     const element: React.ReactElement<IProjDocTocGeneratorAppProps> = React.createElement(
       ProjDocTocGeneratorApp,
       {
-        description: this.properties.description
+        //description: this.properties.description
       }
     );
 

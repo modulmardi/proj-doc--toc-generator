@@ -1,3 +1,3 @@
 export interface IProjDocTocGeneratorAppProps {
-  description: string;
+  //description: string;
 }
