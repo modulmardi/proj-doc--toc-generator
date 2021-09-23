@@ -6,6 +6,7 @@ import { CommandBarButton, PrimaryButton } from 'office-ui-fabric-react/lib/Butt
 import { Stack, StackItem } from 'office-ui-fabric-react/lib/Stack';
 import * as React from 'react';
 import { IProjDocTocGeneratorProps } from './props/IProjDocTocGeneratorProps';
+import { v4 as uuidv4 } from 'uuid';
 
 import { BaseButton, Button, DefaultEffects, Depths, IconButton, TooltipHost } from '@fluentui/react';
 import { MouseEventHandler } from 'react';
@@ -34,7 +35,9 @@ class Section {
     public section: string
     public sectionTitle: string
     public subsections: Subsection[]
+    public readonly sectionUuid: string
     constructor() {
+        this.sectionUuid = uuidv4()
         this.subsections = []
     }
 }
@@ -48,7 +51,10 @@ class Subsection {
     public bookTitle: string
     public block: string
     public subblock: string
-    constructor() { }
+    public readonly subsectionUuid: string
+    constructor() {
+        this.subsectionUuid = uuidv4()
+    }
 }
 
 
@@ -78,61 +84,61 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
     const setSection = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId) => {
         let _toc = toc
         _toc.sections[secId].section = e.currentTarget.value
-        setToc({..._toc})
+        setToc({ ..._toc })
     }
     const setSectionTitle = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId) => {
         let _toc = toc
         _toc.sections[secId].sectionTitle = e.currentTarget.value
-        setToc({..._toc})
+        setToc({ ..._toc })
     }
     const setSubsectionStamp = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId, subsecId) => {
         let _toc = toc
         _toc.sections[secId].subsections[subsecId].stamp = e.currentTarget.value
-        setToc({..._toc})
+        setToc({ ..._toc })
     }
     const setSubsection = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId, subsecId) => {
         let _toc = toc
         _toc.sections[secId].subsections[subsecId].subsection = e.currentTarget.value
-        setToc({..._toc})
+        setToc({ ..._toc })
     }
     const setSubsectionTitle = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId, subsecId) => {
         let _toc = toc
         _toc.sections[secId].subsections[subsecId].subsectionTitle = e.currentTarget.value
-        setToc({..._toc})
+        setToc({ ..._toc })
     }
     const setChapter = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId, subsecId) => {
         let _toc = toc
         _toc.sections[secId].subsections[subsecId].chapter = e.currentTarget.value
-        setToc({..._toc})
+        setToc({ ..._toc })
     }
     const setChapterTitle = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId, subsecId) => {
         let _toc = toc
         _toc.sections[secId].subsections[subsecId].chapterTitle = e.currentTarget.value
-        setToc({..._toc})
+        setToc({ ..._toc })
     }
 
     const setBook = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId, subsecId) => {
         let _toc = toc
         _toc.sections[secId].subsections[subsecId].book = e.currentTarget.value
-        setToc({..._toc})
+        setToc({ ..._toc })
     }
 
     const setBookTitle = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId, subsecId) => {
         let _toc = toc
         _toc.sections[secId].subsections[subsecId].bookTitle = e.currentTarget.value
-        setToc({..._toc})
+        setToc({ ..._toc })
     }
 
     const setBlock = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId, subsecId) => {
         let _toc = toc
         _toc.sections[secId].subsections[subsecId].block = e.currentTarget.value
-        setToc({..._toc})
+        setToc({ ..._toc })
     }
 
     const setSubblock = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId, subsecId) => {
         let _toc = toc
         _toc.sections[secId].subsections[subsecId].subblock = e.currentTarget.value
-        setToc({..._toc})
+        setToc({ ..._toc })
     }
 
 
@@ -154,8 +160,11 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
         //console.log(toc, _toc)
         setToc({ ..._toc })
     }
-    const removeSubsection = (secId) => {
-        setToc({ ...toc, sections: [...toc.sections.splice(secId)] })
+    const removeSubsection = (secId: number, subsecId: number) => {
+        let _toc = toc
+        _toc.sections[secId].subsections = _toc.sections[secId].subsections.filter((subsec, id) => id != subsecId)
+        setToc({ ..._toc })
+        // setToc({ ...toc, sections: [...toc.sections.splice(secId)] })
     }
 
     React.useEffect(() => console.log(toc), [toc])
@@ -182,23 +191,41 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                         <Stack>
                             {toc?.sections?.map((sec, secId) =>
                                 <>
-                                    <Stack key={"subsection_" + secId} tokens={{ padding: '0vh 0 0 0' }} style={{ boxShadow: Depths.depth8, /*border: 'medium dashed green',*/ padding: '2vh 2vh 2vh 2vh' }}>
-                                        <Stack horizontal wrap style={{ /*background: "tomato"*/ margin: '0', padding: '0' }}>
-                                            <TooltipHost content="Remove section">
-                                                <IconButton key={"subsectionRemove_" + secId} onClick={() => removeSection(secId)} style={{ background: "pink", height: '100%' }} iconProps={{ iconName: 'Cancel' }} ariaLabel="Remove section" />
+                                    <Stack key={"stack_" + sec.sectionUuid} tokens={{ padding: '0vh 0 0 0' }} style={{ boxShadow: Depths.depth8, /*border: 'medium dashed green',*/ padding: '2vh 2vh 2vh 2vh' }}>
+                                        <Stack key={"stackCancelAndSection_" + sec.sectionUuid} horizontal wrap style={{ /*background: "tomato"*/ margin: '0', padding: '0' }}>
+                                            <TooltipHost key={"sectionRemoveTooltip_" + sec.sectionUuid} content="Remove section">
+                                                <IconButton
+                                                    key={"sectionRemove_" + sec.sectionUuid}
+                                                    onClick={() => removeSection(secId)}
+                                                    style={{ background: "pink", height: '100%' }}
+                                                    iconProps={{ iconName: 'Cancel' }}
+                                                    ariaLabel="Remove section"
+                                                />
                                             </TooltipHost>
-                                            <Stack key={"subsectionInputs_" + secId} style={{ width: "90%", padding: '0 0 0 1vh' }}>
-                                                <Stack horizontal>
-                                                    <StackItem>
+                                            <Stack
+                                                key={"sectionInputsStack_" + sec.sectionUuid}
+                                                style={{ width: "90%", padding: '0 0 0 1vh' }}
+                                            >
+                                                <Stack
+                                                    key={"secstionStack_" + sec.sectionUuid}
+                                                    horizontal>
+                                                    <StackItem
+                                                        key={"sectionStackItemNumber_" + sec.sectionUuid}
+                                                    >
+                                                        {console.log("\n_________________________\nsectionNumber_" + sec.sectionUuid, "\n" + sec)}
                                                         <TextField label="Section number"
-                                                            key={"sectionNumber_" + secId}
+                                                            value={sec.section}
+                                                            key={"sectionNumber_" + sec.sectionUuid}
                                                             onChange={(e) => setSection(e, secId)}
                                                             styles={{ fieldGroup: { width: 100 }, }}
                                                             required />
                                                     </StackItem>
-                                                    <StackItem>
+                                                    <StackItem
+                                                        key={"sectionStackItemTitle_" + sec.sectionUuid}
+                                                    >
                                                         <TextField label="Section title"
-                                                            key={"sectionTitle_" + secId}
+                                                            value={sec.sectionTitle}
+                                                            key={"sectionTitle_" + sec.sectionUuid}
                                                             onChange={(e) => setSectionTitle(e, secId)}
                                                             styles={{ fieldGroup: { width: 300 } }}
                                                             required />
@@ -206,54 +233,69 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                                                 </Stack>
                                                 {sec.subsections.map((subsec, subsecId) =>
                                                     <>
-                                                        <Stack horizontal wrap style={{ boxShadow: Depths.depth64, background: "peachpuff", margin: '0' }}>
-                                                            <TooltipHost content="Remove subsection">
-                                                                <IconButton key={`"subsectionRemove_${secId}_${subsecId}`} onClick={() => removeSubsection(secId)} style={{ background: "pink", height: '100%' }} iconProps={{ iconName: 'Cancel' }} ariaLabel="Remove section" />
+                                                        <Stack
+                                                            key={"sectionStack_" + sec.sectionUuid + "_" + subsec.subsectionUuid}
+                                                            horizontal
+                                                            wrap
+                                                            style={{ boxShadow: Depths.depth64, background: "peachpuff", margin: '0' }}
+                                                        >
+                                                            <TooltipHost key={"subsectionRemoveTooltip_" + sec.sectionUuid + subsec.subsectionUuid} content="Remove subsection">
+                                                                <IconButton key={`"subsectionRemove_${sec.sectionUuid}_${subsec.subsectionUuid}}`} onClick={() => removeSubsection(secId, subsecId)} style={{ background: "pink", height: '100%' }} iconProps={{ iconName: 'Cancel' }} ariaLabel="Remove section" />
                                                             </TooltipHost>
-                                                            <Stack style={{ padding: '0 0 1vh 1vh' }}>
-                                                                <Stack horizontal>
+                                                            <Stack
+                                                                key={`"subsectionStackTitle_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
+                                                                style={{ padding: '0 0 1vh 1vh' }}>
+                                                                <Stack
+                                                                    key={`"subsectionStackHorizontalTitle_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
+                                                                    horizontal>
                                                                     <TextField label="Subsection stamp"
-                                                                        key={`"subsectionStamp_${secId}_${subsecId}`}
+                                                                        key={`"subsectionStamp_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
                                                                         onChange={(e) => setSubsectionStamp(e, secId, subsecId)}
                                                                         value={subsec.stamp}
                                                                         required />
                                                                     <TextField label="Subsection number"
-                                                                        key={`"subsectionNumber_${secId}_${subsecId}`}
+                                                                        key={`"subsectionNumber_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
                                                                         onChange={(e) => setSubsection(e, secId, subsecId)}
                                                                         value={subsec.subsection}
                                                                         required />
                                                                 </Stack>
                                                                 <TextField label="Subsection title"
-                                                                    key={`"subsectionTitle_${secId}_${subsecId}`}
+                                                                    key={`"subsectionTitle_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
                                                                     onChange={(e) => setSubsectionTitle(e, secId, subsecId)}
                                                                     value={subsec.subsectionTitle} />
-                                                                <Stack horizontal>
+                                                                <Stack
+                                                                    key={`"subsectionStackChapter_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
+                                                                    horizontal>
                                                                     <TextField label="Chapter number"
-                                                                        key={`"chapterNumber_${secId}_${subsecId}`}
+                                                                        key={`"chapterNumber_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
                                                                         onChange={(e) => setChapter(e, secId, subsecId)}
                                                                         value={subsec.chapter} />
                                                                     <TextField label="Chapter title"
-                                                                        key={`"chapterTitle_${secId}_${subsecId}`}
+                                                                        key={`"chapterTitle_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
                                                                         onChange={(e) => setChapterTitle(e, secId, subsecId)}
                                                                         value={subsec.chapterTitle} />
                                                                 </Stack>
-                                                                <Stack horizontal>
+                                                                <Stack
+                                                                    key={`"subsectionStackBook_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
+                                                                    horizontal>
                                                                     <TextField label="Book number"
-                                                                        key={`"bookNumber_${secId}_${subsecId}`}
+                                                                        key={`"bookNumber_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
                                                                         onChange={(e) => setBook(e, secId, subsecId)}
                                                                         value={subsec.book} />
                                                                     <TextField label="Book title"
-                                                                        key={`"bookTitle_${secId}_${subsecId}`}
+                                                                        key={`"bookTitle_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
                                                                         onChange={(e) => setBookTitle(e, secId, subsecId)}
                                                                         value={subsec.bookTitle} />
                                                                 </Stack>
-                                                                <Stack horizontal>
+                                                                <Stack
+                                                                    key={`"subsectionStackBlock_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
+                                                                    horizontal>
                                                                     <TextField label="Block"
-                                                                        key={`"block_${secId}_${subsecId}`}
+                                                                        key={`"block_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
                                                                         onChange={(e) => setBlock(e, secId, subsecId)}
                                                                         value={subsec.block} />
                                                                     <TextField label="Subblock"
-                                                                        key={`"subblock_${secId}_${subsecId}`}
+                                                                        key={`"subblock_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
                                                                         onChange={(e) => setSubblock(e, secId, subsecId)}
                                                                         value={subsec.subblock} />
                                                                 </Stack>
@@ -261,14 +303,16 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                                                         </Stack>
                                                     </>
                                                 )}
-                                                <CommandBarButton onClick={() => addSubsection(secId)} iconProps={{ iconName: 'Add' }} text="Add subsection" />
+                                                <CommandBarButton key={`"addSubsection_${sec.sectionUuid}}`} onClick={() => addSubsection(secId)} iconProps={{ iconName: 'Add' }} text="Add subsection" />
                                             </Stack>
                                         </Stack>
                                     </Stack>
                                 </>
                             )}
                         </Stack>
-                        <CommandBarButton onClick={addSection} iconProps={{ iconName: 'Add' }} text="Add section" />
+                        <CommandBarButton
+                            key={`"sectionStackBlock_main}`}
+                            onClick={addSection} iconProps={{ iconName: 'Add' }} text="Add section" />
                     </Stack>
                     <Stack>
                         <PrimaryButton text="Get project's ToC" />
