@@ -25,8 +25,11 @@
     "@pnp/spfx-controls-react": "2.3.0",
     "@pnp/spfx-property-controls": "2.2.0",
     "@types/jquery": "^3.5.4",
+    "docxtemplater": "^3.25.3",
+    "file-saver": "^2.0.5",
     "jquery": "^3.5.5",
     "office-ui-fabric-react": "^7.155.3",
+    "pizzip": "^3.1.1",
     "react": "16.8.5",
     "react-dom": "16.8.5",
     "uuid": "^8.3.2"

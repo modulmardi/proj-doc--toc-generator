@@ -7,6 +7,7 @@ import { Stack, StackItem } from 'office-ui-fabric-react/lib/Stack';
 import * as React from 'react';
 import { IProjDocTocGeneratorProps } from './props/IProjDocTocGeneratorProps';
 import { v4 as uuidv4 } from 'uuid';
+import docGenerator from '../utils/docGenerator';
 
 import { BaseButton, Button, DefaultEffects, Depths, IconButton, TooltipHost } from '@fluentui/react';
 import { MouseEventHandler } from 'react';
@@ -257,7 +258,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                                                                         key={`"subsectionNumber_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
                                                                         onChange={(e) => setSubsection(e, secId, subsecId)}
                                                                         value={subsec.subsection}
-                                                                        required />
+                                                                        /*required*/ />
                                                                 </Stack>
                                                                 <TextField label="Subsection title"
                                                                     key={`"subsectionTitle_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
@@ -315,7 +316,8 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                             onClick={addSection} iconProps={{ iconName: 'Add' }} text="Add section" />
                     </Stack>
                     <Stack>
-                        <PrimaryButton text="Get project's ToC" />
+                        <PrimaryButton onClick={() => docGenerator(toc)} text="Get project's ToC" />
+                        {/* <a download="template" href="https://publiccdn.sharepointonline.com/marachdv.sharepoint.com/sites/cdntest/cdnpics/template003.docx">click</a> */}
                     </Stack>
                 </Stack>
             </Stack>
