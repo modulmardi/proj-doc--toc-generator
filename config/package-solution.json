@@ -1,14 +1,15 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
   "solution": {
-    "name": "proj-doc-toc-generator-client-side-solution",
+    "name": "Project ToC Generator",
     "id": "7c233485-a856-40d9-b933-fb2bf2fc8842",
     "version": "1.0.0.0",
     "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
     "isDomainIsolated": false,
     "developer": {
-      "name": "",
-      "websiteUrl": "",
+      "name": "marachdv",
+      "websiteUrl": "marachdv.com",
       "privacyUrl": "",
       "termsOfUseUrl": "",
       "mpnId": ""
