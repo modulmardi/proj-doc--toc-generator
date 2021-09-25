@@ -10,7 +10,6 @@ import * as ReactDom from 'react-dom';
 import { IProjDocTocGeneratorAppProps } from './components/props/IProjDocTocGeneratorAppProps';
 import ProjDocTocGeneratorApp from './components/ProjDocTocGeneratorApp';
 
-
 export interface IProjDocTocGeneratorWebPartProps {
   description: string;
 }
@@ -18,9 +17,17 @@ export interface IProjDocTocGeneratorWebPartProps {
 export default class ProjDocTocGeneratorWebPart extends BaseClientSideWebPart<IProjDocTocGeneratorWebPartProps> {
 
   public render(): void {
+    // let client: MSGraphClient
+    // this.context.msGraphClientFactory
+    // .getClient()
+    // .then((_client: MSGraphClient): void => {
+    //   client = _client 
+    // })
     const element: React.ReactElement<IProjDocTocGeneratorAppProps> = React.createElement(
+      
       ProjDocTocGeneratorApp,
       {
+        context: this.context
         //description: this.properties.description
       }
     );

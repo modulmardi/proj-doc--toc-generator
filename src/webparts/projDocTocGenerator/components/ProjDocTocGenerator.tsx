@@ -11,6 +11,7 @@ import docGenerator from '../utils/docGenerator';
 
 import { BaseButton, Button, DefaultEffects, Depths, IconButton, TooltipHost } from '@fluentui/react';
 import { MouseEventHandler } from 'react';
+import { MSGraphClient } from '@microsoft/sp-http';
 
 const theme: ITheme = createTheme({
     fonts: {
@@ -60,6 +61,16 @@ class Subsection {
 
 
 const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
+    const fileSaver = (file) => {
+        props.context.msGraphClientFactory
+        .getClient()
+        .then((client: MSGraphClient): void => {
+            console.log(client.api("/me/drive/root:/FileB.docx:/content"));
+            console.log(file);
+            
+            client.api("/me/drive/root:/FileB.docx:/content").header('Content-Type','application/vnd.openxmlformats-officedocument.wordprocessingml.document').put(file)
+        });
+    }
     const onOverflowedTextField = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string): void => {
         setAddress(ev)
 
@@ -316,7 +327,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                             onClick={addSection} iconProps={{ iconName: 'Add' }} text="Add section" />
                     </Stack>
                     <Stack>
-                        <PrimaryButton onClick={() => docGenerator(toc)} text="Get project's ToC" />
+                        <PrimaryButton onClick={() => docGenerator(toc, fileSaver)} text="Get project's ToC" />
                         {/* <a download="template" href="https://publiccdn.sharepointonline.com/marachdv.sharepoint.com/sites/cdntest/cdnpics/template003.docx">click</a> */}
                     </Stack>
                 </Stack>

@@ -6,7 +6,7 @@ const ProjDocTocGeneratorApp: React.FC<IProjDocTocGeneratorAppProps> = (props) =
 
   return (
     <>
-    <ProjDocTocGenerator></ProjDocTocGenerator>
+    <ProjDocTocGenerator context={props.context}></ProjDocTocGenerator>
     </>
   );
 };
