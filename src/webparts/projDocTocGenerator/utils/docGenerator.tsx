@@ -1,13 +1,35 @@
 import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
-import { saveAs } from 'file-saver';
+import expressions from 'angular-expressions'
+import merge from 'lodash/merge'
 
 function loadFile(url, callback) {
   PizZipUtils.getBinaryContent(url, callback);
 }
+function angularParser(tag) {
+  if (tag === '.') {
+    return {
+      get: function (s) { return s; }
+    };
+  }
+  const expr = expressions.compile(
+    tag.replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
+  );
+  return {
+    get: function (scope, context) {
+      let obj = {};
+      const scopeList = context.scopeList;
+      const num = context.num;
+      for (let i = 0, len = num + 1; i < len; i++) {
+        obj = merge(obj, scopeList[i]);
+      }
+      return expr(scope, obj);
+    }
+  };
+}
 const generateDocument = (jsonData, fileSaver) => {
-  loadFile('https://publiccdn.sharepointonline.com/marachdv.sharepoint.com/sites/cdntest/cdnpics/template004.docx', function (
+  loadFile('https://publiccdn.sharepointonline.com/marachdv.sharepoint.com/sites/cdntest/cdnpics/template006.docx', function (
     error,
     content
   ) {
@@ -17,8 +39,9 @@ const generateDocument = (jsonData, fileSaver) => {
     const zip = new PizZip(content);
     const doc = new Docxtemplater(zip, {
       paragraphLoop: true,
-      linebreaks: true
-    });
+      linebreaks: true,
+      parser: angularParser 
+    })
     try {
       console.log(jsonData);
 
@@ -59,10 +82,10 @@ const generateDocument = (jsonData, fileSaver) => {
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     }); //Output the document using Data-URI
     console.log("docGenerator", out);
-    
+
     fileSaver(out)
     console.log(out);
-    
+
   });
 };
 

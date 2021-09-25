@@ -1,17 +1,16 @@
+import { Depths, IconButton, TooltipHost } from '@fluentui/react';
 import { useBoolean } from '@fluentui/react-hooks';
 import { Separator } from '@fluentui/react/lib/Separator';
 import { createTheme, ITheme } from '@fluentui/react/lib/Styling';
 import { TextField } from '@fluentui/react/lib/TextField';
+import { MSGraphClient } from '@microsoft/sp-http';
 import { CommandBarButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { Stack, StackItem } from 'office-ui-fabric-react/lib/Stack';
 import * as React from 'react';
-import { IProjDocTocGeneratorProps } from './props/IProjDocTocGeneratorProps';
 import { v4 as uuidv4 } from 'uuid';
 import docGenerator from '../utils/docGenerator';
+import { IProjDocTocGeneratorProps } from './props/IProjDocTocGeneratorProps';
 
-import { BaseButton, Button, DefaultEffects, Depths, IconButton, TooltipHost } from '@fluentui/react';
-import { MouseEventHandler } from 'react';
-import { MSGraphClient } from '@microsoft/sp-http';
 
 const theme: ITheme = createTheme({
     fonts: {
@@ -64,11 +63,9 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
     const fileSaver = (file) => {
         props.context.msGraphClientFactory
         .getClient()
-        .then((client: MSGraphClient): void => {
-            console.log(client.api("/me/drive/root:/FileB.docx:/content"));
-            console.log(file);
-            
-            client.api("/me/drive/root:/FileB.docx:/content").header('Content-Type','application/vnd.openxmlformats-officedocument.wordprocessingml.document').put(file)
+        .then((client: MSGraphClient): void => {   
+            client.api("/me/drive/root:/ToCs/ToC2.docx:/content").header('Content-Type','application/vnd.openxmlformats-officedocument.wordprocessingml.document').put(file)
+            client.api("/me/drive/root:/jsonToc/toc1.json:/content").header('Content-Type','application/json').put(toc)
         });
     }
     const onOverflowedTextField = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string): void => {
