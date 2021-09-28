@@ -1,4 +1,4 @@
-import { Depths, IconButton, TooltipHost } from '@fluentui/react';
+import { ComboBox as Dropdown, Depths, IComboBox, IComboBoxOption, IconButton, Toggle, TooltipHost } from '@fluentui/react';
 import { useBoolean } from '@fluentui/react-hooks';
 import { Separator } from '@fluentui/react/lib/Separator';
 import { createTheme, ITheme } from '@fluentui/react/lib/Styling';
@@ -8,8 +8,14 @@ import { CommandBarButton, PrimaryButton } from 'office-ui-fabric-react/lib/Butt
 import { Stack, StackItem } from 'office-ui-fabric-react/lib/Stack';
 import * as React from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import docGenerator from '../utils/docGenerator';
+import docGenerator, { loadFile } from '../utils/docGenerator';
 import { IProjDocTocGeneratorProps } from './props/IProjDocTocGeneratorProps';
+import bufferify from 'json-bufferify';
+
+import fs from 'fs'
+
+import PizZip from 'pizzip';
+import { JSONParser } from '@pnp/odata';
 
 
 const theme: ITheme = createTheme({
@@ -60,36 +66,100 @@ class Subsection {
 
 
 const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
-    const fileSaver = (file) => {
+    const fileSaver = (file, fileName) => {
         props.context.msGraphClientFactory
             .getClient()
             .then((client: MSGraphClient): void => {
-                client.api("/me/drive/root:/ToCs/ToC2.docx:/content").header('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document').put(file)
-                client.api("/me/drive/root:/jsonToc/toc1.json:/content").header('Content-Type', 'application/json').put(toc)
+                client
+                    .api(`/me/drive/root:/ToCs/${fileName}.docx:/content`)
+                    .header('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+                    .put(file)
+                client
+                    .api(`/me/drive/root:/jsonToc/${fileName}.json:/content`)
+                    .header('Content-Type', 'application/json')
+                    .put(toc)
             });
     }
-    const onOverflowedTextField = (ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string): void => {
-        setAddress(ev)
+    //table of contents
+    const [toc, setToc] = React.useState<Toc>(new Toc())
+    const [currentFileName, setCurrentFileName] = React.useState<string>()
+    const [existingFiles, setExistingFiles] = React.useState<IComboBoxOption[]>()
+    const [fileNameError, setFileNameError] = React.useState<boolean>()
+
+//// TODO DROPDOWN bug!!!
+
+    const [multiline, { toggle: toggleMultiline }] = useBoolean(false);
+    const [creatingNewFile, { toggle: toggleCreatingNewFile }] = useBoolean(true);
+
+
+    const downloadFileContent = () => {
+        console.log(currentFileName)
+        loadFile(existingFiles.find((file) => file.text = currentFileName).key,
+            function (
+                error: any,
+                content: ArrayBuffer
+            ) {
+                if (error) {
+                    throw error;
+                }
+                setToc(JSON.parse(decodeURIComponent(escape((String.fromCharCode(...(new Uint8Array(content))))))))
+
+
+            })
+    }
+
+    const initExistingFiles: () => void = () =>
+        props.context.msGraphClientFactory.getClient()
+            .then((client: MSGraphClient): void => {
+                client.api("/me/drive/root:/jsonToc:/children")
+                    .get()
+                    .then((data) => setExistingFiles([...(data.value as [])
+                        .map((item: any) => {
+                            return { key: item['@microsoft.graph.downloadUrl'], text: item.name.replace(/\.[^/.]+$/, "") }
+                        })]))
+            })
+    React.useEffect(() => initExistingFiles(), [])
+
+
+
+    const onNewFileToggleChange = () => {
+        toggleCreatingNewFile()
+        setCurrentFileName(existingFiles[0].text)
+    }
+
+    //React.useEffect(() => console.log(111111, currentFileName), [creatingNewFile])
+
+
+    const onNewFileNameChange = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string): void => {
+        setCurrentFileName(newText)
+        setFileNameError(false)
+        if (existingFiles.filter((file) => file.text == newText).length != 0) {
+            setFileNameError(true)
+        }
+    }
+    const onExistingFileNameChange = (e: React.FormEvent<IComboBox | HTMLOptionElement>, option: IComboBoxOption): void => {
+        setCurrentFileName(option.text)
+        console.log(256);
+    }
+
+
+    const onOverflowedTextField = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string): void => {
+        setAddress(newText)
 
         const newMultiline = newText.length > 40;
         if (newMultiline !== multiline) {
             toggleMultiline();
         }
-    };
-    let [toc, setToc] = React.useState<Toc>(new Toc())
-
-    const [multiline, { toggle: toggleMultiline }] = useBoolean(false);
-
-    const setProjectCode = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setToc({ ...toc, projectCode: e.currentTarget.value })
     }
-    const setBuildingName = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setToc({ ...toc, buildingName: e.currentTarget.value })
+    const setProjectCode = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string) => {
+        setToc({ ...toc, projectCode: newText })
     }
-    const setAddress = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setToc({ ...toc, address: e.currentTarget.value })
+    const setBuildingName = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string) => {
+        setToc({ ...toc, buildingName: newText })
     }
-    //TODO
+    const setAddress = (newText: string) => {
+        setToc({ ...toc, address: newText })
+    }
     const setSection = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId) => {
         let _toc = toc
         _toc.sections[secId].section = e.currentTarget.value
@@ -162,9 +232,9 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
             })]
         })
     }
-    const addSubsection = (id: number) => {
+    const addSubsection = (secId: number) => {
         let _toc = toc
-        _toc.sections[id].subsections = [...toc.sections[id].subsections, new Subsection()]
+        _toc.sections[secId].subsections = [...toc.sections[secId].subsections, new Subsection()]
         //console.log(toc.sections[id].subsections)
         //console.log(toc, _toc)
         setToc({ ..._toc })
@@ -176,24 +246,65 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
         // setToc({ ...toc, sections: [...toc.sections.splice(secId)] })
     }
 
-    React.useEffect(() => console.log(toc), [toc])
-
 
     return (
         <>
             <Stack tokens={{ padding: '2vh' }} style={{ boxShadow: Depths.depth8, display: 'flow', alignItems: 'center', justifyContent: 'center' }}>
-                <form onSubmit={(event) => { event.preventDefault(); docGenerator(toc, fileSaver) }}>
+                <form id="main_form" style={{ width: '80%' }} onSubmit={(event) => { event.preventDefault(); return !fileNameError && docGenerator(toc, fileSaver, currentFileName) }}>
+                    <Separator theme={theme}>Table of contents</Separator>
+                    <Toggle defaultChecked offText='existing file' onText='new file' onChange={onNewFileToggleChange} />
+                    {creatingNewFile ?
+                        <TextField label='File name'
+                            onChange={onNewFileNameChange}
+                            errorMessage={fileNameError && "File with same name already exists"}
+                            value={currentFileName}
+                            required />
+                        :
+                        (<>
+                            <Stack horizontal verticalAlign='end' >
+                                <Dropdown
+                                    label='File name'
+                                    style={{ width: '100%' }}
+
+                                    onChange={onExistingFileNameChange}
+                                    options={existingFiles.length ?
+                                        existingFiles
+                                        :
+                                        [{ key: null, text: "No files found" }]}
+                                    disabled={!existingFiles.length}
+                                    selectedKey={existingFiles.length ?
+                                        existingFiles[0].key
+                                        :
+                                        null}
+
+                                    required
+
+                                />
+                                <TooltipHost content="Download file content">
+                                    <IconButton
+                                        onClick={downloadFileContent}
+                                        disabled={!existingFiles.length}
+                                        iconProps={{ iconName: "download" }}
+                                        ariaLabel="download" />
+                                </TooltipHost>
+                            </Stack>
+                        </>
+                            // <>
+                            //     <ComboBox options={[{ key: null, text: "No files found" }]} disabled defaultSelectedKey={null} />
+                            // </>
+                        )
+                    }
 
                     <Separator theme={theme}>Title</Separator>
-                    <Stack style={{ width: '80%' }}>
+                    <Stack>
 
                         <Stack>
                             <TextField label="Project code" required
                                 value={toc.projectCode}
-                                onChange={(e) => setProjectCode(e)} />
+                                onChange={setProjectCode} />
                             <TextField label="Building name" required
                                 value={toc.buildingName}
-                                onChange={(e) => setBuildingName(e)} />
+                                onChange={setBuildingName} />
                             <TextField
                                 label="Address" required
                                 value={toc.address}
@@ -206,8 +317,8 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                             <Stack>
                                 {toc?.sections?.map((sec, secId) =>
                                     <>
-                                        <Stack key={"stack_" + sec.sectionUuid} tokens={{ padding: '0vh 0 0 0' }} style={{ boxShadow: Depths.depth8, /*border: 'medium dashed green',*/ padding: '2vh 2vh 2vh 2vh' }}>
-                                            <Stack key={"stackCancelAndSection_" + sec.sectionUuid} horizontal wrap style={{ /*background: "tomato"*/ margin: '0', padding: '0' }}>
+                                        <Stack key={"stack_" + sec.sectionUuid} tokens={{ padding: '0' }} style={{ boxShadow: Depths.depth8, padding: '2vh 2vh 2vh 2vh' }}>
+                                            <Stack key={"stackCancelAndSection_" + sec.sectionUuid} horizontal wrap style={{ margin: '0', padding: '0' }}>
                                                 <TooltipHost key={"sectionRemoveTooltip_" + sec.sectionUuid} content="Remove section">
                                                     <IconButton
                                                         key={"sectionRemove_" + sec.sectionUuid}
@@ -227,7 +338,6 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                                                         <StackItem
                                                             key={"sectionStackItemNumber_" + sec.sectionUuid}
                                                         >
-                                                            {console.log("\n_________________________\nsectionNumber_" + sec.sectionUuid, "\n" + sec)}
                                                             <TextField label="Section number"
                                                                 value={sec.section}
                                                                 key={"sectionNumber_" + sec.sectionUuid}
@@ -255,62 +365,62 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                                                                 style={{ boxShadow: Depths.depth64, background: "peachpuff", margin: '0' }}
                                                             >
                                                                 <TooltipHost key={"subsectionRemoveTooltip_" + sec.sectionUuid + subsec.subsectionUuid} content="Remove subsection">
-                                                                    <IconButton key={`"subsectionRemove_${sec.sectionUuid}_${subsec.subsectionUuid}}`} onClick={() => removeSubsection(secId, subsecId)} style={{ background: "pink", height: '100%' }} iconProps={{ iconName: 'Cancel' }} ariaLabel="Remove section" />
+                                                                    <IconButton key={`"subsectionRemove_${sec.sectionUuid}_${subsec.subsectionUuid}`} onClick={() => removeSubsection(secId, subsecId)} style={{ background: "pink", height: '100%' }} iconProps={{ iconName: 'Cancel' }} ariaLabel="Remove section" />
                                                                 </TooltipHost>
                                                                 <Stack
-                                                                    key={`"subsectionStackTitle_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
+                                                                    key={`"subsectionStackTitle_${sec.sectionUuid}_${subsec.subsectionUuid}`}
                                                                     style={{ padding: '0 0 1vh 1vh' }}>
                                                                     <Stack
-                                                                        key={`"subsectionStackHorizontalTitle_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
+                                                                        key={`"subsectionStackHorizontalTitle_${sec.sectionUuid}_${subsec.subsectionUuid}`}
                                                                         horizontal>
                                                                         <TextField label="Subsection stamp"
-                                                                            key={`"subsectionStamp_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
+                                                                            key={`"subsectionStamp_${sec.sectionUuid}_${subsec.subsectionUuid}`}
                                                                             onChange={(e) => setSubsectionStamp(e, secId, subsecId)}
                                                                             value={subsec.stamp}
                                                                             required />
                                                                         <TextField label="Subsection number"
-                                                                            key={`"subsectionNumber_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
+                                                                            key={`"subsectionNumber_${sec.sectionUuid}_${subsec.subsectionUuid}`}
                                                                             onChange={(e) => setSubsection(e, secId, subsecId)}
                                                                             value={subsec.subsection}
                                                                         /*required*/ />
                                                                     </Stack>
                                                                     <TextField label="Subsection title"
-                                                                        key={`"subsectionTitle_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
+                                                                        key={`"subsectionTitle_${sec.sectionUuid}_${subsec.subsectionUuid}`}
                                                                         onChange={(e) => setSubsectionTitle(e, secId, subsecId)}
                                                                         value={subsec.subsectionTitle} />
                                                                     <Stack
-                                                                        key={`"subsectionStackChapter_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
+                                                                        key={`"subsectionStackChapter_${sec.sectionUuid}_${subsec.subsectionUuid}`}
                                                                         horizontal>
                                                                         <TextField label="Chapter number"
-                                                                            key={`"chapterNumber_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
+                                                                            key={`"chapterNumber_${sec.sectionUuid}_${subsec.subsectionUuid}`}
                                                                             onChange={(e) => setChapter(e, secId, subsecId)}
                                                                             value={subsec.chapter} />
                                                                         <TextField label="Chapter title"
-                                                                            key={`"chapterTitle_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
+                                                                            key={`"chapterTitle_${sec.sectionUuid}_${subsec.subsectionUuid}`}
                                                                             onChange={(e) => setChapterTitle(e, secId, subsecId)}
                                                                             value={subsec.chapterTitle} />
                                                                     </Stack>
                                                                     <Stack
-                                                                        key={`"subsectionStackBook_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
+                                                                        key={`"subsectionStackBook_${sec.sectionUuid}_${subsec.subsectionUuid}`}
                                                                         horizontal>
                                                                         <TextField label="Book number"
-                                                                            key={`"bookNumber_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
+                                                                            key={`"bookNumber_${sec.sectionUuid}_${subsec.subsectionUuid}`}
                                                                             onChange={(e) => setBook(e, secId, subsecId)}
                                                                             value={subsec.book} />
                                                                         <TextField label="Book title"
-                                                                            key={`"bookTitle_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
+                                                                            key={`"bookTitle_${sec.sectionUuid}_${subsec.subsectionUuid}`}
                                                                             onChange={(e) => setBookTitle(e, secId, subsecId)}
                                                                             value={subsec.bookTitle} />
                                                                     </Stack>
                                                                     <Stack
-                                                                        key={`"subsectionStackBlock_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
+                                                                        key={`"subsectionStackBlock_${sec.sectionUuid}_${subsec.subsectionUuid}`}
                                                                         horizontal>
                                                                         <TextField label="Block"
-                                                                            key={`"block_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
+                                                                            key={`"block_${sec.sectionUuid}_${subsec.subsectionUuid}`}
                                                                             onChange={(e) => setBlock(e, secId, subsecId)}
                                                                             value={subsec.block} />
                                                                         <TextField label="Subblock"
-                                                                            key={`"subblock_${sec.sectionUuid}_${subsec.subsectionUuid}}`}
+                                                                            key={`"subblock_${sec.sectionUuid}_${subsec.subsectionUuid}`}
                                                                             onChange={(e) => setSubblock(e, secId, subsecId)}
                                                                             value={subsec.subblock} />
                                                                     </Stack>

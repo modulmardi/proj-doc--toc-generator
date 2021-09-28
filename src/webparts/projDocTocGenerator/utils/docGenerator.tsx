@@ -4,9 +4,10 @@ import PizZipUtils from 'pizzip/utils/index.js';
 import expressions from 'angular-expressions'
 import merge from 'lodash/merge'
 
-function loadFile(url, callback) {
+export function loadFile(url, callback) {
   PizZipUtils.getBinaryContent(url, callback);
 }
+
 function angularParser(tag) {
   if (tag === '.') {
     return {
@@ -28,8 +29,8 @@ function angularParser(tag) {
     }
   };
 }
-const generateDocument = (jsonData, fileSaver) => {
-  loadFile('https://publiccdn.sharepointonline.com/marachdv.sharepoint.com/sites/cdntest/cdnpics/template006.docx', function (
+const generateDocument = (jsonData, fileSaver, fileName: string) => {
+  loadFile('https://publiccdn.sharepointonline.com/marachdv.sharepoint.com/sites/cdntest/cdnpics/template008.docx', function (
     error,
     content
   ) {
@@ -40,7 +41,7 @@ const generateDocument = (jsonData, fileSaver) => {
     const doc = new Docxtemplater(zip, {
       paragraphLoop: true,
       linebreaks: true,
-      parser: angularParser 
+      parser: angularParser
     })
     try {
       console.log(jsonData);
@@ -83,7 +84,7 @@ const generateDocument = (jsonData, fileSaver) => {
     }); //Output the document using Data-URI
     console.log("docGenerator", out);
 
-    fileSaver(out)
+    fileSaver(out, fileName)
     console.log(out);
 
   });
