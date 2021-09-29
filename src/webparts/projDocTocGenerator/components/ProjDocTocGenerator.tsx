@@ -10,13 +10,6 @@ import * as React from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import docGenerator, { loadFile } from '../utils/docGenerator';
 import { IProjDocTocGeneratorProps } from './props/IProjDocTocGeneratorProps';
-import bufferify from 'json-bufferify';
-
-import fs from 'fs'
-
-import PizZip from 'pizzip';
-import { JSONParser } from '@pnp/odata';
-
 
 const theme: ITheme = createTheme({
     fonts: {
@@ -37,7 +30,6 @@ class Toc { //Table of Contents
     }
 
 }
-
 class Section {
     public section: string
     public sectionTitle: string
@@ -86,7 +78,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
     const [existingFiles, setExistingFiles] = React.useState<IComboBoxOption[]>()
     const [fileNameError, setFileNameError] = React.useState<boolean>()
 
-//// TODO DROPDOWN bug!!!
+    //// TODO DROPDOWN bug!!!
 
     const [multiline, { toggle: toggleMultiline }] = useBoolean(false);
     const [creatingNewFile, { toggle: toggleCreatingNewFile }] = useBoolean(true);
@@ -133,7 +125,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
     const onNewFileNameChange = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string): void => {
         setCurrentFileName(newText)
         setFileNameError(false)
-        if (existingFiles.filter((file) => file.text == newText).length != 0) {
+        if (existingFiles.filter((file) => file.text == newText)?.length != 0) {
             setFileNameError(true)
         }
     }
@@ -195,25 +187,21 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
         _toc.sections[secId].subsections[subsecId].chapterTitle = e.currentTarget.value
         setToc({ ..._toc })
     }
-
     const setBook = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId, subsecId) => {
         let _toc = toc
         _toc.sections[secId].subsections[subsecId].book = e.currentTarget.value
         setToc({ ..._toc })
     }
-
     const setBookTitle = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId, subsecId) => {
         let _toc = toc
         _toc.sections[secId].subsections[subsecId].bookTitle = e.currentTarget.value
         setToc({ ..._toc })
     }
-
     const setBlock = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId, subsecId) => {
         let _toc = toc
         _toc.sections[secId].subsections[subsecId].block = e.currentTarget.value
         setToc({ ..._toc })
     }
-
     const setSubblock = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId, subsecId) => {
         let _toc = toc
         _toc.sections[secId].subsections[subsecId].subblock = e.currentTarget.value
@@ -247,6 +235,8 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
     }
 
 
+    React.useEffect(() => console.log(existingFiles), [existingFiles]   )
+
     return (
         <>
             <Stack tokens={{ padding: '2vh' }} style={{ boxShadow: Depths.depth8, display: 'flow', alignItems: 'center', justifyContent: 'center' }}>
@@ -267,13 +257,13 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                                     style={{ width: '100%' }}
 
                                     onChange={onExistingFileNameChange}
-                                    options={existingFiles.length ?
+                                    options={existingFiles?.length ?
                                         existingFiles
                                         :
                                         [{ key: null, text: "No files found" }]}
-                                    disabled={!existingFiles.length}
-                                    selectedKey={existingFiles.length ?
-                                        existingFiles[0].key
+                                    disabled={!existingFiles?.length}
+                                    selectedKey={existingFiles?.length ?
+                                        existingFiles.find((file) => file.text === currentFileName).key
                                         :
                                         null}
 
@@ -283,7 +273,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                                 <TooltipHost content="Download file content">
                                     <IconButton
                                         onClick={downloadFileContent}
-                                        disabled={!existingFiles.length}
+                                        disabled={!existingFiles?.length}
                                         iconProps={{ iconName: "download" }}
                                         ariaLabel="download" />
                                 </TooltipHost>
@@ -337,22 +327,24 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                                                         horizontal>
                                                         <StackItem
                                                             key={"sectionStackItemNumber_" + sec.sectionUuid}
+                                                            styles={{ root: { width: "15%" } }}
                                                         >
-                                                            <TextField label="Section number"
+                                                            <TextField label="#"
                                                                 value={sec.section}
                                                                 key={"sectionNumber_" + sec.sectionUuid}
                                                                 onChange={(e) => setSection(e, secId)}
-                                                                styles={{ fieldGroup: { width: 100 }, }}
+                                                                styles={{ fieldGroup: { width: '100%' }, }}
                                                                 required />
                                                         </StackItem>
                                                         <StackItem
                                                             key={"sectionStackItemTitle_" + sec.sectionUuid}
+                                                            styles={{ root: { width: "100%" } }}
                                                         >
                                                             <TextField label="Section title"
                                                                 value={sec.sectionTitle}
                                                                 key={"sectionTitle_" + sec.sectionUuid}
                                                                 onChange={(e) => setSectionTitle(e, secId)}
-                                                                styles={{ fieldGroup: { width: 300 } }}
+                                                                styles={{ fieldGroup: { width: '100%' }, }}
                                                                 required />
                                                         </StackItem>
                                                     </Stack>
