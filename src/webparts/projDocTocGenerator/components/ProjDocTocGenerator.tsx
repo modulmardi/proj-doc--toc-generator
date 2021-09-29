@@ -3,11 +3,10 @@ import { useBoolean } from '@fluentui/react-hooks';
 import { Separator } from '@fluentui/react/lib/Separator';
 import { createTheme, ITheme } from '@fluentui/react/lib/Styling';
 import { TextField } from '@fluentui/react/lib/TextField';
-import { MSGraphClient } from '@microsoft/sp-http';
 import { CommandBarButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { Stack, StackItem } from 'office-ui-fabric-react/lib/Stack';
 import * as React from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { Section, Subsection, Toc } from '../model/ToC';
 import docGenerator, { loadFile } from '../utils/docGenerator';
 import { IProjDocTocGeneratorProps } from './props/IProjDocTocGeneratorProps';
 
@@ -20,58 +19,8 @@ const theme: ITheme = createTheme({
     },
 });
 
-class Toc { //Table of Contents
-    public buildingName: string
-    public address: string
-    public projectCode: string
-    public sections: Section[]
-    constructor() {
-        this.sections = []
-    }
-
-}
-class Section {
-    public section: string
-    public sectionTitle: string
-    public subsections: Subsection[]
-    public readonly sectionUuid: string
-    constructor() {
-        this.sectionUuid = uuidv4()
-        this.subsections = []
-    }
-}
-class Subsection {
-    public subsection: string
-    public subsectionTitle: string
-    public stamp: string
-    public chapter: string
-    public chapterTitle: string
-    public book: string
-    public bookTitle: string
-    public block: string
-    public subblock: string
-    public readonly subsectionUuid: string
-    constructor() {
-        this.subsectionUuid = uuidv4()
-    }
-}
-
-
 const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
-    const fileSaver = (file, fileName) => {
-        props.context.msGraphClientFactory
-            .getClient()
-            .then((client: MSGraphClient): void => {
-                client
-                    .api(`/me/drive/root:/ToCs/${fileName}.docx:/content`)
-                    .header('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-                    .put(file)
-                client
-                    .api(`/me/drive/root:/jsonToc/${fileName}.json:/content`)
-                    .header('Content-Type', 'application/json')
-                    .put(toc)
-            });
-    }
+
     const [toc, setToc] = React.useState<Toc>(new Toc())
     const [currentFileName, setCurrentFileName] = React.useState<string>()
     const [existingFiles, setExistingFiles] = React.useState<IComboBoxOption[]>()
@@ -85,7 +34,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
         console.log(currentFileName)
         console.log(existingFiles.find((file) => file.text === currentFileName).key)
 
-        loadFile(existingFiles.find((file) => file.text === currentFileName).key,
+        loadFile(existingFiles.find((file) => file.text === currentFileName).key as string,
             function (
                 error: any,
                 content: ArrayBuffer
@@ -122,21 +71,21 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
     const onExistingFileNameChange = (e: React.FormEvent<IComboBox | HTMLOptionElement>, option: IComboBoxOption): void => {
         setCurrentFileName(option.text)
     }
-    const onOverflowedTextField = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string): void => {
-        setAddress(newText)
+    const onAddressFieldChange = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string): void => {
+        onAddressChange(newText)
         const newMultiline = newText.length > 40;
         if (newMultiline !== multiline) {
             toggleMultiline();
         }
     }
 
-    const setProjectCode = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string) => {
+    const onProjectCodeChange = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string) => {
         setToc({ ...toc, projectCode: newText })
     }
-    const setBuildingName = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string) => {
+    const onBuildingNameChange = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string) => {
         setToc({ ...toc, buildingName: newText })
     }
-    const setAddress = (newText: string) => {
+    const onAddressChange = (newText: string) => {
         setToc({ ...toc, address: newText })
     }
     const setSection = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId) => {
@@ -149,12 +98,12 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
         _toc.sections[secId].sectionTitle = e.currentTarget.value
         setToc({ ..._toc })
     }
-    const setSubsectionStamp = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId, subsecId) => {
+    const onSubsectionStampChange = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId, subsecId) => {
         let _toc = toc
         _toc.sections[secId].subsections[subsecId].stamp = e.currentTarget.value
         setToc({ ..._toc })
     }
-    const setSubsection = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId, subsecId) => {
+    const onSubsectionChange = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, secId, subsecId) => {
         let _toc = toc
         _toc.sections[secId].subsections[subsecId].subsection = e.currentTarget.value
         setToc({ ..._toc })
@@ -214,7 +163,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
     return (
         <>
             <Stack tokens={{ padding: '2vh' }} style={{ boxShadow: Depths.depth8, display: 'flow', alignItems: 'center', justifyContent: 'center' }}>
-                <form id="main_form" style={{ width: '100%' }} onSubmit={(event) => { event.preventDefault(); return !fileNameError && docGenerator(toc, fileSaver, currentFileName) }}>
+                <form id="main_form" style={{ width: '100%' }} onSubmit={(event) => { event.preventDefault(); return !fileNameError && docGenerator(toc, fileSaver, currentFileName, props.context) }}>
                     <Separator theme={theme}>Table of contents</Separator>
                     <Toggle defaultChecked offText='existing file' onText='new file' onChange={onNewFileToggleChange} />
                     {creatingNewFile ?
@@ -240,9 +189,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                                         existingFiles.find((file) => file.text === currentFileName)?.key
                                         :
                                         null}
-
                                     required
-
                                 />
                                 <TooltipHost content="Download file content">
                                     <IconButton
@@ -259,15 +206,15 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                         <Stack>
                             <TextField label="Project code" required
                                 value={toc.projectCode}
-                                onChange={setProjectCode} />
+                                onChange={onProjectCodeChange} />
                             <TextField label="Building name" required
                                 value={toc.buildingName}
-                                onChange={setBuildingName} />
+                                onChange={onBuildingNameChange} />
                             <TextField
                                 label="Address" required
                                 value={toc.address}
                                 multiline={multiline}
-                                onChange={onOverflowedTextField}
+                                onChange={onAddressFieldChange}
                             />
                         </Stack>
                         <Separator theme={theme}>Content</Separator>
@@ -342,12 +289,12 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                                                                         horizontal>
                                                                         <TextField label="Subsection stamp"
                                                                             key={`"subsectionStamp_${sec.sectionUuid}_${subsec.subsectionUuid}`}
-                                                                            onChange={(e) => setSubsectionStamp(e, secId, subsecId)}
+                                                                            onChange={(e) => onSubsectionStampChange(e, secId, subsecId)}
                                                                             value={subsec.stamp}
                                                                             required />
                                                                         <TextField label="Subsection number"
                                                                             key={`"subsectionNumber_${sec.sectionUuid}_${subsec.subsectionUuid}`}
-                                                                            onChange={(e) => setSubsection(e, secId, subsecId)}
+                                                                            onChange={(e) => onSubsectionChange(e, secId, subsecId)}
                                                                             value={subsec.subsection}
                                                                         /*required*/ />
                                                                     </Stack>

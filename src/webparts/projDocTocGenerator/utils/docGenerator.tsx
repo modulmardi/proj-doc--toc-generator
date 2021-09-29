@@ -3,22 +3,24 @@ import PizZip from 'pizzip';
 import PizZipUtils from 'pizzip/utils/index.js';
 import expressions from 'angular-expressions'
 import merge from 'lodash/merge'
+import { WebPartContext } from '@microsoft/sp-webpart-base';
+import { Toc } from '../model/ToC';
 
-export function loadFile(url, callback) {
+export function loadFile(url: string, callback) {
   PizZipUtils.getBinaryContent(url, callback);
 }
 
-function angularParser(tag) {
+function angularParser(tag: string) {
   if (tag === '.') {
     return {
-      get: function (s) { return s; }
+      get: function (s: any) { return s; }
     };
   }
   const expr = expressions.compile(
     tag.replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
   );
   return {
-    get: function (scope, context) {
+    get: function (scope: any, context: { scopeList: any; num: any; }) {
       let obj = {};
       const scopeList = context.scopeList;
       const num = context.num;
@@ -29,10 +31,10 @@ function angularParser(tag) {
     }
   };
 }
-const generateDocument = (jsonData, fileSaver, fileName: string) => {
+const generateDocument = (toc: Toc, fileSaver: (context: WebPartContext, fileName: string, file: any, toc: Toc) => void, fileName: string, context: WebPartContext) => {
   loadFile('https://publiccdn.sharepointonline.com/marachdv.sharepoint.com/sites/cdntest/cdnpics/template008.docx', function (
-    error,
-    content
+    error: any,
+    content: any
   ) {
     if (error) {
       throw error;
@@ -44,13 +46,13 @@ const generateDocument = (jsonData, fileSaver, fileName: string) => {
       parser: angularParser
     })
     try {
-      console.log(jsonData);
+      console.log(toc);
 
       // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-      doc.render(jsonData);
+      doc.render(toc);
     } catch (error) {
       // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
-      function replaceErrors(key, value) {
+      function replaceErrors(key: any, value: { [x: string]: any; }) {
         if (value instanceof Error) {
           return Object.getOwnPropertyNames(value).reduce(function (
             error,
@@ -67,7 +69,7 @@ const generateDocument = (jsonData, fileSaver, fileName: string) => {
 
       if (error.properties && error.properties.errors instanceof Array) {
         const errorMessages = error.properties.errors
-          .map(function (error) {
+          .map(function (error: { properties: { explanation: any; }; }) {
             return error.properties.explanation;
           })
           .join('\n');
@@ -84,7 +86,7 @@ const generateDocument = (jsonData, fileSaver, fileName: string) => {
     }); //Output the document using Data-URI
     console.log("docGenerator", out);
 
-    fileSaver(out, fileName)
+    fileSaver(context, fileName, out, toc)
     console.log(out);
 
   });
