@@ -72,13 +72,10 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                     .put(toc)
             });
     }
-    //table of contents
     const [toc, setToc] = React.useState<Toc>(new Toc())
     const [currentFileName, setCurrentFileName] = React.useState<string>()
     const [existingFiles, setExistingFiles] = React.useState<IComboBoxOption[]>()
     const [fileNameError, setFileNameError] = React.useState<boolean>()
-
-    //// TODO DROPDOWN bug!!!
 
     const [multiline, { toggle: toggleMultiline }] = useBoolean(false);
     const [creatingNewFile, { toggle: toggleCreatingNewFile }] = useBoolean(true);
@@ -86,17 +83,16 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 
     const downloadFileContent = () => {
         console.log(currentFileName)
-        loadFile(existingFiles.find((file) => file.text = currentFileName).key,
+        console.log(existingFiles.find((file) => file.text === currentFileName).key)
+
+        loadFile(existingFiles.find((file) => file.text === currentFileName).key,
             function (
                 error: any,
                 content: ArrayBuffer
             ) {
-                if (error) {
-                    throw error;
-                }
-                setToc(JSON.parse(decodeURIComponent(escape((String.fromCharCode(...(new Uint8Array(content))))))))
-
-
+                if (error) { throw error; }
+                const decoder = new TextDecoder('utf-8')
+                setToc(JSON.parse(decoder.decode(new Int8Array(content))))
             })
     }
 
@@ -112,16 +108,10 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
             })
     React.useEffect(() => initExistingFiles(), [])
 
-
-
     const onNewFileToggleChange = () => {
         toggleCreatingNewFile()
-        setCurrentFileName(existingFiles[0].text)
+        creatingNewFile ? setCurrentFileName(existingFiles[0].text) : setCurrentFileName("")
     }
-
-    //React.useEffect(() => console.log(111111, currentFileName), [creatingNewFile])
-
-
     const onNewFileNameChange = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string): void => {
         setCurrentFileName(newText)
         setFileNameError(false)
@@ -131,18 +121,15 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
     }
     const onExistingFileNameChange = (e: React.FormEvent<IComboBox | HTMLOptionElement>, option: IComboBoxOption): void => {
         setCurrentFileName(option.text)
-        console.log(256);
     }
-
-
     const onOverflowedTextField = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string): void => {
         setAddress(newText)
-
         const newMultiline = newText.length > 40;
         if (newMultiline !== multiline) {
             toggleMultiline();
         }
     }
+
     const setProjectCode = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string) => {
         setToc({ ...toc, projectCode: newText })
     }
@@ -208,39 +195,26 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
         setToc({ ..._toc })
     }
 
+    const addSection = () => { setToc({ ...toc, sections: [...toc.sections, new Section()] }) }
+    const removeSection = (secId) => { setToc({ ...toc, sections: [...toc.sections.filter((section, id) => { return id != secId })] }) }
 
-    const addSection = () => {
-        setToc({ ...toc, sections: [...toc.sections, new Section()] })
-    }
-    const removeSection = (secId) => {
-        setToc({
-            ...toc, sections: [...toc.sections.filter((section, id) => {
-                return id != secId
-
-            })]
-        })
-    }
     const addSubsection = (secId: number) => {
         let _toc = toc
         _toc.sections[secId].subsections = [...toc.sections[secId].subsections, new Subsection()]
-        //console.log(toc.sections[id].subsections)
-        //console.log(toc, _toc)
         setToc({ ..._toc })
     }
     const removeSubsection = (secId: number, subsecId: number) => {
         let _toc = toc
         _toc.sections[secId].subsections = _toc.sections[secId].subsections.filter((subsec, id) => id != subsecId)
         setToc({ ..._toc })
-        // setToc({ ...toc, sections: [...toc.sections.splice(secId)] })
     }
 
-
-    React.useEffect(() => console.log(existingFiles), [existingFiles]   )
+    React.useEffect(() => console.log(currentFileName, "\n", existingFiles), [currentFileName])
 
     return (
         <>
             <Stack tokens={{ padding: '2vh' }} style={{ boxShadow: Depths.depth8, display: 'flow', alignItems: 'center', justifyContent: 'center' }}>
-                <form id="main_form" style={{ width: '80%' }} onSubmit={(event) => { event.preventDefault(); return !fileNameError && docGenerator(toc, fileSaver, currentFileName) }}>
+                <form id="main_form" style={{ width: '100%' }} onSubmit={(event) => { event.preventDefault(); return !fileNameError && docGenerator(toc, fileSaver, currentFileName) }}>
                     <Separator theme={theme}>Table of contents</Separator>
                     <Toggle defaultChecked offText='existing file' onText='new file' onChange={onNewFileToggleChange} />
                     {creatingNewFile ?
@@ -263,7 +237,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                                         [{ key: null, text: "No files found" }]}
                                     disabled={!existingFiles?.length}
                                     selectedKey={existingFiles?.length ?
-                                        existingFiles.find((file) => file.text === currentFileName).key
+                                        existingFiles.find((file) => file.text === currentFileName)?.key
                                         :
                                         null}
 
@@ -278,16 +252,10 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                                         ariaLabel="download" />
                                 </TooltipHost>
                             </Stack>
-                        </>
-                            // <>
-                            //     <ComboBox options={[{ key: null, text: "No files found" }]} disabled defaultSelectedKey={null} />
-                            // </>
-                        )
+                        </>)
                     }
-
                     <Separator theme={theme}>Title</Separator>
                     <Stack>
-
                         <Stack>
                             <TextField label="Project code" required
                                 value={toc.projectCode}
@@ -334,7 +302,8 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                                                                 key={"sectionNumber_" + sec.sectionUuid}
                                                                 onChange={(e) => setSection(e, secId)}
                                                                 styles={{ fieldGroup: { width: '100%' }, }}
-                                                                required />
+                                                                required
+                                                            />
                                                         </StackItem>
                                                         <StackItem
                                                             key={"sectionStackItemTitle_" + sec.sectionUuid}
@@ -345,7 +314,8 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                                                                 key={"sectionTitle_" + sec.sectionUuid}
                                                                 onChange={(e) => setSectionTitle(e, secId)}
                                                                 styles={{ fieldGroup: { width: '100%' }, }}
-                                                                required />
+                                                                required
+                                                            />
                                                         </StackItem>
                                                     </Stack>
                                                     {sec.subsections.map((subsec, subsecId) =>
@@ -357,7 +327,12 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                                                                 style={{ boxShadow: Depths.depth64, background: "peachpuff", margin: '0' }}
                                                             >
                                                                 <TooltipHost key={"subsectionRemoveTooltip_" + sec.sectionUuid + subsec.subsectionUuid} content="Remove subsection">
-                                                                    <IconButton key={`"subsectionRemove_${sec.sectionUuid}_${subsec.subsectionUuid}`} onClick={() => removeSubsection(secId, subsecId)} style={{ background: "pink", height: '100%' }} iconProps={{ iconName: 'Cancel' }} ariaLabel="Remove section" />
+                                                                    <IconButton
+                                                                        key={`"subsectionRemove_${sec.sectionUuid}_${subsec.subsectionUuid}`}
+                                                                        onClick={() => removeSubsection(secId, subsecId)}
+                                                                        style={{ background: "pink", height: '100%' }}
+                                                                        iconProps={{ iconName: 'Cancel' }}
+                                                                        ariaLabel="Remove section" />
                                                                 </TooltipHost>
                                                                 <Stack
                                                                     key={`"subsectionStackTitle_${sec.sectionUuid}_${subsec.subsectionUuid}`}
@@ -420,7 +395,12 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                                                             </Stack>
                                                         </>
                                                     )}
-                                                    <CommandBarButton key={`"addSubsection_${sec.sectionUuid}}`} onClick={() => addSubsection(secId)} iconProps={{ iconName: 'Add' }} text="Add subsection" />
+                                                    <CommandBarButton
+                                                        key={`"addSubsection_${sec.sectionUuid}}`}
+                                                        onClick={() => addSubsection(secId)}
+                                                        iconProps={{ iconName: 'Add' }}
+                                                        text="Add subsection"
+                                                    />
                                                 </Stack>
                                             </Stack>
                                         </Stack>
@@ -433,7 +413,6 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
                         </Stack>
                         <Stack>
                             <PrimaryButton type="submit" text="Get project's ToC" />
-                            {/* <a download="template" href="https://publiccdn.sharepointonline.com/marachdv.sharepoint.com/sites/cdntest/cdnpics/template003.docx">click</a> */}
                         </Stack>
                     </Stack>
                 </form>
