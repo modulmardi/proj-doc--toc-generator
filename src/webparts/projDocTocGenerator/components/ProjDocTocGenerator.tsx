@@ -3,12 +3,15 @@ import { useBoolean } from '@fluentui/react-hooks';
 import { Separator } from '@fluentui/react/lib/Separator';
 import { createTheme, ITheme } from '@fluentui/react/lib/Styling';
 import { TextField } from '@fluentui/react/lib/TextField';
+import { MSGraphClient } from '@microsoft/sp-http';
 import { CommandBarButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { Stack, StackItem } from 'office-ui-fabric-react/lib/Stack';
 import * as React from 'react';
 import { Section, Subsection, Toc } from '../model/ToC';
 import docGenerator, { loadFile } from '../utils/docGenerator';
+import fileSaver from '../utils/fileSaver';
 import { IProjDocTocGeneratorProps } from './props/IProjDocTocGeneratorProps';
+
 
 const theme: ITheme = createTheme({
     fonts: {

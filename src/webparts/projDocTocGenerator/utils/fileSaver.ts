@@ -16,3 +16,5 @@ const fileSaver = (context: WebPartContext, fileName: string, file: any, toc: To
                 .put(toc)
         });
 }
+
+export default fileSaver
