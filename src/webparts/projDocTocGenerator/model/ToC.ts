@@ -1,9 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
 
 export class Toc { //Table of Contents
+	public projectCode: string
 	public buildingName: string
 	public address: string
-	public projectCode: string
+	public projectStage: string
+	public cpeName: string							//Главный инженер проекта
+	public gapName: string							//Главный архитектор проекта
+	public complianceAssessmentName: string			//Нормоконтроль
+	
 	public sections: Section[]
 	constructor() {
 		this.sections = []
@@ -13,6 +18,7 @@ export class Toc { //Table of Contents
 export class Section {
 	public section: string
 	public sectionTitle: string
+	public stamp: string
 	public subsections: Subsection[]
 	public readonly sectionUuid: string
 	constructor() {

@@ -30,7 +30,6 @@
 		"docxtemplater": "^3.25.3",
 		"file-saver": "^2.0.5",
 		"formik": "^2.2.9",
-		"formik-fluent-ui-react": "^1.1.0",
 		"jquery": "^3.5.5",
 		"json-bufferify": "^0.2.2",
 		"office-ui-fabric-react": "^7.155.3",
