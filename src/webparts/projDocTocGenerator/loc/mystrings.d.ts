@@ -1,10 +1,10 @@
 declare interface IProjDocTocGeneratorWebPartStrings {
-  PropertyPaneDescription: string;
-  BasicGroupName: string;
-  DescriptionFieldLabel: string;
+	PropertyPaneDescription: string;
+	BasicGroupName: string;
+	DescriptionFieldLabel: string;
 }
 
 declare module 'ProjDocTocGeneratorWebPartStrings' {
-  const strings: IProjDocTocGeneratorWebPartStrings;
-  export = strings;
+	const strings: IProjDocTocGeneratorWebPartStrings;
+	export = strings;
 }

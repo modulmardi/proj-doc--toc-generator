@@ -1,39 +1,39 @@
 {
-  "@pnp/generator-spfx": {
-    "framework": "react",
-    "pnpFramework": "reactjs.plus",
-    "pnp-libraries": [
-      "jquery@3",
-      "msgraph",
-      "msgt",
-      "@pnp/pnpjs",
-      "@pnp/spfx-property-controls",
-      "spfx-uifabric-themes",
-      "lodash",
-      "@pnp/spfx-controls-react",
-      "ouifr@7",
-      "rush@3.9"
-    ],
-    "pnp-ci": "no-devops",
-    "pnp-vetting": [
-      "webpack-analyzer",
-      "stylelint",
-      "csscomb"
-    ],
-    "spfxenv": "spo",
-    "pnp-testing": [
-      "jest"
-    ]
-  },
-  "@microsoft/generator-sharepoint": {
-    "environment": "spo",
-    "framework": "react",
-    "isCreatingSolution": true,
-    "version": "1.11.0",
-    "libraryName": "proj-doc-toc-generator",
-    "libraryId": "7c233485-a856-40d9-b933-fb2bf2fc8842",
-    "packageManager": "npm",
-    "isDomainIsolated": false,
-    "componentType": "webpart"
-  }
+	"@pnp/generator-spfx": {
+		"framework": "react",
+		"pnpFramework": "reactjs.plus",
+		"pnp-libraries": [
+			"jquery@3",
+			"msgraph",
+			"msgt",
+			"@pnp/pnpjs",
+			"@pnp/spfx-property-controls",
+			"spfx-uifabric-themes",
+			"lodash",
+			"@pnp/spfx-controls-react",
+			"ouifr@7",
+			"rush@3.9"
+		],
+		"pnp-ci": "no-devops",
+		"pnp-vetting": [
+			"webpack-analyzer",
+			"stylelint",
+			"csscomb"
+		],
+		"spfxenv": "spo",
+		"pnp-testing": [
+			"jest"
+		]
+	},
+	"@microsoft/generator-sharepoint": {
+		"environment": "spo",
+		"framework": "react",
+		"isCreatingSolution": true,
+		"version": "1.11.0",
+		"libraryName": "proj-doc-toc-generator",
+		"libraryId": "7c233485-a856-40d9-b933-fb2bf2fc8842",
+		"packageManager": "npm",
+		"isDomainIsolated": false,
+		"componentType": "webpart"
+	}
 }

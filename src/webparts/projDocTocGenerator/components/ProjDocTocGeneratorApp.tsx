@@ -4,11 +4,11 @@ import { IProjDocTocGeneratorAppProps } from './props/IProjDocTocGeneratorAppPro
 
 const ProjDocTocGeneratorApp: React.FC<IProjDocTocGeneratorAppProps> = (props) => {
 
-  return (
-    <>
-    <ProjDocTocGenerator context={props.context}></ProjDocTocGenerator>
-    </>
-  );
+	return (
+		<>
+		<ProjDocTocGenerator context={props.context}></ProjDocTocGenerator>
+		</>
+	);
 };
 
 
