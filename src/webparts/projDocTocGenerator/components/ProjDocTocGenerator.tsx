@@ -110,18 +110,20 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 					})}
 					initialValues={{
 						currentFileName: '',
-						toc: null,
+						_toc: null,
 						newProjectTemplateChecks: new Array<boolean>(sectionsPreset.length).fill(true)
 					}}
-					onSubmit={(values: Values, formikHelpers: FormikHelpers<Values>): void | Promise<any> => {
-						console.log(1);
-						setCurrentToc({ ...values.toc })
+					onSubmit={(values, formikHelpers): void | Promise<any> => {
+						const _presetToc = new Toc
+
+						_presetToc.sections = sectionsPreset.filter((sec, secId) => values.newProjectTemplateChecks[secId])
+
+						setCurrentToc({ ..._presetToc })
 						hideCreateNewProjModal()
 					}}>
-					<Form>
-						{props => <>
+					{(props) => <>
+						<Form>
 							<Stack horizontal tokens={stackTokens}>
-								{console.log('lol')}
 								<PrimaryButton text="Создать проект" onClick={showCreateNewProjModal} />
 								<PrimaryButton text="Открыть существующий проект" />
 							</Stack>
@@ -146,6 +148,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 													name={`newProjectTemplateChecks[${checkboxId}]`}
 													styles={{ label: { width: '100%', alignItems: 'baseline' } }}
 													onChange={props.handleChange}
+													checked={props.values.newProjectTemplateChecks[checkboxId]}
 													onRenderLabel={() =>
 														<Stack horizontal style={{ width: '100%' }}>
 															<div style={{ fontSize: '1.1em', width: '7%', position: 'relative', display: 'block', left: '1%' }}>{sectionItem.section}</div>
@@ -162,15 +165,15 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 										<DefaultButton text="Назад" onClick={hideCreateNewProjModal} style={{}} />
 									</Stack>
 									<Stack horizontalAlign="end" style={{ width: '100%' }}>
-										<PrimaryButton type='submit' text="Продолжить" />
+										<PrimaryButton type='submit' onClick={() => props.handleSubmit()}>Продолжить</PrimaryButton>
 									</Stack>
 								</Stack>
 							</Modal>
-						</>}
-					</Form>
+						</Form>
+					</>}
 				</Formik>
 
-				{!!currentToc && <TocForm toc={new Toc} />}
+				{currentToc && <TocForm toc={currentToc} /> || <TocForm toc={new Toc} />}
 			</Stack>
 		</>
 	);
