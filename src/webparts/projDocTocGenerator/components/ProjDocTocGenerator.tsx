@@ -15,6 +15,7 @@ import fileSaver from '../utils/fileSaver';
 import { IProjDocTocGeneratorProps } from './props/IProjDocTocGeneratorProps';
 import TocForm from './TocForm';
 import * as Yup from 'yup';
+import styles from './ProjDocTocGeneratorApp.module.scss';
 
 const theme: ITheme = createTheme({
 	fonts: {
@@ -132,7 +133,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 								isOpen={isCreateNewProjModalOpen}
 								onDismiss={hideCreateNewProjModal}
 								isBlocking={false}
-								styles={{ main: { height: '70vh', width: '40vw', borderRadius: '2vh', padding: '5vh 5vw' } }}
+								styles={{ main: { height: 'wrap-content', width: '40vw', borderRadius: '0,5vh', padding: '2vh 2vw', position: 'relative' } }}
 							// containerClassName={contentStyles.container}
 							>
 								<Stack>
@@ -160,13 +161,9 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 										))}
 									</Stack>
 								</Stack>
-								<Stack horizontal style={{ alignItems: 'center', width: '100%', padding: '4vw 5vw 0 5vw' }}>
-									<Stack>
-										<DefaultButton text="Назад" onClick={hideCreateNewProjModal} style={{}} />
-									</Stack>
-									<Stack horizontalAlign="end" style={{ width: '100%' }}>
-										<PrimaryButton type='submit' onClick={() => props.handleSubmit()}>Продолжить</PrimaryButton>
-									</Stack>
+								<Stack horizontal style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', padding: '1vh 0 0 0' }}>
+									<DefaultButton text="Назад" onClick={hideCreateNewProjModal} style={{ width: '100%' }} />
+									<PrimaryButton type='submit' onClick={() => props.handleSubmit()} style={{ width: '100%' }}>Продолжить</PrimaryButton>
 								</Stack>
 							</Modal>
 						</Form>
