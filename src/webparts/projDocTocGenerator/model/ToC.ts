@@ -5,9 +5,9 @@ export class Toc { //Table of Contents
 	public buildingName: string
 	public address: string
 	public projectStage: string
-	public cpeName: string							//Главный инженер проекта
+	public gipName: string							//Главный инженер проекта
 	public gapName: string							//Главный архитектор проекта
-	public complianceAssessmentName: string			//Нормоконтроль
+	public nContr: string							//Нормоконтроль
 	
 	public sections: Section[]
 	constructor() {
