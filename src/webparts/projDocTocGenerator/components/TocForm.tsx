@@ -1,4 +1,4 @@
-import { createTheme, Depths, IButtonStyles, IComboBoxOption, IconButton, ITheme, Stack, StackItem, TextField } from '@fluentui/react';
+import { createTheme, Depths, IButtonStyles, IComboBoxOption, IconButton, ITheme, Modal, Stack, StackItem, TextField } from '@fluentui/react';
 import { useBoolean } from '@fluentui/react-hooks';
 import { FieldArray, Form, Formik, FormikHelpers } from 'formik';
 import { values } from 'lodash';
@@ -8,6 +8,7 @@ import { SharedColors, NeutralColors } from '@fluentui/theme';
 import { getTheme } from '@fluentui/react';
 import { mergeStyles, mergeStyleSets } from '@fluentui/merge-styles';
 import { stylesAddButtonBig, stylesAddButtonLateral, stylesCancelButton, stylesEditButton } from './styles/stylesButton';
+import EditSectionModal from './EditSectionModal';
 
 interface ITocFormProps {
 	toc: Toc
@@ -23,6 +24,22 @@ interface Values {
 
 
 const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
+	const [isEditSectionModalOpen, { setTrue: showEditSectionModal, setFalse: hideEditSectionModal }] = useBoolean(false);
+	const [currentEditableSection, setCurrentEditableSection] = React.useState<Section>(null);
+	const [currentEditableSectionNumber, setCurrentEditableSectionNumber] = React.useState<number>(null);
+	const [isSectionEdited, setIsSectionEdited] = React.useState<boolean>(false);
+	const replacer = React.useRef<any>(null)
+	React.useEffect(
+		() => {
+			{
+				if (isSectionEdited) {
+					console.log("inTEXT"); replacer.current(currentEditableSectionNumber, currentEditableSection); setIsSectionEdited(false)
+				}
+			}
+		}
+		, [isSectionEdited]
+	)
+
 	return (
 		<>
 			<Formik
@@ -66,14 +83,22 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 
 						<h2>Разделы</h2>
 
-						{console.log(props.values._toc)}
-
+						{//console.log(props.values._toc)}
+						}
 						<FieldArray name="_toc.sections"
 							render={arrayHelpers =>
 								<>
 									{props.values._toc?.sections?.length > 0 &&
 										props.values._toc?.sections?.map((section, sectionId, sections) =>
 											<>
+
+												<EditSectionModal isEditSectionModalOpen={isEditSectionModalOpen}
+													hideEditSectionModal={hideEditSectionModal}
+													currentEditableSection={currentEditableSection}
+													setIsSectionEdited={setIsSectionEdited}
+													setCurrentEditableSection={setCurrentEditableSection}
+												/>
+
 												< Stack key={`stack_sec_add_top`}
 													tokens={{ padding: '0' }}
 													style={{ boxShadow: Depths.depth8, display: 'flow', alignItems: 'center', justifyContent: 'center' }}
@@ -92,7 +117,12 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 														<IconButton key={`stack_sec_input_${sections[sectionId].sectionUuid}_edit`}
 															styles={stylesEditButton}
 															iconProps={{ iconName: "edit", }}
-															onClick={() => arrayHelpers.remove(sectionId)} />
+															onClick={() => {
+																setCurrentEditableSection(section)
+																setCurrentEditableSectionNumber(sectionId)
+																replacer.current = arrayHelpers.replace
+																showEditSectionModal()
+															}} />
 														<IconButton key={`stack_sec_input_${sections[sectionId].sectionUuid}_cancel`}
 															style={{}}
 															styles={stylesCancelButton}
@@ -100,16 +130,17 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 															onClick={() => arrayHelpers.remove(sectionId)} />
 
 														<Stack horizontal styles={{ root: { width: '100%' } }}>
-															<TextField key={`stack_sec_input_${sections[sectionId].sectionUuid}_#`}
-																name={`_toc.sections[${sectionId}].section`} borderless underlined placeholder="#" value={section.section} onChange={props.handleChange} />
+															<TextField placeholder="#" key={`stack_sec_input_${sections[sectionId].sectionUuid}_#`}
+																name={`_toc.sections[${sectionId}].section`} borderless underlined value={section.section} onChange={props.handleChange} />
 															<TextField key={`stack_sec_input_${sections[sectionId].sectionUuid}_stamp`}
 																styles={{ root: { width: '100%' } }} name={`_toc.sections[${sectionId}].stamp`} borderless underlined placeholder="Шифр раздела" value={section.stamp} onChange={props.handleChange} />
 														</Stack>
 
-														<TextField key={`stack_sec_input_${sections[sectionId].sectionUuid}_title`}
+														<TextField placeholder="Наименование раздела" key={`stack_sec_input_${sections[sectionId].sectionUuid}_title`}
+															name={`_toc.sections[${sectionId}].sectionTitle`} value={section.sectionTitle}
 															multiline
 															styles={{ root: { width: '100%' } }}
-															name={`_toc.sections[${sectionId}].sectionTitle`} borderless underlined placeholder="Наименование раздела" value={section.sectionTitle} onChange={props.handleChange} />
+															borderless underlined onChange={props.handleChange} />
 
 													</Stack>
 
@@ -124,7 +155,6 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 										<IconButton styles={stylesAddButtonBig} iconProps={{ iconName: "add", }}
 											onClick={() => arrayHelpers.push(new Section())} />
 									</Stack>
-
 								</>}
 						/>
 					</Form>

@@ -134,7 +134,6 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 								onDismiss={hideCreateNewProjModal}
 								isBlocking={false}
 								styles={{ main: { height: 'wrap-content', width: '40vw', borderRadius: '0,5vh', padding: '2vh 2vw', position: 'relative' } }}
-							// containerClassName={contentStyles.container}
 							>
 								<Stack>
 									<h2 {...theme}>Добавить разделы</h2>
@@ -163,7 +162,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 								</Stack>
 								<Stack horizontal style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', padding: '1vh 0 0 0' }}>
 									<DefaultButton text="Назад" onClick={hideCreateNewProjModal} style={{ width: '100%' }} />
-									<PrimaryButton type='submit' onClick={() => props.handleSubmit()} style={{ width: '100%' }}>Продолжить</PrimaryButton>
+									<PrimaryButton text="Продолжить" type='submit' onClick={() => props.handleSubmit()} style={{ width: '100%' }} />
 								</Stack>
 							</Modal>
 						</Form>
