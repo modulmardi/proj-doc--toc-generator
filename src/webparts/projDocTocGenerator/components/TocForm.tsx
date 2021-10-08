@@ -1,12 +1,8 @@
 import { createTheme, Depths, IButtonStyles, IComboBoxOption, IconButton, ITheme, Modal, Stack, StackItem, TextField } from '@fluentui/react';
 import { useBoolean } from '@fluentui/react-hooks';
 import { FieldArray, Form, Formik, FormikHelpers } from 'formik';
-import { values } from 'lodash';
 import * as React from 'react';
 import { Section, Subsection, Toc } from '../model/ToC';
-import { SharedColors, NeutralColors } from '@fluentui/theme';
-import { getTheme } from '@fluentui/react';
-import { mergeStyles, mergeStyleSets } from '@fluentui/merge-styles';
 import { stylesAddButtonBig, stylesAddButtonLateral, stylesCancelButton, stylesEditButton } from './styles/stylesButton';
 import EditSectionModal from './EditSectionModal';
 
@@ -28,13 +24,11 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 	const [currentEditableSection, setCurrentEditableSection] = React.useState<Section>(null);
 	const [currentEditableSectionNumber, setCurrentEditableSectionNumber] = React.useState<number>(null);
 	const [isSectionEdited, setIsSectionEdited] = React.useState<boolean>(false);
-	const replacer = React.useRef<any>(null)
+	const replacer = React.useRef<(index: number, value: any) => void>(null)
 	React.useEffect(
 		() => {
-			{
-				if (isSectionEdited) {
-					console.log("inTEXT"); replacer.current(currentEditableSectionNumber, currentEditableSection); setIsSectionEdited(false)
-				}
+			if (isSectionEdited) {
+				replacer.current(currentEditableSectionNumber, currentEditableSection); setIsSectionEdited(false)
 			}
 		}
 		, [isSectionEdited]
@@ -58,10 +52,10 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 						<Stack tokens={{ childrenGap: '1vh' }}>
 							<TextField name={`_toc.buildingName`}
 								onChange={props.handleChange}
-								multiline borderless underlined placeholder="Название объекта" value={props.values._toc.buildingName} />
+								multiline autoAdjustHeight resizable={false} borderless underlined placeholder="Название объекта" value={props.values._toc.buildingName} />
 							<TextField name={`_toc.address`}
 								onChange={props.handleChange}
-								multiline borderless underlined placeholder="Адрес" value={props.values._toc.address} />
+								multiline autoAdjustHeight resizable={false} borderless underlined placeholder="Адрес" value={props.values._toc.address} />
 							<Stack horizontal>
 								<TextField name={`_toc.projectCode`}
 									onChange={props.handleChange}
@@ -138,7 +132,7 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 
 														<TextField placeholder="Наименование раздела" key={`stack_sec_input_${sections[sectionId].sectionUuid}_title`}
 															name={`_toc.sections[${sectionId}].sectionTitle`} value={section.sectionTitle}
-															multiline
+															multiline autoAdjustHeight resizable={false}
 															styles={{ root: { width: '100%' } }}
 															borderless underlined onChange={props.handleChange} />
 

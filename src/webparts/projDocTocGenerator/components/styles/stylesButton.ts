@@ -7,7 +7,7 @@ const theme: ITheme = createTheme({ //pass this object to your components
 export const stylesCircleButton: IButtonStyles = {
     root: [{
         borderRadius: '50%'
-    }]
+    }],
 }
 export const stylesOrdinaryButton: IButtonStyles = {
     root: [{
@@ -34,6 +34,39 @@ export const stylesAddButtonLateral: IButtonStyles = mergeStyleSets(stylesOrdina
         borderRadius: '50%',
     }]
 })
+
+export const stylesAddButtonModal: IButtonStyles = mergeStyleSets(stylesOrdinaryButton, stylesCircleButton, {
+    root: [{
+        position: 'absolute',
+        zIndex: '10',
+        top: '50%',
+        borderRadius: '50%',
+    }]
+})
+export const stylesAddButtonModalLateralRight: IButtonStyles = mergeStyleSets(stylesOrdinaryButton, stylesCircleButton, stylesAddButtonModal, {
+    root: [{
+        right: '0',
+        transform: 'translateX(150%)',
+    }]
+})
+export const stylesAddButtonModalLateralLeft: IButtonStyles = mergeStyleSets(stylesOrdinaryButton, stylesCircleButton, stylesAddButtonModal, {
+    root: [{
+        left: '0',
+        transform: 'translateX(-150%)',
+    }]
+})
+export const stylesAddButtonModalCentral: IButtonStyles = mergeStyleSets(stylesOrdinaryButton, stylesCircleButton, stylesAddButtonModal, {
+    root: [{
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '10vh',
+        height: '10vh',
+        border: '1px solid ' + theme.palette.themeDark
+
+    }]
+})
+
 export const stylesEditButton: IButtonStyles = mergeStyleSets(stylesOrdinaryButton, stylesCircleButton, {
     root: [{
         position: 'absolute',
@@ -55,4 +88,11 @@ export const stylesCancelButton: IButtonStyles = mergeStyleSets(stylesCircleButt
         background: theme.palette.red,
         color: theme.palette.white
     }],
+})
+export const stylesCancelButtonModal: IButtonStyles = mergeStyleSets(stylesCancelButton, {
+    root: [{
+        top: '0',
+        left: '50%',
+        transform: 'translate(-50%, -150%)'
+    }]
 })
