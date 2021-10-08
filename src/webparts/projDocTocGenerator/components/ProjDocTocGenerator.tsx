@@ -1,4 +1,4 @@
-import { Checkbox, ComboBox as Dropdown, DefaultButton, Depths, IComboBox, IComboBoxOption, IconButton, Modal, Toggle, TooltipHost } from '@fluentui/react';
+import { Checkbox, Dropdown, DefaultButton, Depths, IComboBox, IComboBoxOption, IconButton, Modal, Toggle, TooltipHost } from '@fluentui/react';
 import { useBoolean } from '@fluentui/react-hooks';
 import { Separator } from '@fluentui/react/lib/Separator';
 import { createTheme, FontSizes, ITheme } from '@fluentui/react/lib/Styling';
@@ -45,7 +45,6 @@ const sectionsPreset: Section[] = [
 ]
 
 interface Values {
-	currentFileName: string
 	newProjectTemplateChecks: boolean[]
 
 	toc: Toc
@@ -54,63 +53,57 @@ interface Values {
 const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 
 	const [currentToc, setCurrentToc] = React.useState<Toc>();
-	// const [currentFileName, setCurrentFileName] = React.useState<string>()
-	// const [existingFiles, setExistingFiles] = React.useState<IComboBoxOption[]>()
+	const [existingFiles, setExistingFiles] = React.useState<IComboBoxOption[]>()
+
+	const [openingProjectName, setOpeningProjectName] = React.useState<string>()
+
 	const [isCreateNewProjModalOpen, { setTrue: showCreateNewProjModal, setFalse: hideCreateNewProjModal }] = useBoolean(false);
+	const [isOpenProjModalOpen, { setTrue: showOpenProjModal, setFalse: hideOpenProjModal }] = useBoolean(false);
 
-	////const [newProjectTemplateChecks, setNewProjectTemplateChecks] = React.useState<boolean[]>(new Array<boolean>(sectionsPreset.length).fill(true));
-	// React.useEffect(() => initExistingFiles(), [])
-
-	//// const toggleTemplateItem = (checkboxId: number) => {
-	//// 	setNewProjectTemplateChecks(newProjectTemplateChecks.map((check, id) => id === checkboxId ? !check : check))
-	//// }
+	React.useEffect(() => initExistingFiles(), [])
 
 	React.useEffect(() => console.log(currentToc), [currentToc])
 
-	// const downloadFileContent = () => {
-	// 	console.log(currentFileName)
-	// 	console.log(existingFiles.find((file) => file.text === currentFileName).key)
+	const downloadFileContent = () => {
+		//console.log(openingProjectName)
+		//console.log(existingFiles.find((file) => file.text === openingProjectName).key)
 
-	// 	loadFile(existingFiles.find((file) => file.text === currentFileName).key as string,
-	// 		function (
-	// 			error: any,
-	// 			content: ArrayBuffer
-	// 		) {
-	// 			if (error) { throw error; }
-	// 			const decoder = new TextDecoder('utf-8')
-	// 			setToc(JSON.parse(decoder.decode(new Int8Array(content))))
-	// 		})
-	// }
-	// const initExistingFiles: () => void = () =>
-	// 	props.context.msGraphClientFactory.getClient()
-	// 		.then((client: MSGraphClient): void => {
-	// 			client.api("/me/drive/root:/jsonToc:/children")
-	// 				.get()
-	// 				.then((data) => setExistingFiles([...(data.value as [])
-	// 					.filter((item: any) => (item.name as string).match(/\.json$/))
-	// 					.map((item: any) => {
-	// 						return { key: item['@microsoft.graph.downloadUrl'], text: item.name.replace(/\.[^/.]+$/, "") }
-	// 					})]))
-	// 		})
+		loadFile(existingFiles.find((file) => file.text === openingProjectName)?.key as string,
+			function (
+				error: any,
+				content: ArrayBuffer
+			) {
+				if (error) { throw error; }
+				const decoder = new TextDecoder('utf-8')
+				setCurrentToc(JSON.parse(decoder.decode(new Int8Array(content))))
+			})
+	}
 
-	//// const createNewToc = () => {
-	//// 	const _toc = new Toc();
-	//// 	_toc.sections = newProjectTemplateChecks.map((check, checkId) => check ? sectionsPreset[checkId] : null).filter(section => section)
-	//// 	setToc(_toc)
-	//// 	hideCreateNewProjModal()
-	//// }
+	const initExistingFiles: () => void = () =>
+		props.context.msGraphClientFactory.getClient()
+			.then((client: MSGraphClient): void => {
+				client.api("/me/drive/root:/jsonToc:/children")
+					.get()
+					.then((data) => setExistingFiles([...(data.value as [])
+						.filter((item: any) => (item.name as string).match(/\.toc$/))
+						.map((item: any) => {
+							return { key: item['@microsoft.graph.downloadUrl'], text: item.name.replace(/\.[^/.]+$/, "") }
+						})]))
+			})
+	const onOpeningProjectNameChange = (e, newOpeningProjectName) => {
+		setOpeningProjectName(newOpeningProjectName.text)
+	}
+	const handleOpenProject = () => {
+		downloadFileContent()
+		hideOpenProjModal();
+	}
 
 	return (
 		<>
 			<Stack tokens={{ padding: '2vh' }} style={{ boxShadow: Depths.depth8, display: 'flow', alignItems: 'center', justifyContent: 'center' }}>
 				<h1 {...theme}>Генератор проектной документации</h1>
 				<Formik
-					validationSchema=
-					{Yup.object({
-						currentFileName: Yup.string()
-					})}
 					initialValues={{
-						currentFileName: '',
 						_toc: null,
 						newProjectTemplateChecks: new Array<boolean>(sectionsPreset.length).fill(true)
 					}}
@@ -125,8 +118,8 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 					{(props) => <>
 						<Form>
 							<Stack horizontal tokens={stackTokens}>
-								<PrimaryButton text="Создать проект" onClick={showCreateNewProjModal} />
-								<PrimaryButton text="Открыть существующий проект" />
+								<PrimaryButton text="Сгенерировать разделы" onClick={showCreateNewProjModal} />
+								<PrimaryButton text="Открыть существующий проект" onClick={showOpenProjModal} />
 							</Stack>
 							<Modal
 								titleAriaId="createNewProjectModal"
@@ -137,9 +130,6 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 							>
 								<Stack>
 									<h2 {...theme}>Добавить разделы</h2>
-									{/* <Stack tokens={stackTokens}>
-									<Checkbox label="Выбрать все" />
-								</Stack> */}
 									<Stack tokens={stackTokens} style={{ padding: '2vh 0 0 1vw' }}>
 										{sectionsPreset.map((sectionItem, checkboxId) => (
 											<>
@@ -165,11 +155,37 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 									<PrimaryButton text="Продолжить" type='submit' onClick={() => props.handleSubmit()} style={{ width: '100%' }} />
 								</Stack>
 							</Modal>
+							<Modal
+								titleAriaId="openProjModal"
+								isOpen={isOpenProjModalOpen}
+								onDismiss={hideOpenProjModal}
+								isBlocking={false}
+								styles={{ main: { height: 'wrap-content', width: '40vw', borderRadius: '0,5vh', padding: '2vh 2vw', position: 'relative' } }}
+							>
+								<Stack>
+									<h2 {...theme}>Выберите проект</h2>
+									<Dropdown styles={{ root: { width: '100%' } }} placeholder='Имя проекта' onChange={onOpeningProjectNameChange}
+										options={existingFiles?.length ?
+											existingFiles
+											:
+											[{ key: null, text: "No files found" }]}
+										disabled={!existingFiles?.length}
+										selectedKey={existingFiles?.length ?
+											existingFiles.find((file) => file.text === openingProjectName)?.key
+											:
+											null} />
+								</Stack>
+								<Stack horizontal style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', padding: '1vh 0 0 0' }}>
+									<DefaultButton text="Назад" onClick={hideCreateNewProjModal} style={{ width: '100%' }} />
+									<PrimaryButton text="Продолжить" type='submit' onClick={handleOpenProject} style={{ width: '100%' }} />
+								</Stack>
+							</Modal>
 						</Form>
 					</>}
 				</Formik>
 
-				{currentToc && <TocForm toc={currentToc} /> || <TocForm toc={new Toc} />}
+				{<TocForm toc={currentToc || new Toc()} setToc={setCurrentToc} existingFiles={existingFiles} context={props.context} />}
+
 			</Stack>
 		</>
 	);
