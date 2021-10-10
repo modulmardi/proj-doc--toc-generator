@@ -2,6 +2,7 @@ import { Depths, Dropdown, IComboBox, IComboBoxOption, IconButton, PrimaryButton
 import { useBoolean } from '@fluentui/react-hooks';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { FieldArray, Form, Formik, FormikHelpers } from 'formik';
+import { values } from 'lodash';
 import * as React from 'react';
 import * as yup from 'yup';
 import { Section, Subsection, Toc } from '../model/ToC';
@@ -23,7 +24,11 @@ interface Values {
 }
 
 
-
+function fillEmptySectionsWithSubsections(_toc: Toc): Toc {
+	_toc.sections = _toc.sections
+		.map((section) => section.subsections.length > 0 ? section : { ...section, subsections: [new Subsection] })
+	return _toc
+}
 
 
 const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
@@ -110,7 +115,7 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 				enableReinitialize
 				onSubmit={(values: Values, formikHelpers: FormikHelpers<Values>): void | Promise<any> => {
 					validateCurrentFileName(currentFileName)
-					if (fileNameError === '' && currentFileName !== '') { return docGenerator(values._toc, fileSaver, currentFileName, props.context) }
+					if (fileNameError === '' && currentFileName !== '') { return docGenerator(fillEmptySectionsWithSubsections(values._toc), fileSaver, currentFileName, props.context) }
 				}}
 			>
 				{(formikProps) => <>
