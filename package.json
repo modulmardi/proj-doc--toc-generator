@@ -26,7 +26,7 @@
 		"@pnp/spfx-controls-react": "2.3.0",
 		"@pnp/spfx-property-controls": "2.2.0",
 		"@types/jquery": "^3.5.4",
-		"@uifabric/experiments": "^6.44.0",
+		"@uifabric/experiments": "^6.84.0",
 		"angular-expressions": "^1.1.4",
 		"docxtemplater": "^3.25.3",
 		"file-saver": "^2.0.5",
