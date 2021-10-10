@@ -13,14 +13,14 @@ export class Toc { //Table of Contents
 export class Section {
 	public section: string = ''
 	public sectionTitle: string = ''
-	public stamp: string = ''
+	public sectionStamp: string = ''
 	public subsections: Subsection[] = []
 	public readonly sectionUuid: string = uuidv4()
 }
 export class Subsection {
 	public subsection: string = ''
 	public subsectionTitle: string = ''
-	public stamp: string = ''
+	public subsectionStamp: string = ''
 	public chapter: string = ''
 	public chapterTitle: string = ''
 	public book: string = ''

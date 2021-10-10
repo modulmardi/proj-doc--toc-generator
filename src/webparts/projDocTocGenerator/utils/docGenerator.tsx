@@ -32,7 +32,7 @@ function angularParser(tag: string) {
 	};
 }
 const generateDocument = (toc: Toc, fileSaver: (context: WebPartContext, fileName: string, file: any, toc: Toc) => void, fileName: string, context: WebPartContext) => {
-	loadFile('https://publiccdn.sharepointonline.com/marachdv.sharepoint.com/sites/cdntest/cdnpics/template010.docx', function (
+	loadFile('https://publiccdn.sharepointonline.com/marachdv.sharepoint.com/sites/cdntest/cdnpics/template011.docx', function (
 		error: any,
 		content: any
 	) {

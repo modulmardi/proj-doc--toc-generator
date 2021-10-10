@@ -92,11 +92,11 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 						sections: yup.array().of(yup.object().shape({
 							section: yup.string().matches(/(\d*.)*/, 'Must contain digits and dots'),
 							sectionTitle: yup.string(),
-							stamp: yup.string(),
+							sectionStamp: yup.string(),
 							subsections: yup.array().of(yup.object().shape({
 								subsection: yup.string().matches(/(\d*.)*/, 'Must contain digits and dots'),
 								subsectionTitle: yup.string(),
-								stamp: yup.string(),
+								subsectionStamp: yup.string(),
 								chapter: yup.string().matches(/(\d*.)*/, 'Must contain digits and dots'),
 								chapterTitle: yup.string(),
 								book: yup.string().matches(/(\d*.)*/, 'Must contain digits and dots'),
@@ -228,10 +228,10 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 
 																key={`stack_sec_input_${sections[sectionId].sectionUuid}_#`}
 																borderless underlined onChange={formikProps.handleChange} />
-															<TextField placeholder="Шифр раздела" name={`_toc.sections[${sectionId}].stamp`}
-																value={section.stamp}
+															<TextField placeholder="Шифр раздела" name={`_toc.sections[${sectionId}].sectionStamp`}
+																value={section.sectionStamp}
 
-																key={`stack_sec_input_${sections[sectionId].sectionUuid}_stamp`}
+																key={`stack_sec_input_${sections[sectionId].sectionUuid}_sectionStamp`}
 																styles={{ root: { width: '100%' } }} borderless underlined onChange={formikProps.handleChange} />
 														</Stack>
 

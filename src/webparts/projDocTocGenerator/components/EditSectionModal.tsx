@@ -85,9 +85,9 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
 
 
                                                     <Stack styles={{ root: { marginBottom: '10vh' } }} >
-                                                        <TextField placeholder="Шифр подраздела (Перезаписывает шифр раздела!!!)" name={`_section.subsections[${currentSubsection}].stamp`}
-                                                            key={`modal_stack_subsec_input_${values._section.subsections[currentSubsection].subsectionUuid}_stamp`}
-                                                            value={values._section.subsections[currentSubsection]?.stamp}
+                                                        <TextField placeholder="Шифр подраздела (Перезаписывает шифр раздела!!!)" name={`_section.subsections[${currentSubsection}].subsectionStamp`}
+                                                            key={`modal_stack_subsec_input_${values._section.subsections[currentSubsection].subsectionUuid}_subsectionStamp`}
+                                                            value={values._section.subsections[currentSubsection]?.subsectionStamp}
 
                                                             borderless underlined styles={{ root: { width: '100%' } }} onChange={props.handleChange} />
 

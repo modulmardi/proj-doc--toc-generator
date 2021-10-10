@@ -28,20 +28,20 @@ const theme: ITheme = createTheme({
 const stackTokens = { childrenGap: 10 };
 
 const sectionsPreset: Section[] = [
-	{ ...new Section, section: '1', stamp: 'ПЗ', sectionTitle: 'Пояснительная записка' },
-	{ ...new Section, section: '2', stamp: 'ПЗУ', sectionTitle: 'Схема планировочной организации земельного участка' },
-	{ ...new Section, section: '3', stamp: 'АР', sectionTitle: 'Архитектурные решения' },
-	{ ...new Section, section: '4', stamp: 'КР', sectionTitle: 'Конструктивные и объемно-планировочные решения' },
-	{ ...new Section, section: '5', stamp: 'ИОС', sectionTitle: 'Сведения об инженерном оборудовании, о сетях инженерно-технического обеспечения, перечень инженерно-технических мероприятий, содержание технологических решений' },
-	{ ...new Section, section: '6', stamp: 'ПОС', sectionTitle: 'Проект организации строительства' },
-	{ ...new Section, section: '7', stamp: 'ПОД', sectionTitle: 'Проект организации работ по сносу или демонтажу объектов капитального строительства' },
-	{ ...new Section, section: '8', stamp: 'ООС', sectionTitle: 'Перечень мероприятий по охране окружающей среды' },
-	{ ...new Section, section: '9', stamp: 'ПБ', sectionTitle: 'Мероприятия по обеспечению пожарной безопасности' },
-	{ ...new Section, section: '10', stamp: 'ОДИ', sectionTitle: 'Мероприятия по обеспечению доступа инвалидов' },
-	{ ...new Section, section: '10.1', stamp: 'ЭЭ', sectionTitle: 'Мероприятия по обеспечению соблюдения требований энергетической эффективности и требований оснащенности зданий, строений и сооружений приборами учета используемых энергетических ресурсов' },
-	{ ...new Section, section: '11', stamp: 'СМ', sectionTitle: 'Смета на строительство объектов капитального строительства' },
-	{ ...new Section, section: '11.1', stamp: 'ПКР', sectionTitle: 'Сведения о нормативной периодичности выполнения работ по капитальному ремонту многоквартирного дома' },
-	{ ...new Section, section: '12', stamp: '', sectionTitle: 'Иная документация в случаях, предусмотренных федеральными законами' }
+	{ ...new Section, section: '1', sectionStamp: 'ПЗ', sectionTitle: 'Пояснительная записка' },
+	{ ...new Section, section: '2', sectionStamp: 'ПЗУ', sectionTitle: 'Схема планировочной организации земельного участка' },
+	{ ...new Section, section: '3', sectionStamp: 'АР', sectionTitle: 'Архитектурные решения' },
+	{ ...new Section, section: '4', sectionStamp: 'КР', sectionTitle: 'Конструктивные и объемно-планировочные решения' },
+	{ ...new Section, section: '5', sectionStamp: 'ИОС', sectionTitle: 'Сведения об инженерном оборудовании, о сетях инженерно-технического обеспечения, перечень инженерно-технических мероприятий, содержание технологических решений' },
+	{ ...new Section, section: '6', sectionStamp: 'ПОС', sectionTitle: 'Проект организации строительства' },
+	{ ...new Section, section: '7', sectionStamp: 'ПОД', sectionTitle: 'Проект организации работ по сносу или демонтажу объектов капитального строительства' },
+	{ ...new Section, section: '8', sectionStamp: 'ООС', sectionTitle: 'Перечень мероприятий по охране окружающей среды' },
+	{ ...new Section, section: '9', sectionStamp: 'ПБ', sectionTitle: 'Мероприятия по обеспечению пожарной безопасности' },
+	{ ...new Section, section: '10', sectionStamp: 'ОДИ', sectionTitle: 'Мероприятия по обеспечению доступа инвалидов' },
+	{ ...new Section, section: '10.1', sectionStamp: 'ЭЭ', sectionTitle: 'Мероприятия по обеспечению соблюдения требований энергетической эффективности и требований оснащенности зданий, строений и сооружений приборами учета используемых энергетических ресурсов' },
+	{ ...new Section, section: '11', sectionStamp: 'СМ', sectionTitle: 'Смета на строительство объектов капитального строительства' },
+	{ ...new Section, section: '11.1', sectionStamp: 'ПКР', sectionTitle: 'Сведения о нормативной периодичности выполнения работ по капитальному ремонту многоквартирного дома' },
+	{ ...new Section, section: '12', sectionStamp: '', sectionTitle: 'Иная документация в случаях, предусмотренных федеральными законами' }
 ]
 
 interface Values {
@@ -143,7 +143,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 														<Stack horizontal style={{ width: '100%' }}>
 															<div style={{ fontSize: '1.1em', width: '7%', position: 'relative', display: 'block', left: '1%' }}>{sectionItem.section}</div>
 															<div style={{ fontSize: '1.1em', width: '75%', position: 'relative', display: 'block', }}>{sectionItem.sectionTitle}</div>
-															<div style={{ fontSize: '1.1em', width: '18%', position: 'relative', display: 'block', textAlign: 'right' }}>{sectionItem.stamp}</div>
+															<div style={{ fontSize: '1.1em', width: '18%', position: 'relative', display: 'block', textAlign: 'right' }}>{sectionItem.sectionStamp}</div>
 														</Stack>}
 												/>
 											</>
