@@ -1,11 +1,13 @@
-import { DefaultButton, Depths, IconButton, Modal, PrimaryButton, Stack, TextField } from '@fluentui/react';
+import { Depths, IconButton, Modal, Stack, TextField } from '@fluentui/react';
 import { Pagination } from '@uifabric/experiments/lib/Pagination';
 import { FieldArray, Form, Formik } from 'formik';
 import * as React from 'react';
 import { Section, Subsection, Toc } from '../model/ToC';
+import stringToColor from '../utils/stringToColor';
+import BackContinueButtonGroup from './BackContinueButtonGroup';
 import "./style.scss";
 import { stylesAddButtonModalCentral, stylesAddButtonModalLateralLeft, stylesAddButtonModalLateralRight, stylesCancelButtonModal } from './styles/stylesButton';
-import stringToColor from '../utils/stringToColor'
+import TablePreview from './TablePreview';
 
 interface IPropEditSectionModal {
     toc: Toc
@@ -18,7 +20,7 @@ interface IPropEditSectionModal {
 
 const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
 
-    const [currentSubsection, setCurrentSubsection] = React.useState<number>(0)
+    const [currentSubsectionNumber, setCurrentSubsection] = React.useState<number>(0)
     const _hideEditSectionModal = props.hideEditSectionModal
     React.useEffect(() => setCurrentSubsection(0), [props.isEditSectionModalOpen])
 
@@ -61,183 +63,101 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                             {values?._section?.subsections?.length > 0 &&
                                                 <>
 
-                                                    <IconButton key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsection].subsectionUuid}_cancel`}
+                                                    <IconButton key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsectionNumber].subsectionUuid}_cancel`}
                                                         styles={{ ...stylesCancelButtonModal }} iconProps={{ iconName: "cancel", }}
                                                         onClick={() => {
 
-                                                            console.log(currentSubsection,);
-                                                            arrayHelpers.remove(currentSubsection)
-                                                            if ((currentSubsection >= values?._section?.subsections?.length - 1) && !(currentSubsection == 0)) setCurrentSubsection((previous) => previous - 1)
+                                                            console.log(currentSubsectionNumber,);
+                                                            arrayHelpers.remove(currentSubsectionNumber)
+                                                            if ((currentSubsectionNumber >= values?._section?.subsections?.length - 1) && !(currentSubsectionNumber == 0)) setCurrentSubsection((previous) => previous - 1)
                                                         }} />
-                                                    <IconButton key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsection].subsectionUuid}_add_left`}
+                                                    <IconButton key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsectionNumber].subsectionUuid}_add_left`}
                                                         styles={{ ...stylesAddButtonModalLateralLeft }} iconProps={{ iconName: "add", }}
                                                         onClick={() => {
-                                                            arrayHelpers.insert(currentSubsection, new Subsection())
+                                                            arrayHelpers.insert(currentSubsectionNumber, new Subsection())
 
                                                         }} />
-                                                    <IconButton key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsection].subsectionUuid}_add_right`}
+                                                    <IconButton key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsectionNumber].subsectionUuid}_add_right`}
                                                         styles={{ ...stylesAddButtonModalLateralRight }} iconProps={{ iconName: "add", }}
                                                         onClick={() => {
-                                                            arrayHelpers.insert(currentSubsection + 1, new Subsection())
+                                                            arrayHelpers.insert(currentSubsectionNumber + 1, new Subsection())
                                                             setCurrentSubsection((previous) => previous + 1)
                                                         }} />
 
-                                                    <div style={{ width: '100%', height: '2vh', backgroundColor: stringToColor(values._section.subsections[currentSubsection].subsectionUuid) }}>
+                                                    <div style={{ width: '100%', height: '2vh', backgroundColor: stringToColor(values._section.subsections[currentSubsectionNumber].subsectionUuid) }}>
 
                                                     </div>
 
                                                     <Pagination pageCount={values._section.subsections.length}
-                                                        selectedPageIndex={currentSubsection}
+                                                        selectedPageIndex={currentSubsectionNumber}
                                                         onPageChange={(subsection) => setCurrentSubsection(subsection)}
                                                     />
 
 
                                                     <Stack styles={{ root: { marginBottom: '10vh' } }} >
-                                                        <TextField placeholder="Шифр подраздела (Перезаписывает шифр раздела!!!)" name={`_section.subsections[${currentSubsection}].subsectionStamp`}
-                                                            key={`modal_stack_subsec_input_${values._section.subsections[currentSubsection].subsectionUuid}_subsectionStamp`}
-                                                            value={values._section.subsections[currentSubsection]?.subsectionStamp}
+                                                        <TextField placeholder="Шифр подраздела (Перезаписывает шифр раздела!!!)" name={`_section.subsections[${currentSubsectionNumber}].subsectionStamp`}
+                                                            key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber].subsectionUuid}_subsectionStamp`}
+                                                            value={values._section.subsections[currentSubsectionNumber]?.subsectionStamp}
 
                                                             borderless underlined styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
 
-                                                        <TextField placeholder="Подраздел #" name={`_section.subsections[${currentSubsection}].subsection`}
-                                                            key={`modal_stack_subsec_input_${values._section.subsections[currentSubsection]?.subsectionUuid}_#`}
-                                                            value={values._section.subsections[currentSubsection]?.subsection}
+                                                        <TextField placeholder="Подраздел #" name={`_section.subsections[${currentSubsectionNumber}].subsection`}
+                                                            key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_#`}
+                                                            value={values._section.subsections[currentSubsectionNumber]?.subsection}
 
                                                             borderless underlined styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
 
-                                                        <TextField placeholder="Наименование подраздела" name={`_section.subsections[${currentSubsection}].subsectionTitle`}
-                                                            key={`modal_stack_subsec_input_${values._section.subsections[currentSubsection]?.subsectionUuid}_subsectionTitle`}
-                                                            value={values._section.subsections[currentSubsection]?.subsectionTitle}
+                                                        <TextField placeholder="Наименование подраздела" name={`_section.subsections[${currentSubsectionNumber}].subsectionTitle`}
+                                                            key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_subsectionTitle`}
+                                                            value={values._section.subsections[currentSubsectionNumber]?.subsectionTitle}
 
                                                             multiline autoAdjustHeight resizable={false} borderless underlined styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
 
-                                                        <TextField placeholder="Часть #" name={`_section.subsections[${currentSubsection}].chapter`}
-                                                            key={`modal_stack_subsec_input_${values._section.subsections[currentSubsection]?.subsectionUuid}_chapter`}
-                                                            value={values._section.subsections[currentSubsection]?.chapter}
+                                                        <TextField placeholder="Часть #" name={`_section.subsections[${currentSubsectionNumber}].chapter`}
+                                                            key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_chapter`}
+                                                            value={values._section.subsections[currentSubsectionNumber]?.chapter}
 
                                                             borderless underlined styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
 
-                                                        <TextField placeholder="Наименование части" name={`_section.subsections[${currentSubsection}].chapterTitle`}
-                                                            key={`modal_stack_subsec_input_${values._section.subsections[currentSubsection]?.subsectionUuid}_chapterTitle`}
-                                                            value={values._section.subsections[currentSubsection]?.chapterTitle}
+                                                        <TextField placeholder="Наименование части" name={`_section.subsections[${currentSubsectionNumber}].chapterTitle`}
+                                                            key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_chapterTitle`}
+                                                            value={values._section.subsections[currentSubsectionNumber]?.chapterTitle}
 
                                                             multiline autoAdjustHeight resizable={false} borderless underlined styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
 
-                                                        <TextField placeholder="Книга #" name={`_section.subsections[${currentSubsection}].book`}
-                                                            key={`modal_stack_subsec_input_${values._section.subsections[currentSubsection]?.subsectionUuid}_book`}
-                                                            value={values._section.subsections[currentSubsection]?.book}
+                                                        <TextField placeholder="Книга #" name={`_section.subsections[${currentSubsectionNumber}].book`}
+                                                            key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_book`}
+                                                            value={values._section.subsections[currentSubsectionNumber]?.book}
 
                                                             borderless underlined styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
 
-                                                        <TextField placeholder="Название книги" name={`_section.subsections[${currentSubsection}].bookTitle`}
-                                                            key={`modal_stack_subsec_input_${values._section.subsections[currentSubsection]?.subsectionUuid}_bookTitle`}
-                                                            value={values._section.subsections[currentSubsection]?.bookTitle}
+                                                        <TextField placeholder="Название книги" name={`_section.subsections[${currentSubsectionNumber}].bookTitle`}
+                                                            key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_bookTitle`}
+                                                            value={values._section.subsections[currentSubsectionNumber]?.bookTitle}
 
                                                             multiline autoAdjustHeight resizable={false} borderless underlined styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
 
-                                                        <TextField placeholder="Корпус" name={`_section.subsections[${currentSubsection}].block`}
-                                                            key={`modal_stack_subsec_input_${values._section.subsections[currentSubsection]?.subsectionUuid}_block`}
-                                                            value={values._section.subsections[currentSubsection]?.block} //наверное должно набираться *тэгами*
+                                                        <TextField placeholder="Корпус" name={`_section.subsections[${currentSubsectionNumber}].block`}
+                                                            key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_block`}
+                                                            value={values._section.subsections[currentSubsectionNumber]?.block} //наверное должно набираться *тэгами*
 
                                                             borderless underlined styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
 
-                                                        <TextField placeholder="Подкорпус" name={`_section.subsections[${currentSubsection}].subblock`}
-                                                            key={`modal_stack_subsec_input_${values._section.subsections[currentSubsection]?.subsectionUuid}_subblock`}
-                                                            value={values._section.subsections[currentSubsection]?.subblock}
+                                                        <TextField placeholder="Подкорпус" name={`_section.subsections[${currentSubsectionNumber}].subblock`}
+                                                            key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_subblock`}
+                                                            value={values._section.subsections[currentSubsectionNumber]?.subblock}
 
                                                             borderless underlined styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
 
-                                                        <div>
-                                                            <table  >
-                                                                <tr>
-                                                                    <th style={{ width: '15%' }}>№/№</th>
-                                                                    <th style={{ width: '15%' }}>ОБОЗНАЧЕНИЕ</th>
-                                                                    <th style={{ width: '60%' }}>НАИМЕНОВАНИЕ</th>
-                                                                    <th style={{ width: '10%' }}>ПРИМЕЧАНИЕ</th>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td colSpan={4}>
-                                                                        Раздел {values._section.section}. {values._section.sectionTitle}
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>
-                                                                        {values._section.section}
-                                                                        {values._section.subsections[currentSubsection].subsection != '' ?
-                                                                            '.' + values._section.subsections[currentSubsection].subsection
-                                                                            : ''
-                                                                        }
-                                                                        {values._section.subsections[currentSubsection].chapter != '' ?
-                                                                            '.' + values._section.subsections[currentSubsection].chapter
-                                                                            : ''
-                                                                        }
-                                                                        {values._section.subsections[currentSubsection].book != '' ?
-                                                                            '.' + values._section.subsections[currentSubsection].book
-                                                                            : ''
-                                                                        }
-                                                                    </td>
-                                                                    <td>
-                                                                        {props.toc.projectCode}
-                                                                        {values._section.subsections[currentSubsection].block != '' ?
-                                                                            '-' + values._section.subsections[currentSubsection].block
-                                                                            : ''
-                                                                        }
-                                                                        {values._section.subsections[currentSubsection].subblock != '' ?
-                                                                            '.' + values._section.subsections[currentSubsection].subblock
-                                                                            : ''
-                                                                        }
-                                                                        -
-                                                                        {values._section.subsections[currentSubsection].subsectionStamp || values._section.sectionStamp}
-                                                                        {values._section.subsections[currentSubsection].subsection}
-                                                                        {values._section.subsections[currentSubsection].chapter != '' ?
-                                                                            '.' + values._section.subsections[currentSubsection].chapter
-                                                                            : ''
-                                                                        }
-                                                                        {values._section.subsections[currentSubsection].book != '' ?
-                                                                            '.' + values._section.subsections[currentSubsection].book
-                                                                            : ''
-                                                                        }
-                                                                    </td>
-                                                                    <td>
-                                                                        Раздел {values._section.section}. {values._section.sectionTitle}.
-
-                                                                        {values._section.subsections[currentSubsection].subsection != '' ?
-                                                                            ' Подраздел ' + values._section.subsections[currentSubsection].subsection + '.'
-                                                                            + (values._section.subsections[currentSubsection].subsectionTitle != '' ?
-                                                                                ' ' + values._section.subsections[currentSubsection].subsectionTitle : '') + '.'
-                                                                            : ''
-                                                                        }
-                                                                        {values._section.subsections[currentSubsection].chapter != '' ?
-                                                                            ' Часть ' + values._section.subsections[currentSubsection].chapter + '.'
-                                                                            + (values._section.subsections[currentSubsection].chapterTitle != '' ?
-                                                                                ' ' + values._section.subsections[currentSubsection].chapterTitle : '') + '.'
-                                                                            : ''
-                                                                        }
-                                                                        {values._section.subsections[currentSubsection].book != '' ?
-                                                                            ' Книга ' + values._section.subsections[currentSubsection].book + '.'
-                                                                            + (values._section.subsections[currentSubsection].bookTitle != '' ?
-                                                                                ' ' + values._section.subsections[currentSubsection].bookTitle : '') + '.'
-                                                                            : ''
-                                                                        }
-                                                                        {values._section.subsections[currentSubsection].block != '' ?
-                                                                            ' Корпус ' + values._section.subsections[currentSubsection].block + '.'
-                                                                            + (values._section.subsections[currentSubsection].subblock != '' ?
-                                                                                '' + values._section.subsections[currentSubsection].subblock : '')
-                                                                            : ''
-                                                                        }
-                                                                    </td>
-                                                                    <td></td>
-                                                                </tr>
-                                                            </table>
-                                                        </div>
+                                                        <TablePreview toc={props.toc} section={values._section} currentSubsectionNumber={currentSubsectionNumber} />
                                                     </Stack>
 
 
                                                 </>}
-                                            <Stack horizontal style={{ position: 'absolute', bottom: '5%', margin: '0 10% 0 10%', width: '80%', padding: '0' }}>
-                                                <DefaultButton text="Назад" onClick={_hideEditSectionModal} style={{ width: '100%' }} />
-                                                <PrimaryButton text="Продолжить" type='submit' onClick={() => formikProps.handleSubmit()} style={{ width: '100%' }} />
-                                            </Stack>
+
+                                            <BackContinueButtonGroup onClickBack={_hideEditSectionModal}
+                                                onClickContinue={() => formikProps.handleSubmit()} />
+
                                         </Stack>
                                     </div>
                                 </>} />
