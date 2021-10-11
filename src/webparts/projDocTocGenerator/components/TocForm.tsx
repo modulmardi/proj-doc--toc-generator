@@ -180,7 +180,8 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 						<FieldArray name="_toc.sections"
 							render={arrayHelpers =>
 								<>
-									<EditSectionModal isEditSectionModalOpen={isEditSectionModalOpen}
+									<EditSectionModal toc={props.toc}
+										isEditSectionModalOpen={isEditSectionModalOpen}
 										hideEditSectionModal={hideEditSectionModal}
 										currentEditableSection={currentEditableSection}
 										setIsSectionEdited={setIsSectionEdited}

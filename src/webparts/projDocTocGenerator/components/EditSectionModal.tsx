@@ -1,11 +1,12 @@
 import { ChoiceGroup, ChoiceGroupOption, DefaultButton, Depths, IconButton, Modal, PrimaryButton, Stack, TextField } from '@fluentui/react';
 import { FieldArray, Form, Formik } from 'formik';
 import * as React from 'react';
-import { Section, Subsection } from '../model/ToC';
+import { Section, Subsection, Toc } from '../model/ToC';
 import { stylesAddButtonModalCentral, stylesAddButtonModalLateralLeft, stylesAddButtonModalLateralRight, stylesCancelButtonModal } from './styles/stylesButton';
 import { Pagination } from '@uifabric/experiments/lib/Pagination';
 
 interface IPropEditSectionModal {
+    toc: Toc
     isEditSectionModalOpen: boolean
     hideEditSectionModal: () => void
     currentEditableSection: Section
@@ -38,7 +39,7 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                     props.setIsSectionEdited(true)
                     props.hideEditSectionModal()
                 }}>
-                {({ values, ...props }) => <>
+                {({ values, ...formikProps }) => <>
                     <Form>
 
                         <FieldArray
@@ -89,62 +90,80 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                                             key={`modal_stack_subsec_input_${values._section.subsections[currentSubsection].subsectionUuid}_subsectionStamp`}
                                                             value={values._section.subsections[currentSubsection]?.subsectionStamp}
 
-                                                            borderless underlined styles={{ root: { width: '100%' } }} onChange={props.handleChange} />
+                                                            borderless underlined styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
 
                                                         <TextField placeholder="Подраздел #" name={`_section.subsections[${currentSubsection}].subsection`}
                                                             key={`modal_stack_subsec_input_${values._section.subsections[currentSubsection]?.subsectionUuid}_#`}
                                                             value={values._section.subsections[currentSubsection]?.subsection}
 
-                                                            borderless underlined styles={{ root: { width: '100%' } }} onChange={props.handleChange} />
+                                                            borderless underlined styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
 
                                                         <TextField placeholder="Наименование подраздела" name={`_section.subsections[${currentSubsection}].subsectionTitle`}
                                                             key={`modal_stack_subsec_input_${values._section.subsections[currentSubsection]?.subsectionUuid}_subsectionTitle`}
                                                             value={values._section.subsections[currentSubsection]?.subsectionTitle}
 
-                                                            multiline autoAdjustHeight resizable={false} borderless underlined styles={{ root: { width: '100%' } }} onChange={props.handleChange} />
+                                                            multiline autoAdjustHeight resizable={false} borderless underlined styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
 
                                                         <TextField placeholder="Часть #" name={`_section.subsections[${currentSubsection}].chapter`}
                                                             key={`modal_stack_subsec_input_${values._section.subsections[currentSubsection]?.subsectionUuid}_chapter`}
                                                             value={values._section.subsections[currentSubsection]?.chapter}
 
-                                                            borderless underlined styles={{ root: { width: '100%' } }} onChange={props.handleChange} />
+                                                            borderless underlined styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
 
                                                         <TextField placeholder="Наименование части" name={`_section.subsections[${currentSubsection}].chapterTitle`}
                                                             key={`modal_stack_subsec_input_${values._section.subsections[currentSubsection]?.subsectionUuid}_chapterTitle`}
                                                             value={values._section.subsections[currentSubsection]?.chapterTitle}
 
-                                                            multiline autoAdjustHeight resizable={false} borderless underlined styles={{ root: { width: '100%' } }} onChange={props.handleChange} />
+                                                            multiline autoAdjustHeight resizable={false} borderless underlined styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
 
                                                         <TextField placeholder="Книга #" name={`_section.subsections[${currentSubsection}].book`}
                                                             key={`modal_stack_subsec_input_${values._section.subsections[currentSubsection]?.subsectionUuid}_book`}
                                                             value={values._section.subsections[currentSubsection]?.book}
 
-                                                            borderless underlined styles={{ root: { width: '100%' } }} onChange={props.handleChange} />
+                                                            borderless underlined styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
 
                                                         <TextField placeholder="Название книги" name={`_section.subsections[${currentSubsection}].bookTitle`}
                                                             key={`modal_stack_subsec_input_${values._section.subsections[currentSubsection]?.subsectionUuid}_bookTitle`}
                                                             value={values._section.subsections[currentSubsection]?.bookTitle}
 
-                                                            multiline autoAdjustHeight resizable={false} borderless underlined styles={{ root: { width: '100%' } }} onChange={props.handleChange} />
+                                                            multiline autoAdjustHeight resizable={false} borderless underlined styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
 
                                                         <TextField placeholder="Корпус" name={`_section.subsections[${currentSubsection}].block`}
                                                             key={`modal_stack_subsec_input_${values._section.subsections[currentSubsection]?.subsectionUuid}_block`}
                                                             value={values._section.subsections[currentSubsection]?.block} //наверное должно набираться *тэгами*
 
-                                                            borderless underlined styles={{ root: { width: '100%' } }} onChange={props.handleChange} />
+                                                            borderless underlined styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
 
                                                         <TextField placeholder="Подкорпус" name={`_section.subsections[${currentSubsection}].subblock`}
                                                             key={`modal_stack_subsec_input_${values._section.subsections[currentSubsection]?.subsectionUuid}_subblock`}
                                                             value={values._section.subsections[currentSubsection]?.subblock}
 
-                                                            borderless underlined styles={{ root: { width: '100%' } }} onChange={props.handleChange} />
+                                                            borderless underlined styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
+
+                                                        <div>
+                                                            <table>
+                                                                <tr>
+                                                                    <th>№/№</th>
+                                                                    <th>ОБОЗНАЧЕНИЕ</th>
+                                                                    <th>НАИМЕНОВАНИЕ</th>
+                                                                    <th>ПРИМЕЧАНИЕ</th>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>{values._section.section}</td>
+                                                                    <td>{props.toc.projectCode}
+                                                                        -
+                                                                        {values._section.subsections[currentSubsection].subsectionStamp || values._section.sectionStamp}
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </div>
                                                     </Stack>
 
 
                                                 </>}
                                             <Stack horizontal style={{ position: 'absolute', bottom: '5%', margin: '0 10% 0 10%', width: '80%', padding: '0' }}>
                                                 <DefaultButton text="Назад" onClick={_hideEditSectionModal} style={{ width: '100%' }} />
-                                                <PrimaryButton text="Продолжить" type='submit' onClick={() => props.handleSubmit()} style={{ width: '100%' }} />
+                                                <PrimaryButton text="Продолжить" type='submit' onClick={() => formikProps.handleSubmit()} style={{ width: '100%' }} />
                                             </Stack>
                                         </Stack>
                                     </div>
