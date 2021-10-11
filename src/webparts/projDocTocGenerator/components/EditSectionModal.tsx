@@ -5,6 +5,7 @@ import * as React from 'react';
 import { Section, Subsection, Toc } from '../model/ToC';
 import "./style.scss";
 import { stylesAddButtonModalCentral, stylesAddButtonModalLateralLeft, stylesAddButtonModalLateralRight, stylesCancelButtonModal } from './styles/stylesButton';
+import stringToColor from '../utils/stringToColor'
 
 interface IPropEditSectionModal {
     toc: Toc
@@ -19,7 +20,7 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
 
     const [currentSubsection, setCurrentSubsection] = React.useState<number>(0)
     const _hideEditSectionModal = props.hideEditSectionModal
-
+    React.useEffect(() => setCurrentSubsection(0), [props.isEditSectionModalOpen])
 
     return <>
         <Modal
@@ -71,14 +72,19 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                                     <IconButton key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsection].subsectionUuid}_add_left`}
                                                         styles={{ ...stylesAddButtonModalLateralLeft }} iconProps={{ iconName: "add", }}
                                                         onClick={() => {
-                                                            arrayHelpers.insert(currentSubsection - 1, new Subsection())
-                                                            setCurrentSubsection((previous) => previous + 1)
+                                                            arrayHelpers.insert(currentSubsection, new Subsection())
+
                                                         }} />
                                                     <IconButton key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsection].subsectionUuid}_add_right`}
                                                         styles={{ ...stylesAddButtonModalLateralRight }} iconProps={{ iconName: "add", }}
-                                                        onClick={() => arrayHelpers.insert(currentSubsection + 1, new Subsection())} />
+                                                        onClick={() => {
+                                                            arrayHelpers.insert(currentSubsection + 1, new Subsection())
+                                                            setCurrentSubsection((previous) => previous + 1)
+                                                        }} />
 
+                                                    <div style={{ width: '100%', height: '2vh', backgroundColor: stringToColor(values._section.subsections[currentSubsection].subsectionUuid) }}>
 
+                                                    </div>
 
                                                     <Pagination pageCount={values._section.subsections.length}
                                                         selectedPageIndex={currentSubsection}

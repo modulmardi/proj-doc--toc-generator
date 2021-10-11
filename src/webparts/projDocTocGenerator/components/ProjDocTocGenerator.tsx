@@ -1,21 +1,15 @@
-import { Checkbox, Dropdown, DefaultButton, Depths, IComboBox, IComboBoxOption, IconButton, Modal, Toggle, TooltipHost } from '@fluentui/react';
+import { Checkbox, DefaultButton, Depths, Dropdown, IComboBoxOption, Modal } from '@fluentui/react';
 import { useBoolean } from '@fluentui/react-hooks';
-import { Separator } from '@fluentui/react/lib/Separator';
 import { createTheme, FontSizes, ITheme } from '@fluentui/react/lib/Styling';
-import { TextField } from '@fluentui/react/lib/TextField';
 import { MSGraphClient } from '@microsoft/sp-http';
-import { Form, Formik, FormikHelpers } from 'formik';
-import { values } from 'lodash';
-import { CommandBarButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
-import { Stack, StackItem } from 'office-ui-fabric-react/lib/Stack';
+import { Form, Formik } from 'formik';
+import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
+import { Stack } from 'office-ui-fabric-react/lib/Stack';
 import * as React from 'react';
-import { Section, Subsection, Toc } from '../model/ToC';
-import docGenerator, { loadFile } from '../utils/docGenerator';
-import fileSaver from '../utils/fileSaver';
+import { Section, Toc } from '../model/ToC';
+import { loadFile } from '../utils/docGenerator';
 import { IProjDocTocGeneratorProps } from './props/IProjDocTocGeneratorProps';
 import TocForm from './TocForm';
-import * as Yup from 'yup';
-import styles from './ProjDocTocGeneratorApp.module.scss';
 
 const theme: ITheme = createTheme({
 	fonts: {
