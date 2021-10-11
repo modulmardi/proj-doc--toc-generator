@@ -180,7 +180,7 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 						<FieldArray name="_toc.sections"
 							render={arrayHelpers =>
 								<>
-									<EditSectionModal toc={props.toc}
+									<EditSectionModal toc={formikProps.values._toc}
 										isEditSectionModalOpen={isEditSectionModalOpen}
 										hideEditSectionModal={hideEditSectionModal}
 										currentEditableSection={currentEditableSection}

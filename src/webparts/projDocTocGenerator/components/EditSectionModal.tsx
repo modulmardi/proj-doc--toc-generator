@@ -1,9 +1,10 @@
-import { ChoiceGroup, ChoiceGroupOption, DefaultButton, Depths, IconButton, Modal, PrimaryButton, Stack, TextField } from '@fluentui/react';
+import { DefaultButton, Depths, IconButton, Modal, PrimaryButton, Stack, TextField } from '@fluentui/react';
+import { Pagination } from '@uifabric/experiments/lib/Pagination';
 import { FieldArray, Form, Formik } from 'formik';
 import * as React from 'react';
 import { Section, Subsection, Toc } from '../model/ToC';
+import "./style.scss";
 import { stylesAddButtonModalCentral, stylesAddButtonModalLateralLeft, stylesAddButtonModalLateralRight, stylesCancelButtonModal } from './styles/stylesButton';
-import { Pagination } from '@uifabric/experiments/lib/Pagination';
 
 interface IPropEditSectionModal {
     toc: Toc
@@ -141,19 +142,85 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                                             borderless underlined styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
 
                                                         <div>
-                                                            <table>
+                                                            <table  >
                                                                 <tr>
-                                                                    <th>№/№</th>
-                                                                    <th>ОБОЗНАЧЕНИЕ</th>
-                                                                    <th>НАИМЕНОВАНИЕ</th>
-                                                                    <th>ПРИМЕЧАНИЕ</th>
+                                                                    <th style={{ width: '15%' }}>№/№</th>
+                                                                    <th style={{ width: '15%' }}>ОБОЗНАЧЕНИЕ</th>
+                                                                    <th style={{ width: '60%' }}>НАИМЕНОВАНИЕ</th>
+                                                                    <th style={{ width: '10%' }}>ПРИМЕЧАНИЕ</th>
                                                                 </tr>
                                                                 <tr>
-                                                                    <td>{values._section.section}</td>
-                                                                    <td>{props.toc.projectCode}
+                                                                    <td colSpan={4}>
+                                                                        Раздел {values._section.section}. {values._section.sectionTitle}
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        {values._section.section}
+                                                                        {values._section.subsections[currentSubsection].subsection != '' ?
+                                                                            '.' + values._section.subsections[currentSubsection].subsection
+                                                                            : ''
+                                                                        }
+                                                                        {values._section.subsections[currentSubsection].chapter != '' ?
+                                                                            '.' + values._section.subsections[currentSubsection].chapter
+                                                                            : ''
+                                                                        }
+                                                                        {values._section.subsections[currentSubsection].book != '' ?
+                                                                            '.' + values._section.subsections[currentSubsection].book
+                                                                            : ''
+                                                                        }
+                                                                    </td>
+                                                                    <td>
+                                                                        {props.toc.projectCode}
+                                                                        {values._section.subsections[currentSubsection].block != '' ?
+                                                                            '-' + values._section.subsections[currentSubsection].block
+                                                                            : ''
+                                                                        }
+                                                                        {values._section.subsections[currentSubsection].subblock != '' ?
+                                                                            '.' + values._section.subsections[currentSubsection].subblock
+                                                                            : ''
+                                                                        }
                                                                         -
                                                                         {values._section.subsections[currentSubsection].subsectionStamp || values._section.sectionStamp}
+                                                                        {values._section.subsections[currentSubsection].subsection}
+                                                                        {values._section.subsections[currentSubsection].chapter != '' ?
+                                                                            '.' + values._section.subsections[currentSubsection].chapter
+                                                                            : ''
+                                                                        }
+                                                                        {values._section.subsections[currentSubsection].book != '' ?
+                                                                            '.' + values._section.subsections[currentSubsection].book
+                                                                            : ''
+                                                                        }
                                                                     </td>
+                                                                    <td>
+                                                                        Раздел {values._section.section}. {values._section.sectionTitle}.
+
+                                                                        {values._section.subsections[currentSubsection].subsection != '' ?
+                                                                            ' Подраздел ' + values._section.subsections[currentSubsection].subsection + '.'
+                                                                            + (values._section.subsections[currentSubsection].subsectionTitle != '' ?
+                                                                                ' ' + values._section.subsections[currentSubsection].subsectionTitle : '') + '.'
+                                                                            : ''
+                                                                        }
+                                                                        {values._section.subsections[currentSubsection].chapter != '' ?
+                                                                            ' Часть ' + values._section.subsections[currentSubsection].chapter + '.'
+                                                                            + (values._section.subsections[currentSubsection].chapterTitle != '' ?
+                                                                                ' ' + values._section.subsections[currentSubsection].chapterTitle : '') + '.'
+                                                                            : ''
+                                                                        }
+                                                                        {values._section.subsections[currentSubsection].book != '' ?
+                                                                            ' Книга ' + values._section.subsections[currentSubsection].book + '.'
+                                                                            + (values._section.subsections[currentSubsection].bookTitle != '' ?
+                                                                                ' ' + values._section.subsections[currentSubsection].bookTitle : '') + '.'
+                                                                            : ''
+                                                                        }
+                                                                        {values._section.subsections[currentSubsection].block != '' ?
+                                                                            ' Корпус ' + values._section.subsections[currentSubsection].block + '.'
+                                                                            + (values._section.subsections[currentSubsection].subblock != '' ?
+                                                                                '' + values._section.subsections[currentSubsection].subblock : '')
+                                                                            : ''
+                                                                        }
+                                                                    </td>
+                                                                    <td></td>
                                                                 </tr>
                                                             </table>
                                                         </div>
