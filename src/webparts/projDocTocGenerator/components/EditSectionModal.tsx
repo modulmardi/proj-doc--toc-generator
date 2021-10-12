@@ -61,8 +61,8 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
 								<>
 									{values?._section?.subsections?.length != 0 &&
 										<>
-											<IconButton key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsectionNumber].subsectionUuid}_cancel`}
-												styles={{ ...stylesDeleteButtonModal }} iconProps={{ iconName: "cancel", }}
+											<IconButton key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsectionNumber].subsectionUuid}_delete`}
+												styles={{ ...stylesDeleteButtonModal }} iconProps={{ iconName: "delete", }}
 												onClick={() => {
 													setModalAnimation(MotionAnimations.slideDownOut)
 													console.log(currentSubsectionNumber,);
