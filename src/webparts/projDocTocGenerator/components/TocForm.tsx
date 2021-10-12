@@ -120,14 +120,14 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 				{(formikProps) => <>
 					<Form>
 						<h2>Данные проекта</h2>
-						<Stack tokens={{ childrenGap: '1vh' }}>
+						<Stack tokens={{ childrenGap: 10 }}>
 							<TextField placeholder="Название объекта" name={`_toc.buildingName`}
 								value={formikProps.values._toc.buildingName}
 								errorMessage={(formikProps.touched?._toc?.buildingName) ? formikProps.errors?._toc?.buildingName : ''}
 
 								onBlur={formikProps.handleBlur}
 								onChange={formikProps.handleChange}
-								multiline autoAdjustHeight resizable={false} borderless underlined />
+								multiline autoAdjustHeight resizable={false}   />
 							<TextField placeholder="Адрес" name={`_toc.address`}
 								value={formikProps.values._toc.address}
 								errorMessage={(formikProps.touched?._toc?.address) ? formikProps.errors?._toc?.address : ''}
@@ -135,22 +135,22 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 
 								onBlur={formikProps.handleBlur}
 								onChange={formikProps.handleChange}
-								multiline autoAdjustHeight resizable={false} borderless underlined />
-							<Stack horizontal>
+								multiline autoAdjustHeight resizable={false}   />
+							<Stack tokens={{ childrenGap: 10 }} horizontal>
 								<TextField placeholder="Код проекта" name={`_toc.projectCode`}
 									value={formikProps.values._toc.projectCode}
 									errorMessage={(formikProps.touched?._toc?.projectCode) ? formikProps.errors?._toc?.projectCode : ''}
 
 									onBlur={formikProps.handleBlur}
 									onChange={formikProps.handleChange}
-									styles={{ root: { width: '100%' } }} borderless underlined />
+									styles={{ root: { width: '100%' } }}   />
 								<TextField placeholder="Стадия проекта" name={`_toc.projectStage`}
 									value={formikProps.values._toc.projectStage}
 									errorMessage={(formikProps.touched?._toc?.projectStage) ? formikProps.errors?._toc?.projectStage : ''}
 
 									onBlur={formikProps.handleBlur}
 									onChange={formikProps.handleChange}
-									styles={{ root: { width: '100%' } }} borderless underlined />
+									styles={{ root: { width: '100%' } }}   />
 							</Stack>
 							<TextField placeholder="ГИП" name={`_toc.gipName`}
 								value={formikProps.values._toc.gipName}
@@ -158,21 +158,21 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 
 								onBlur={formikProps.handleBlur}
 								onChange={formikProps.handleChange}
-								borderless underlined />
+								  />
 							<TextField placeholder="ГАП" name={`_toc.gapName`}
 								value={formikProps.values._toc.gapName}
 								errorMessage={(formikProps.touched?._toc?.gapName) ? formikProps.errors?._toc?.gapName : ''}
 
 								onBlur={formikProps.handleBlur}
 								onChange={formikProps.handleChange}
-								borderless underlined />
+								  />
 							<TextField placeholder="Н. Контр" name={`_toc.nContr`}
 								value={formikProps.values._toc.nContr}
 								errorMessage={(formikProps.touched?._toc?.nContr) ? formikProps.errors?._toc?.nContr : ''}
 
 								onBlur={formikProps.handleBlur}
 								onChange={formikProps.handleChange}
-								borderless underlined />
+								  />
 						</Stack>
 
 						<h2>Разделы</h2>
@@ -200,8 +200,8 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 														onClick={() => arrayHelpers.insert(sectionId, new Section())} />}
 												</Stack>
 												<div style={{ position: 'relative' }}>
-													<Stack key={`stack_sec_input_${sections[sectionId].sectionUuid}`}
-														tokens={{ padding: '2vh' }}
+													<Stack  key={`stack_sec_input_${sections[sectionId].sectionUuid}`}
+														tokens={{ padding: '2vh', childrenGap: 10 }}
 														style={{ boxShadow: Depths.depth8, display: 'flow', alignItems: 'center', justifyContent: 'center' }}
 													>
 														{(sectionId > 0) && <IconButton key={`stack_sec_input_${sections[sectionId].sectionUuid}_add`}
@@ -227,17 +227,17 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 															iconProps={{ iconName: "delete", }}
 															onClick={() => arrayHelpers.remove(sectionId)} />
 
-														<Stack horizontal styles={{ root: { width: '100%' } }}>
+														<Stack tokens={{ childrenGap: 10 }} horizontal styles={{ root: { width: '100%' } }}>
 															<TextField placeholder="#" name={`_toc.sections[${sectionId}].section`}
 																value={section.section}
 
 																key={`stack_sec_input_${sections[sectionId].sectionUuid}_#`}
-																borderless underlined onChange={formikProps.handleChange} />
+																  onChange={formikProps.handleChange} />
 															<TextField placeholder="Шифр раздела" name={`_toc.sections[${sectionId}].sectionStamp`}
 																value={section.sectionStamp}
 
 																key={`stack_sec_input_${sections[sectionId].sectionUuid}_sectionStamp`}
-																styles={{ root: { width: '100%' } }} borderless underlined onChange={formikProps.handleChange} />
+																styles={{ root: { width: '100%' } }}   onChange={formikProps.handleChange} />
 														</Stack>
 
 														<TextField placeholder="Наименование раздела" key={`stack_sec_input_${sections[sectionId].sectionUuid}_title`}
@@ -246,7 +246,7 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 
 															multiline autoAdjustHeight resizable={false}
 															styles={{ root: { width: '100%' } }}
-															borderless underlined onChange={formikProps.handleChange} />
+															  onChange={formikProps.handleChange} />
 
 													</Stack>
 

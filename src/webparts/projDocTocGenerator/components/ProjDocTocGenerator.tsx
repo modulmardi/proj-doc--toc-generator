@@ -152,7 +152,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 								isOpen={isOpenProjModalOpen}
 								onDismiss={hideOpenProjModal}
 								isBlocking={false}
-								styles={{ main: { height: 'wrap-content', width: '40vw', borderRadius: '0,5vh', padding: '2vh 2vw', position: 'relative' } }}
+								styles={{ main: { height: 'wrap-content', width: '20vw', borderRadius: '0,5vh', padding: '2vh 2vw', position: 'relative' } }}
 							>
 								<Stack>
 									<h2 {...theme}>Выберите проект</h2>

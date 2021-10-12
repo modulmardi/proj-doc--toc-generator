@@ -1,5 +1,6 @@
 import { DefaultButton, PrimaryButton, Stack } from '@fluentui/react'
 import React, { ReactElement } from 'react'
+import { stylesBackContinueButtonGroup } from './styles/stylesButton'
 
 interface BackContinueButtonGroupProps {
     onClickBack: (args: any) => any
@@ -9,9 +10,9 @@ interface BackContinueButtonGroupProps {
 export default function BackContinueButtonGroup({ onClickBack, onClickContinue }: BackContinueButtonGroupProps): ReactElement {
     return (
         <>
-            <Stack horizontal style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', padding: '1vh 0 0 0' }}>
-                <DefaultButton text="Назад" onClick={onClickBack} style={{ width: '100%' }} />
-                <PrimaryButton text="Продолжить" type='submit' onClick={onClickContinue} style={{ width: '100%' }} />
+            <Stack horizontal styles={stylesBackContinueButtonGroup}>
+                <DefaultButton text="Назад" onClick={onClickBack} style={{ position: 'relative', width: '50%' }} />
+                <PrimaryButton text="Продолжить" type='submit' onClick={onClickContinue} style={{ position: 'relative', width: '50%' }} />
             </Stack>
         </>
     )

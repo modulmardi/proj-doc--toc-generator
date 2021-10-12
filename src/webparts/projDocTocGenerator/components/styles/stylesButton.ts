@@ -56,11 +56,9 @@ export const stylesAddButtonModalLateralRight: IButtonStyles = mergeStyleSets(st
         transform: 'translateX(100%)'
     }]
 })
-export const stylesAddButtonModalCentral: IButtonStyles = mergeStyleSets(stylesOrdinaryButton, stylesCircleButton, stylesAddButtonModal, {
+export const stylesAddButtonModalCentral: IButtonStyles = mergeStyleSets(stylesOrdinaryButton, stylesCircleButton, {
     root: [{
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
+        margin: 'auto',
         width: '10vh',
         height: '10vh',
         border: '1px solid ' + theme.palette.themeDark
@@ -72,7 +70,7 @@ export const stylesButtonLateral: IButtonStyles = {
     root: {
         position: 'absolute',
         left: '-0.5vw',
-        transform: 'translateX(-100%)'
+        transform: 'translate(-100%, -50%)'
     }
 }
 
@@ -106,3 +104,18 @@ export const stylesDeleteButtonModal: IButtonStyles = mergeStyleSets(stylesDelet
         zIndex: '10'
     }]
 })
+
+
+export const stylesBackContinueButtonGroup: IButtonStyles = {
+    root: {
+        position: 'relative',
+        bottom: 0,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '80%',
+        margin: '1vh 0 0 0'
+    }
+}
