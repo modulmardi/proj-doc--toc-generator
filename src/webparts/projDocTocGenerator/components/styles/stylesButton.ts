@@ -75,7 +75,7 @@ export const stylesEditButton: IButtonStyles = mergeStyleSets(stylesOrdinaryButt
         transform: 'translateX(-110%)'
     }]
 })
-export const stylesCancelButton: IButtonStyles = mergeStyleSets(stylesCircleButton, {
+export const stylesDeleteButton: IButtonStyles = mergeStyleSets(stylesCircleButton, {
     root: [{
         background: theme.palette.white,
         color: theme.palette.red,
@@ -89,7 +89,7 @@ export const stylesCancelButton: IButtonStyles = mergeStyleSets(stylesCircleButt
         color: theme.palette.white
     }],
 })
-export const stylesCancelButtonModal: IButtonStyles = mergeStyleSets(stylesCancelButton, {
+export const stylesDeleteButtonModal: IButtonStyles = mergeStyleSets(stylesDeleteButton, {
     root: [{
         top: '0',
         left: '50%',

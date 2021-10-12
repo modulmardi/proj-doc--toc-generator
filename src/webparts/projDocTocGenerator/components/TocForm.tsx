@@ -9,7 +9,7 @@ import { Section, Subsection, Toc } from '../model/ToC';
 import docGenerator from '../utils/docGenerator';
 import fileSaver from '../utils/fileSaver';
 import EditSectionModal from './EditSectionModal';
-import { stylesAddButtonBig, stylesAddButtonLateral, stylesCancelButton, stylesEditButton } from './styles/stylesButton';
+import { stylesAddButtonBig, stylesAddButtonLateral, stylesDeleteButton, stylesEditButton } from './styles/stylesButton';
 
 interface ITocFormProps {
 	toc: Toc
@@ -222,10 +222,10 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 																}
 																showEditSectionModal()
 															}} />
-														<IconButton key={`stack_sec_input_${sections[sectionId].sectionUuid}_cancel`}
+														<IconButton key={`stack_sec_input_${sections[sectionId].sectionUuid}_delete`}
 															style={{}}
-															styles={stylesCancelButton}
-															iconProps={{ iconName: "cancel", }}
+															styles={stylesDeleteButton}
+															iconProps={{ iconName: "delete", }}
 															onClick={() => arrayHelpers.remove(sectionId)} />
 
 														<Stack horizontal styles={{ root: { width: '100%' } }}>

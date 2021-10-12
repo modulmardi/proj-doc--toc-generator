@@ -4,7 +4,7 @@ import { FieldArray, Form, Formik } from 'formik';
 import * as React from 'react';
 import { Section, Subsection, Toc } from '../model/ToC';
 import "./style.scss";
-import { stylesAddButtonModalCentral, stylesAddButtonModalLateralLeft, stylesAddButtonModalLateralRight, stylesCancelButtonModal } from './styles/stylesButton';
+import { stylesAddButtonModalCentral, stylesAddButtonModalLateralLeft, stylesAddButtonModalLateralRight, stylesDeleteButtonModal } from './styles/stylesButton';
 import stringToColor from '../utils/stringToColor'
 
 interface IPropEditSectionModal {
@@ -61,8 +61,8 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                             {values?._section?.subsections?.length > 0 &&
                                                 <>
 
-                                                    <IconButton key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsection].subsectionUuid}_cancel`}
-                                                        styles={{ ...stylesCancelButtonModal }} iconProps={{ iconName: "cancel", }}
+                                                    <IconButton key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsection].subsectionUuid}_delete`}
+                                                        styles={{ ...stylesDeleteButtonModal }} iconProps={{ iconName: "delete", }}
                                                         onClick={() => {
 
                                                             console.log(currentSubsection,);
