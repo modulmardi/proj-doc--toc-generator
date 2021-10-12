@@ -66,19 +66,19 @@ const TablePreview = ({ toc, section, currentSubsectionNumber }: TablePreviewPro
                         {section.subsections[currentSubsectionNumber].subsection != '' ?
                             ' Подраздел ' + section.subsections[currentSubsectionNumber].subsection + '.'
                             + (section.subsections[currentSubsectionNumber].subsectionTitle != '' ?
-                                ' ' + section.subsections[currentSubsectionNumber].subsectionTitle : '') + '.'
+                                ' ' + section.subsections[currentSubsectionNumber].subsectionTitle + '.' : '')
                             : ''
                         }
                         {section.subsections[currentSubsectionNumber].chapter != '' ?
                             ' Часть ' + section.subsections[currentSubsectionNumber].chapter + '.'
                             + (section.subsections[currentSubsectionNumber].chapterTitle != '' ?
-                                ' ' + section.subsections[currentSubsectionNumber].chapterTitle : '') + '.'
+                                ' ' + section.subsections[currentSubsectionNumber].chapterTitle + '.' : '')
                             : ''
                         }
                         {section.subsections[currentSubsectionNumber].book != '' ?
                             ' Книга ' + section.subsections[currentSubsectionNumber].book + '.'
                             + (section.subsections[currentSubsectionNumber].bookTitle != '' ?
-                                ' ' + section.subsections[currentSubsectionNumber].bookTitle : '') + '.'
+                                ' ' + section.subsections[currentSubsectionNumber].bookTitle + '.' : '')
                             : ''
                         }
                         {section.subsections[currentSubsectionNumber].block != '' ?
