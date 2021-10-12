@@ -19,74 +19,79 @@ const TablePreview = ({ toc, section, currentSubsectionNumber }: TablePreviewPro
                 </tr>
                 <tr>
                     <td colSpan={4}>
-                        Раздел {section.section}. {section.sectionTitle}
+                        {(section.section ? 'Раздел ' + section.section + '. ' + section.sectionTitle : '') || <>&nbsp;</>}
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        {section.section}
-                        {section.subsections[currentSubsectionNumber].subsection != '' ?
-                            '.' + section.subsections[currentSubsectionNumber].subsection
-                            : ''
-                        }
-                        {section.subsections[currentSubsectionNumber].chapter != '' ?
-                            '.' + section.subsections[currentSubsectionNumber].chapter
-                            : ''
-                        }
-                        {section.subsections[currentSubsectionNumber].book != '' ?
-                            '.' + section.subsections[currentSubsectionNumber].book
-                            : ''
-                        }
-                    </td>
-                    <td>
-                        {toc.projectCode}
-                        {section.subsections[currentSubsectionNumber].block != '' ?
-                            '-' + section.subsections[currentSubsectionNumber].block
-                            : ''
-                        }
-                        {section.subsections[currentSubsectionNumber].subblock != '' ?
-                            '.' + section.subsections[currentSubsectionNumber].subblock
-                            : ''
-                        }
-                        -
-                        {section.subsections[currentSubsectionNumber].subsectionStamp || section.sectionStamp}
-                        {section.subsections[currentSubsectionNumber].subsection}
-                        {section.subsections[currentSubsectionNumber].chapter != '' ?
-                            '.' + section.subsections[currentSubsectionNumber].chapter
-                            : ''
-                        }
-                        {section.subsections[currentSubsectionNumber].book != '' ?
-                            '.' + section.subsections[currentSubsectionNumber].book
-                            : ''
-                        }
-                    </td>
-                    <td>
-                        Раздел {section.section}. {section.sectionTitle}.
 
-                        {section.subsections[currentSubsectionNumber].subsection != '' ?
-                            ' Подраздел ' + section.subsections[currentSubsectionNumber].subsection + '.'
-                            + (section.subsections[currentSubsectionNumber].subsectionTitle != '' ?
-                                ' ' + section.subsections[currentSubsectionNumber].subsectionTitle + '.' : '')
-                            : ''
-                        }
-                        {section.subsections[currentSubsectionNumber].chapter != '' ?
-                            ' Часть ' + section.subsections[currentSubsectionNumber].chapter + '.'
-                            + (section.subsections[currentSubsectionNumber].chapterTitle != '' ?
-                                ' ' + section.subsections[currentSubsectionNumber].chapterTitle + '.' : '')
-                            : ''
-                        }
-                        {section.subsections[currentSubsectionNumber].book != '' ?
-                            ' Книга ' + section.subsections[currentSubsectionNumber].book + '.'
-                            + (section.subsections[currentSubsectionNumber].bookTitle != '' ?
-                                ' ' + section.subsections[currentSubsectionNumber].bookTitle + '.' : '')
-                            : ''
-                        }
-                        {section.subsections[currentSubsectionNumber].block != '' ?
-                            ' Корпус ' + section.subsections[currentSubsectionNumber].block + '.'
-                            + (section.subsections[currentSubsectionNumber].subblock != '' ?
-                                '' + section.subsections[currentSubsectionNumber].subblock : '')
-                            : ''
-                        }
+                        {
+                            ((section.section) +
+                                (section.subsections[currentSubsectionNumber].subsection ?
+                                    '.' + section.subsections[currentSubsectionNumber].subsection
+                                    : ''
+                                ) +
+
+                                (section.subsections[currentSubsectionNumber].chapter ?
+                                    '.' + section.subsections[currentSubsectionNumber].chapter
+                                    : ''
+                                ) +
+
+                                (section.subsections[currentSubsectionNumber].book ?
+                                    '.' + section.subsections[currentSubsectionNumber].book
+                                    : ''
+                                )) || <>&nbsp;</>}
+                    </td>
+                    <td>
+                        {((toc.projectCode) +
+                            (section.subsections[currentSubsectionNumber].block ?
+                                '-' + section.subsections[currentSubsectionNumber].block
+                                : '') +
+
+                            (section.subsections[currentSubsectionNumber].subblock ?
+                                '.' + section.subsections[currentSubsectionNumber].subblock
+                                : ''
+                            ) +
+                            (
+                                section.subsections[currentSubsectionNumber].subsectionStamp || section.sectionStamp ?
+                                    '-' + section.subsections[currentSubsectionNumber].subsectionStamp || section.sectionStamp : '') +
+                            (section.subsections[currentSubsectionNumber].subsection) +
+                            (section.subsections[currentSubsectionNumber].chapter ?
+                                '.' + section.subsections[currentSubsectionNumber].chapter
+                                : ''
+                            ) +
+                            (section.subsections[currentSubsectionNumber].book ?
+                                '.' + section.subsections[currentSubsectionNumber].book
+                                : ''
+                            )) || <>&nbsp;</>}
+                    </td>
+                    <td>
+                        {((section.section ? 'Раздел ' + section.section + '. ' + (section.sectionTitle ? section.sectionTitle + '.' : '') : '') +
+
+                            (section.subsections[currentSubsectionNumber].subsection ?
+                                ' Подраздел ' + section.subsections[currentSubsectionNumber].subsection + '.'
+                                + (section.subsections[currentSubsectionNumber].subsectionTitle ?
+                                    ' ' + section.subsections[currentSubsectionNumber].subsectionTitle + '.' : '')
+                                : '') +
+
+                            (section.subsections[currentSubsectionNumber].chapter ?
+                                ' Часть ' + section.subsections[currentSubsectionNumber].chapter + '.'
+                                + (section.subsections[currentSubsectionNumber].chapterTitle ?
+                                    ' ' + section.subsections[currentSubsectionNumber].chapterTitle + '.' : '')
+                                : '') +
+
+                            (section.subsections[currentSubsectionNumber].book ?
+                                ' Книга ' + section.subsections[currentSubsectionNumber].book + '.'
+                                + (section.subsections[currentSubsectionNumber].bookTitle ?
+                                    ' ' + section.subsections[currentSubsectionNumber].bookTitle + '.' : '')
+                                : '') +
+
+                            (section.subsections[currentSubsectionNumber].block ?
+                                ' Корпус ' + section.subsections[currentSubsectionNumber].block + '.'
+                                + (section.subsections[currentSubsectionNumber].subblock ?
+                                    '' + section.subsections[currentSubsectionNumber].subblock : '')
+                                : '')
+                        ) || <>&nbsp;</>}
                     </td>
                     <td></td>
                 </tr>
