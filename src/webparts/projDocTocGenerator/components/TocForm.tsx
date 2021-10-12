@@ -2,14 +2,13 @@ import { Depths, Dropdown, IComboBox, IComboBoxOption, IconButton, PrimaryButton
 import { useBoolean } from '@fluentui/react-hooks';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { FieldArray, Form, Formik, FormikHelpers } from 'formik';
-import { values } from 'lodash';
 import * as React from 'react';
 import * as yup from 'yup';
 import { Section, Subsection, Toc } from '../model/ToC';
 import docGenerator from '../utils/docGenerator';
 import fileSaver from '../utils/fileSaver';
 import EditSectionModal from './EditSectionModal';
-import { stylesAddButtonBig, stylesAddButtonLateral, stylesCancelButton, stylesEditButton } from './styles/stylesButton';
+import { stylesAddButtonBig, stylesAddButtonLateral, stylesCancelButtonLateral, stylesEditButton } from './styles/stylesButton';
 
 interface ITocFormProps {
 	toc: Toc
@@ -224,7 +223,7 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 															}} />
 														<IconButton key={`stack_sec_input_${sections[sectionId].sectionUuid}_cancel`}
 															style={{}}
-															styles={stylesCancelButton}
+															styles={stylesCancelButtonLateral}
 															iconProps={{ iconName: "cancel", }}
 															onClick={() => arrayHelpers.remove(sectionId)} />
 
