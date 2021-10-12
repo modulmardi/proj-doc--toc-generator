@@ -7,7 +7,11 @@
     "**/bower_components": true,
     "**/coverage": true,
     "**/lib-amd": true,
-    "src/**/*.scss.ts": true
+    "src/**/*.scss.ts": true,
+    "node_modules": true,
+    "temp": true,
+    "lib": true,
+    "dist": true
   },
   "typescript.tsdk": ".\\node_modules\\typescript\\lib"
 }

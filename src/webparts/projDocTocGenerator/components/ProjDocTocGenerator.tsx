@@ -8,6 +8,7 @@ import { Stack } from 'office-ui-fabric-react/lib/Stack';
 import * as React from 'react';
 import { Section, Toc } from '../model/ToC';
 import { loadFile } from '../utils/docGenerator';
+import BackContinueButtonGroup from './BackContinueButtonGroup';
 import { IProjDocTocGeneratorProps } from './props/IProjDocTocGeneratorProps';
 import TocForm from './TocForm';
 
@@ -144,10 +145,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 										))}
 									</Stack>
 								</Stack>
-								<Stack horizontal style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', padding: '1vh 0 0 0' }}>
-									<DefaultButton text="Назад" onClick={hideCreateNewProjModal} style={{ width: '100%' }} />
-									<PrimaryButton text="Продолжить" type='submit' onClick={() => props.handleSubmit()} style={{ width: '100%' }} />
-								</Stack>
+								<BackContinueButtonGroup onClickBack={hideCreateNewProjModal} onClickContinue={() => props.handleSubmit()} />
 							</Modal>
 							<Modal
 								titleAriaId="openProjModal"
@@ -169,10 +167,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 											:
 											null} />
 								</Stack>
-								<Stack horizontal style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', padding: '1vh 0 0 0' }}>
-									<DefaultButton text="Назад" onClick={hideCreateNewProjModal} style={{ width: '100%' }} />
-									<PrimaryButton text="Продолжить" type='submit' onClick={handleOpenProject} style={{ width: '100%' }} />
-								</Stack>
+								<BackContinueButtonGroup onClickBack={hideOpenProjModal} onClickContinue={handleOpenProject} />
 							</Modal>
 						</Form>
 					</>}

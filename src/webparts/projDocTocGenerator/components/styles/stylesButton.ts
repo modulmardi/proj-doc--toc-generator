@@ -45,14 +45,12 @@ export const stylesAddButtonModal: IButtonStyles = mergeStyleSets(stylesOrdinary
 })
 export const stylesAddButtonModalLateralRight: IButtonStyles = mergeStyleSets(stylesOrdinaryButton, stylesCircleButton, stylesAddButtonModal, {
     root: [{
-        right: '0',
-        transform: 'translateX(150%)',
+        right: '20vw',
     }]
 })
 export const stylesAddButtonModalLateralLeft: IButtonStyles = mergeStyleSets(stylesOrdinaryButton, stylesCircleButton, stylesAddButtonModal, {
     root: [{
-        left: '0',
-        transform: 'translateX(-150%)',
+        left: '20vw',
     }]
 })
 export const stylesAddButtonModalCentral: IButtonStyles = mergeStyleSets(stylesOrdinaryButton, stylesCircleButton, stylesAddButtonModal, {
@@ -79,20 +77,27 @@ export const stylesDeleteButton: IButtonStyles = mergeStyleSets(stylesCircleButt
     root: [{
         background: theme.palette.white,
         color: theme.palette.red,
-        position: 'absolute',
-        left: '0',
-        top: '80%',
-        transform: 'translate(-110%, -100%)'
     }],
     rootHovered: [{
         background: theme.palette.red,
         color: theme.palette.white
     }],
 })
+export const stylesDeleteButtonLateral: IButtonStyles = mergeStyleSets(stylesDeleteButton, {
+    root: [{
+        position: 'absolute',
+        left: '0',
+        top: '80%',
+        transform: 'translate(-110%, -100%)'
+    }],
+})
 export const stylesDeleteButtonModal: IButtonStyles = mergeStyleSets(stylesDeleteButton, {
     root: [{
-        top: '0',
+        position: 'absolute',
+        top: '3%',
         left: '50%',
-        transform: 'translate(-50%, -150%)'
+        
+        transform: 'translate(-50%, -50%)',
+        zIndex:'10'
     }]
 })
