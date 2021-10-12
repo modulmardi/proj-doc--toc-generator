@@ -51,7 +51,7 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 			return
 		}
 		if (newText.length == 0) {
-			setFileNameError('Required')
+			setFileNameError('Поле обязательно для заполнения')
 		}
 	}
 	const onNewFileNameChange = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string): void => {
@@ -86,13 +86,13 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 				}}
 				validationSchema={yup.object().shape({
 					_toc: yup.object().shape({
-						buildingName: yup.string().required('Required'),
-						address: yup.string().required('Required'),
-						projectCode: yup.string().required('Required'),
-						projectStage: yup.string().required('Required'),
-						gipName: yup.string().required('Required'),
-						gapName: yup.string().required('Required'),
-						nContr: yup.string().required('Required'),
+						buildingName: yup.string().required('Поле обязательно для заполнения'),
+						address: yup.string().required('Поле обязательно для заполнения'),
+						projectCode: yup.string().required('Поле обязательно для заполнения'),
+						projectStage: yup.string().required('Поле обязательно для заполнения'),
+						gipName: yup.string().required('Поле обязательно для заполнения'),
+						gapName: yup.string().required('Поле обязательно для заполнения'),
+						nContr: yup.string().required('Поле обязательно для заполнения'),
 						sections: yup.array().of(yup.object().shape({
 							section: yup.string().matches(/(\d*.)*/, 'Must contain digits and dots'),
 							sectionTitle: yup.string(),
