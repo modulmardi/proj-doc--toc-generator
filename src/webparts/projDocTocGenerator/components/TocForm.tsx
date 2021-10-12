@@ -8,7 +8,7 @@ import { Section, Subsection, Toc } from '../model/ToC';
 import docGenerator from '../utils/docGenerator';
 import fileSaver from '../utils/fileSaver';
 import EditSectionModal from './EditSectionModal';
-import { stylesAddButtonBig, stylesAddButtonLateral, stylesDeleteButtonLateral, stylesEditButton } from './styles/stylesButton';
+import { stylesAddButtonBig, stylesAddButtonLateral, stylesDeleteButtonLateral, stylesEditButtonLateral } from './styles/stylesButton';
 
 interface ITocFormProps {
 	toc: Toc
@@ -208,7 +208,7 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 															styles={{ ...stylesAddButtonLateral }} iconProps={{ iconName: "add", }}
 															onClick={() => arrayHelpers.insert(sectionId, new Section())} />}
 														<IconButton key={`stack_sec_input_${sections[sectionId].sectionUuid}_edit`}
-															styles={stylesEditButton}
+															styles={stylesEditButtonLateral}
 															iconProps={{ iconName: "edit", }}
 															onClick={() => {
 																setCurrentEditableSection(section)

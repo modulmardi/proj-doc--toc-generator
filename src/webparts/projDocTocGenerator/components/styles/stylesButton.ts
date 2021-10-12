@@ -43,14 +43,17 @@ export const stylesAddButtonModal: IButtonStyles = mergeStyleSets(stylesOrdinary
         borderRadius: '50%',
     }]
 })
-export const stylesAddButtonModalLateralRight: IButtonStyles = mergeStyleSets(stylesOrdinaryButton, stylesCircleButton, stylesAddButtonModal, {
-    root: [{
-        right: '20vw',
-    }]
-})
 export const stylesAddButtonModalLateralLeft: IButtonStyles = mergeStyleSets(stylesOrdinaryButton, stylesCircleButton, stylesAddButtonModal, {
     root: [{
-        left: '20vw',
+        left: '-1vw',
+        transform: 'translateX(-100%)'
+
+    }]
+})
+export const stylesAddButtonModalLateralRight: IButtonStyles = mergeStyleSets(stylesOrdinaryButton, stylesCircleButton, stylesAddButtonModal, {
+    root: [{
+        right: '-1vw',
+        transform: 'translateX(100%)'
     }]
 })
 export const stylesAddButtonModalCentral: IButtonStyles = mergeStyleSets(stylesOrdinaryButton, stylesCircleButton, stylesAddButtonModal, {
@@ -65,12 +68,17 @@ export const stylesAddButtonModalCentral: IButtonStyles = mergeStyleSets(stylesO
     }]
 })
 
-export const stylesEditButton: IButtonStyles = mergeStyleSets(stylesOrdinaryButton, stylesCircleButton, {
-    root: [{
+export const stylesButtonLateral: IButtonStyles = {
+    root: {
         position: 'absolute',
-        left: '0',
+        left: '-0.5vw',
+        transform: 'translateX(-100%)'
+    }
+}
+
+export const stylesEditButtonLateral: IButtonStyles = mergeStyleSets(stylesOrdinaryButton, stylesCircleButton, stylesButtonLateral, {
+    root: [{
         top: '20%',
-        transform: 'translateX(-110%)'
     }]
 })
 export const stylesDeleteButton: IButtonStyles = mergeStyleSets(stylesCircleButton, {
@@ -83,21 +91,18 @@ export const stylesDeleteButton: IButtonStyles = mergeStyleSets(stylesCircleButt
         color: theme.palette.white
     }],
 })
-export const stylesDeleteButtonLateral: IButtonStyles = mergeStyleSets(stylesDeleteButton, {
+export const stylesDeleteButtonLateral: IButtonStyles = mergeStyleSets(stylesDeleteButton, stylesButtonLateral, {
     root: [{
-        position: 'absolute',
-        left: '0',
         top: '80%',
-        transform: 'translate(-110%, -100%)'
     }],
 })
 export const stylesDeleteButtonModal: IButtonStyles = mergeStyleSets(stylesDeleteButton, {
     root: [{
         position: 'absolute',
-        top: '3%',
+        top: '-1vh',
         left: '50%',
-        
-        transform: 'translate(-50%, -50%)',
-        zIndex:'10'
+
+        transform: 'translate(-50%, -100%)',
+        zIndex: '10'
     }]
 })
