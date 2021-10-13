@@ -90,15 +90,15 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 						address: yup.string().required('Поле обязательно для заполнения'),
 						projectCode: yup.string().required('Поле обязательно для заполнения'),
 						projectStage: yup.string().required('Поле обязательно для заполнения'),
-						gipName: yup.string().required('Поле обязательно для заполнения'),
-						gapName: yup.string().required('Поле обязательно для заполнения'),
-						nContr: yup.string().required('Поле обязательно для заполнения'),
+						gipName: yup.string().required('Поле обязательно для заполнения').matches(/^[а-яА-Я-]+$/, "Поле должно содержать кириллические символы"),
+						gapName: yup.string().required('Поле обязательно для заполнения').matches(/^[а-яА-Я-]+$/, "Поле должно содержать кириллические символы"),
+						nContr: yup.string().required('Поле обязательно для заполнения').matches(/^[а-яА-Я-]+$/, "Поле должно содержать кириллические символы"),
 						sections: yup.array().of(yup.object().shape({
-							section: yup.string().matches(/(\d*.)*/, 'Must contain digits and dots'),
+							section: yup.string().required('Поле обязательно для заполнения').matches(/^(\d*.)+$/, 'Must contain digits and dots'),
 							sectionTitle: yup.string(),
 							sectionStamp: yup.string(),
 							subsections: yup.array().of(yup.object().shape({
-								subsection: yup.string().matches(/(\d*.)*/, 'Must contain digits and dots'),
+								subsection: yup.string().matches(/^(\d*.)*$/, 'Must contain digits and dots'),
 								subsectionTitle: yup.string(),
 								subsectionStamp: yup.string(),
 								chapter: yup.string().matches(/(\d*.)*/, 'Must contain digits and dots'),
@@ -127,7 +127,7 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 
 								onBlur={formikProps.handleBlur}
 								onChange={formikProps.handleChange}
-								multiline autoAdjustHeight resizable={false}   />
+								multiline autoAdjustHeight resizable={false} />
 							<TextField placeholder="Адрес" name={`_toc.address`}
 								value={formikProps.values._toc.address}
 								errorMessage={(formikProps.touched?._toc?.address) ? formikProps.errors?._toc?.address : ''}
@@ -135,7 +135,7 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 
 								onBlur={formikProps.handleBlur}
 								onChange={formikProps.handleChange}
-								multiline autoAdjustHeight resizable={false}   />
+								multiline autoAdjustHeight resizable={false} />
 							<Stack tokens={{ childrenGap: 10 }} horizontal>
 								<TextField placeholder="Код проекта" name={`_toc.projectCode`}
 									value={formikProps.values._toc.projectCode}
@@ -143,14 +143,14 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 
 									onBlur={formikProps.handleBlur}
 									onChange={formikProps.handleChange}
-									styles={{ root: { width: '100%' } }}   />
+									styles={{ root: { width: '100%' } }} />
 								<TextField placeholder="Стадия проекта" name={`_toc.projectStage`}
 									value={formikProps.values._toc.projectStage}
 									errorMessage={(formikProps.touched?._toc?.projectStage) ? formikProps.errors?._toc?.projectStage : ''}
 
 									onBlur={formikProps.handleBlur}
 									onChange={formikProps.handleChange}
-									styles={{ root: { width: '100%' } }}   />
+									styles={{ root: { width: '100%' } }} />
 							</Stack>
 							<TextField placeholder="ГИП" name={`_toc.gipName`}
 								value={formikProps.values._toc.gipName}
@@ -158,21 +158,21 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 
 								onBlur={formikProps.handleBlur}
 								onChange={formikProps.handleChange}
-								  />
+							/>
 							<TextField placeholder="ГАП" name={`_toc.gapName`}
 								value={formikProps.values._toc.gapName}
 								errorMessage={(formikProps.touched?._toc?.gapName) ? formikProps.errors?._toc?.gapName : ''}
 
 								onBlur={formikProps.handleBlur}
 								onChange={formikProps.handleChange}
-								  />
+							/>
 							<TextField placeholder="Н. Контр" name={`_toc.nContr`}
 								value={formikProps.values._toc.nContr}
 								errorMessage={(formikProps.touched?._toc?.nContr) ? formikProps.errors?._toc?.nContr : ''}
 
 								onBlur={formikProps.handleBlur}
 								onChange={formikProps.handleChange}
-								  />
+							/>
 						</Stack>
 
 						<h2>Разделы</h2>
@@ -200,7 +200,7 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 														onClick={() => arrayHelpers.insert(sectionId, new Section())} />}
 												</Stack>
 												<div style={{ position: 'relative' }}>
-													<Stack  key={`stack_sec_input_${sections[sectionId].sectionUuid}`}
+													<Stack key={`stack_sec_input_${sections[sectionId].sectionUuid}`}
 														tokens={{ padding: '2vh', childrenGap: 10 }}
 														style={{ boxShadow: Depths.depth8, display: 'flow', alignItems: 'center', justifyContent: 'center' }}
 													>
@@ -232,12 +232,12 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 																value={section.section}
 
 																key={`stack_sec_input_${sections[sectionId].sectionUuid}_#`}
-																  onChange={formikProps.handleChange} />
+																onChange={formikProps.handleChange} />
 															<TextField placeholder="Шифр раздела" name={`_toc.sections[${sectionId}].sectionStamp`}
 																value={section.sectionStamp}
 
 																key={`stack_sec_input_${sections[sectionId].sectionUuid}_sectionStamp`}
-																styles={{ root: { width: '100%' } }}   onChange={formikProps.handleChange} />
+																styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
 														</Stack>
 
 														<TextField placeholder="Наименование раздела" key={`stack_sec_input_${sections[sectionId].sectionUuid}_title`}
@@ -246,7 +246,7 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 
 															multiline autoAdjustHeight resizable={false}
 															styles={{ root: { width: '100%' } }}
-															  onChange={formikProps.handleChange} />
+															onChange={formikProps.handleChange} />
 
 													</Stack>
 
