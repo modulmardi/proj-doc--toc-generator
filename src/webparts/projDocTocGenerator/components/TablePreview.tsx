@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react'
 import { Section, Toc } from '../model/ToC'
+import './styles/style.scss'
 
 interface TablePreviewProps {
     toc: Toc
@@ -19,10 +20,83 @@ const TablePreview = ({ toc, section, currentSubsectionNumber }: TablePreviewPro
                 </tr>
                 <tr>
                     <td colSpan={4}>
-                        {(section.section ? 'Раздел ' + section.section + '. ' + section.sectionTitle : '') || <>&nbsp;</>}
+                        {(section.section ? 'Раздел ' + section.section + '. ' + section.sectionTitle : '')}
                     </td>
                 </tr>
-                <tr>
+                {(currentSubsectionNumber > 0) && <tr>
+                    <td>
+
+                        {
+                            ((section.section) +
+                                (section.subsections[currentSubsectionNumber - 1].subsection ?
+                                    '.' + section.subsections[currentSubsectionNumber - 1].subsection
+                                    : ''
+                                ) +
+
+                                (section.subsections[currentSubsectionNumber - 1].chapter ?
+                                    '.' + section.subsections[currentSubsectionNumber - 1].chapter
+                                    : ''
+                                ) +
+
+                                (section.subsections[currentSubsectionNumber - 1].book ?
+                                    '.' + section.subsections[currentSubsectionNumber - 1].book
+                                    : ''
+                                ))}
+                    </td>
+                    <td>
+                        {((toc.projectCode) +
+                            (section.subsections[currentSubsectionNumber - 1].block ?
+                                '-' + section.subsections[currentSubsectionNumber - 1].block
+                                : '') +
+
+                            (section.subsections[currentSubsectionNumber - 1].subblock ?
+                                '.' + section.subsections[currentSubsectionNumber - 1].subblock
+                                : ''
+                            ) +
+                            (
+                                section.subsections[currentSubsectionNumber - 1].subsectionStamp || section.sectionStamp ?
+                                    '-' + (section.subsections[currentSubsectionNumber - 1].subsectionStamp || section.sectionStamp) : '') +
+                            (section.subsections[currentSubsectionNumber - 1].subsection) +
+                            (section.subsections[currentSubsectionNumber - 1].chapter ?
+                                '.' + section.subsections[currentSubsectionNumber - 1].chapter
+                                : ''
+                            ) +
+                            (section.subsections[currentSubsectionNumber - 1].book ?
+                                '.' + section.subsections[currentSubsectionNumber - 1].book
+                                : ''
+                            ))}
+                    </td>
+                    <td>
+                        {((section.section ? 'Раздел ' + section.section + '. ' + (section.sectionTitle ? section.sectionTitle + '.' : '') : '') +
+
+                            (section.subsections[currentSubsectionNumber - 1].subsection ?
+                                ' Подраздел ' + section.subsections[currentSubsectionNumber - 1].subsection + '.'
+                                + (section.subsections[currentSubsectionNumber - 1].subsectionTitle ?
+                                    ' ' + section.subsections[currentSubsectionNumber - 1].subsectionTitle + '.' : '')
+                                : '') +
+
+                            (section.subsections[currentSubsectionNumber - 1].chapter ?
+                                ' Часть ' + section.subsections[currentSubsectionNumber - 1].chapter + '.'
+                                + (section.subsections[currentSubsectionNumber - 1].chapterTitle ?
+                                    ' ' + section.subsections[currentSubsectionNumber - 1].chapterTitle + '.' : '')
+                                : '') +
+
+                            (section.subsections[currentSubsectionNumber - 1].book ?
+                                ' Книга ' + section.subsections[currentSubsectionNumber - 1].book + '.'
+                                + (section.subsections[currentSubsectionNumber - 1].bookTitle ?
+                                    ' ' + section.subsections[currentSubsectionNumber - 1].bookTitle + '.' : '')
+                                : '') +
+
+                            (section.subsections[currentSubsectionNumber - 1].block ?
+                                ' Корпус ' + section.subsections[currentSubsectionNumber - 1].block + '.'
+                                + (section.subsections[currentSubsectionNumber - 1].subblock ?
+                                    '' + section.subsections[currentSubsectionNumber - 1].subblock : '')
+                                : '')
+                        )}
+                    </td>
+                    <td></td>
+                </tr>}
+                <tr className="row_current">
                     <td>
 
                         {
@@ -40,7 +114,7 @@ const TablePreview = ({ toc, section, currentSubsectionNumber }: TablePreviewPro
                                 (section.subsections[currentSubsectionNumber].book ?
                                     '.' + section.subsections[currentSubsectionNumber].book
                                     : ''
-                                )) || <>&nbsp;</>}
+                                ))}
                     </td>
                     <td>
                         {((toc.projectCode) +
@@ -54,7 +128,7 @@ const TablePreview = ({ toc, section, currentSubsectionNumber }: TablePreviewPro
                             ) +
                             (
                                 section.subsections[currentSubsectionNumber].subsectionStamp || section.sectionStamp ?
-                                    '-' + section.subsections[currentSubsectionNumber].subsectionStamp || section.sectionStamp : '') +
+                                    '-' + (section.subsections[currentSubsectionNumber].subsectionStamp || section.sectionStamp) : '') +
                             (section.subsections[currentSubsectionNumber].subsection) +
                             (section.subsections[currentSubsectionNumber].chapter ?
                                 '.' + section.subsections[currentSubsectionNumber].chapter
@@ -63,7 +137,7 @@ const TablePreview = ({ toc, section, currentSubsectionNumber }: TablePreviewPro
                             (section.subsections[currentSubsectionNumber].book ?
                                 '.' + section.subsections[currentSubsectionNumber].book
                                 : ''
-                            )) || <>&nbsp;</>}
+                            ))}
                     </td>
                     <td>
                         {((section.section ? 'Раздел ' + section.section + '. ' + (section.sectionTitle ? section.sectionTitle + '.' : '') : '') +
@@ -91,10 +165,83 @@ const TablePreview = ({ toc, section, currentSubsectionNumber }: TablePreviewPro
                                 + (section.subsections[currentSubsectionNumber].subblock ?
                                     '' + section.subsections[currentSubsectionNumber].subblock : '')
                                 : '')
-                        ) || <>&nbsp;</>}
+                        )}
                     </td>
                     <td></td>
                 </tr>
+                {(currentSubsectionNumber + 1 < section.subsections.length) && <tr>
+                    <td>
+
+                        {
+                            ((section.section) +
+                                (section.subsections[currentSubsectionNumber + 1].subsection ?
+                                    '.' + section.subsections[currentSubsectionNumber + 1].subsection
+                                    : ''
+                                ) +
+
+                                (section.subsections[currentSubsectionNumber + 1].chapter ?
+                                    '.' + section.subsections[currentSubsectionNumber + 1].chapter
+                                    : ''
+                                ) +
+
+                                (section.subsections[currentSubsectionNumber + 1].book ?
+                                    '.' + section.subsections[currentSubsectionNumber + 1].book
+                                    : ''
+                                ))}
+                    </td>
+                    <td>
+                        {((toc.projectCode) +
+                            (section.subsections[currentSubsectionNumber + 1].block ?
+                                '-' + section.subsections[currentSubsectionNumber + 1].block
+                                : '') +
+
+                            (section.subsections[currentSubsectionNumber + 1].subblock ?
+                                '.' + section.subsections[currentSubsectionNumber + 1].subblock
+                                : ''
+                            ) +
+                            (
+                                section.subsections[currentSubsectionNumber + 1].subsectionStamp || section.sectionStamp ?
+                                    '-' + (section.subsections[currentSubsectionNumber + 1].subsectionStamp || section.sectionStamp) : '') +
+                            (section.subsections[currentSubsectionNumber + 1].subsection) +
+                            (section.subsections[currentSubsectionNumber + 1].chapter ?
+                                '.' + section.subsections[currentSubsectionNumber + 1].chapter
+                                : ''
+                            ) +
+                            (section.subsections[currentSubsectionNumber + 1].book ?
+                                '.' + section.subsections[currentSubsectionNumber + 1].book
+                                : ''
+                            ))}
+                    </td>
+                    <td>
+                        {((section.section ? 'Раздел ' + section.section + '. ' + (section.sectionTitle ? section.sectionTitle + '.' : '') : '') +
+
+                            (section.subsections[currentSubsectionNumber + 1].subsection ?
+                                ' Подраздел ' + section.subsections[currentSubsectionNumber + 1].subsection + '.'
+                                + (section.subsections[currentSubsectionNumber + 1].subsectionTitle ?
+                                    ' ' + section.subsections[currentSubsectionNumber + 1].subsectionTitle + '.' : '')
+                                : '') +
+
+                            (section.subsections[currentSubsectionNumber + 1].chapter ?
+                                ' Часть ' + section.subsections[currentSubsectionNumber + 1].chapter + '.'
+                                + (section.subsections[currentSubsectionNumber + 1].chapterTitle ?
+                                    ' ' + section.subsections[currentSubsectionNumber + 1].chapterTitle + '.' : '')
+                                : '') +
+
+                            (section.subsections[currentSubsectionNumber + 1].book ?
+                                ' Книга ' + section.subsections[currentSubsectionNumber + 1].book + '.'
+                                + (section.subsections[currentSubsectionNumber + 1].bookTitle ?
+                                    ' ' + section.subsections[currentSubsectionNumber + 1].bookTitle + '.' : '')
+                                : '') +
+
+                            (section.subsections[currentSubsectionNumber + 1].block ?
+                                ' Корпус ' + section.subsections[currentSubsectionNumber + 1].block + '.'
+                                + (section.subsections[currentSubsectionNumber + 1].subblock ?
+                                    '' + section.subsections[currentSubsectionNumber + 1].subblock : '')
+                                : '')
+                        )}
+                    </td>
+                    <td></td>
+                </tr>}
             </table>
         </>
     )

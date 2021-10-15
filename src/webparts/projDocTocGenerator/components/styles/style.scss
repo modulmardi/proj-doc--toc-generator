@@ -3,11 +3,20 @@
 table {
     width: 100%;
     border-collapse: collapse;
+    font-family: "PT Sans Narrow", sans-serif;
 }
 
-td,
 th {
+    border: 2px black solid;
+}
+td {
     border: 1px black solid;
-    font-family: "PT Sans Narrow";
-    font-size: "3em";
+}
+
+td:empty::after {
+    content: "\00a0";
+}
+
+tr.row_current {
+    background-color: yellow;
 }

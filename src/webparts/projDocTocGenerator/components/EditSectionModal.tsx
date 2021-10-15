@@ -4,7 +4,7 @@ import { FieldArray, Form, Formik } from 'formik';
 import * as React from 'react';
 import { Section, Subsection, Toc } from '../model/ToC';
 import BackContinueButtonGroup from './BackContinueButtonGroup';
-import "./style.scss";
+
 import stringToColor from '../utils/stringToColor'
 import { stylesAddButtonModalCentral, stylesAddButtonModalLateralLeft, stylesAddButtonModalLateralRight, stylesDeleteButtonModal } from './styles/stylesButton';
 import TablePreview from './TablePreview';
