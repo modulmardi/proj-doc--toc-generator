@@ -7,7 +7,7 @@ import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { Stack } from 'office-ui-fabric-react/lib/Stack';
 import * as React from 'react';
 import { Section, Toc } from '../model/ToC';
-import { loadFile } from '../utils/docGenerator';
+import { pizZipfileLoader } from '../utils/fileLoaders';
 import BackContinueButtonGroup from './BackContinueButtonGroup';
 import { IProjDocTocGeneratorProps } from './props/IProjDocTocGeneratorProps';
 import TocForm from './TocForm';
@@ -63,7 +63,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 		//console.log(openingProjectName)
 		//console.log(existingFiles.find((file) => file.text === openingProjectName).key)
 
-		loadFile(existingFiles.find((file) => file.text === openingProjectName)?.key as string,
+		pizZipfileLoader(existingFiles.find((file) => file.text === openingProjectName)?.key as string,
 			function (
 				error: any,
 				content: ArrayBuffer

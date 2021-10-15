@@ -1,18 +1,12 @@
-import Docxtemplater from 'docxtemplater';
-import PizZip from 'pizzip';
-import PizZipUtils from 'pizzip/utils/index.js';
-import expressions from 'angular-expressions'
-import merge from 'lodash/merge'
 import { WebPartContext } from '@microsoft/sp-webpart-base';
+import expressions from 'angular-expressions';
+import Docxtemplater from 'docxtemplater';
+import merge from 'lodash/merge';
+import PizZip from 'pizzip';
 import { Toc } from '../model/ToC';
+import { graphFileLoader } from './fileLoaders';
 
-export function loadFile(context: WebPartContext, callback) {
-	let url: string;
-	context.msGraphClientFactory.getClient()
-		.then(client => client
-			.api('/sites/root/drive/root:/${docxFolder}/${fileName}.docx:/content').get(file => callback(null, file)))
-	//PizZipUtils.getBinaryContent(url, callback);
-}
+
 
 function angularParser(tag: string) {
 	if (tag === '.') {
@@ -37,7 +31,7 @@ function angularParser(tag: string) {
 }
 const generateDocument = (toc: Toc, fileSaver: (context: WebPartContext, fileName: string, tocFolder: string, docxFolder: string, file: any, toc: Toc) => void
 	, fileName: string, tocFolder: string, docxFolder: string, context: WebPartContext) => {
-	loadFile(context, function (
+	graphFileLoader(context, '/sites/root/drive/root:/${docxFolder}/${fileName}.docx:/content', function (
 		error: any,
 		content: any
 	) {
