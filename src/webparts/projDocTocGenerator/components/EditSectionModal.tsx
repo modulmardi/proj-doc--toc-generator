@@ -104,7 +104,7 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
 
 														</div>
 
-														<Pagination pageCount={values._section.subsections.length}
+														<Pagination styles={{root: {margin:'auto'}}} pageCount={values._section.subsections.length}
 															selectedPageIndex={currentSubsectionNumber}
 															onPageChange={(subsection) => setCurrentSubsection(subsection)}
 														/>
