@@ -6,8 +6,12 @@ import merge from 'lodash/merge'
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { Toc } from '../model/ToC';
 
-export function loadFile(url: string, callback) {
-	PizZipUtils.getBinaryContent(url, callback);
+export function loadFile(context: WebPartContext, callback) {
+	let url: string;
+	context.msGraphClientFactory.getClient()
+		.then(client => client
+			.api('/sites/root/drive/root:/${docxFolder}/${fileName}.docx:/content').get(file => callback(null, file)))
+	//PizZipUtils.getBinaryContent(url, callback);
 }
 
 function angularParser(tag: string) {
@@ -33,7 +37,7 @@ function angularParser(tag: string) {
 }
 const generateDocument = (toc: Toc, fileSaver: (context: WebPartContext, fileName: string, tocFolder: string, docxFolder: string, file: any, toc: Toc) => void
 	, fileName: string, tocFolder: string, docxFolder: string, context: WebPartContext) => {
-	loadFile('https://publiccdn.sharepointonline.com/marachdv.sharepoint.com/sites/cdntest/cdnpics/template011.docx', function (
+	loadFile(context, function (
 		error: any,
 		content: any
 	) {
