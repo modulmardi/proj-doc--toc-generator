@@ -248,6 +248,14 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 															styles={{ root: { width: '100%' } }}
 															onChange={formikProps.handleChange} />
 
+														<TextField placeholder="Ответственный" key={`stack_sec_input_${sections[sectionId].sectionUuid}_assignedTo`}
+															name={`_toc.sections[${sectionId}].assignedTo`}
+															value={section.assignedTo}
+
+															multiline autoAdjustHeight resizable={false}
+															styles={{ root: { width: '100%' } }}
+															onChange={formikProps.handleChange} />
+
 													</Stack>
 
 												</div>

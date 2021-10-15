@@ -11,6 +11,7 @@ export class Toc { //Table of Contents
 	public sections: Section[] = []
 }
 export class Section {
+	public assignedTo: string = ''
 	public section: string = ''
 	public sectionTitle: string = ''
 	public sectionStamp: string = ''

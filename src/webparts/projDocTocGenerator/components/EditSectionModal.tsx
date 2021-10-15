@@ -111,7 +111,7 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
 
 
 														<Stack tokens={{ childrenGap: 10 }} styles={{ root: { marginBottom: '10vh' } }} >
-															<TextField placeholder="Шифр подраздела (Перезаписывает шифр раздела!!!)" name={`_section.subsections[${currentSubsectionNumber}].subsectionStamp`}
+															<TextField placeholder="Шифр конкретного подраздела" name={`_section.subsections[${currentSubsectionNumber}].subsectionStamp`}
 																key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber].subsectionUuid}_subsectionStamp`}
 																value={values._section.subsections[currentSubsectionNumber]?.subsectionStamp}
 
