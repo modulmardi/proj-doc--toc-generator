@@ -14,6 +14,8 @@ interface ITocFormProps {
 	toc: Toc
 	setToc: React.Dispatch<React.SetStateAction<Toc>>
 	existingFiles: IComboBoxOption[]
+	tocFolder: string
+	docxFolder: string
 	context: WebPartContext
 }
 
@@ -114,7 +116,7 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 				enableReinitialize
 				onSubmit={(values: Values, formikHelpers: FormikHelpers<Values>): void | Promise<any> => {
 					validateCurrentFileName(currentFileName)
-					if (fileNameError === '' && currentFileName !== '') { return docGenerator(fillEmptySectionsWithSubsections(values._toc), fileSaver, currentFileName, props.context) }
+					if (fileNameError === '' && currentFileName !== '') { return docGenerator(fillEmptySectionsWithSubsections(values._toc), fileSaver, props.tocFolder, props.docxFolder, currentFileName, props.context) }
 				}}
 			>
 				{(formikProps) => <>

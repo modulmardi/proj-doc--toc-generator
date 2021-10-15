@@ -31,7 +31,8 @@ function angularParser(tag: string) {
 		}
 	};
 }
-const generateDocument = (toc: Toc, fileSaver: (context: WebPartContext, fileName: string, file: any, toc: Toc) => void, fileName: string, context: WebPartContext) => {
+const generateDocument = (toc: Toc, fileSaver: (context: WebPartContext, fileName: string, tocFolder: string, docxFolder: string, file: any, toc: Toc) => void
+	, fileName: string, tocFolder: string, docxFolder: string, context: WebPartContext) => {
 	loadFile('https://publiccdn.sharepointonline.com/marachdv.sharepoint.com/sites/cdntest/cdnpics/template011.docx', function (
 		error: any,
 		content: any
@@ -86,7 +87,7 @@ const generateDocument = (toc: Toc, fileSaver: (context: WebPartContext, fileNam
 		}); //Output the document using Data-URI
 		console.log("docGenerator", out);
 
-		fileSaver(context, fileName, out, toc)
+		fileSaver(context, fileName, tocFolder, docxFolder, out, toc)
 		console.log(out);
 
 	});

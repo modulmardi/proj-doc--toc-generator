@@ -11,7 +11,8 @@ import { IProjDocTocGeneratorAppProps } from './components/props/IProjDocTocGene
 import ProjDocTocGeneratorApp from './components/ProjDocTocGeneratorApp';
 
 export interface IProjDocTocGeneratorWebPartProps {
-	description: string;
+	tocFolder: string;
+	docxFolder: string;
 }
 
 export default class ProjDocTocGeneratorWebPart extends BaseClientSideWebPart<IProjDocTocGeneratorWebPartProps> {
@@ -24,10 +25,12 @@ export default class ProjDocTocGeneratorWebPart extends BaseClientSideWebPart<IP
 		//   client = _client 
 		// })
 		const element: React.ReactElement<IProjDocTocGeneratorAppProps> = React.createElement(
-			
+
 			ProjDocTocGeneratorApp,
 			{
-				context: this.context
+				context: this.context,
+				tocFolder: this.properties.tocFolder,
+				docxFolder: this.properties.docxFolder,
 				//description: this.properties.description
 			}
 		);
@@ -54,9 +57,12 @@ export default class ProjDocTocGeneratorWebPart extends BaseClientSideWebPart<IP
 						{
 							groupName: strings.BasicGroupName,
 							groupFields: [
-								PropertyPaneTextField('description', {
-									label: strings.DescriptionFieldLabel
-								})
+								PropertyPaneTextField('tocFolder', {
+									label: strings.tocFolderFieldLabel
+								}),
+								PropertyPaneTextField('docxFolder', {
+									label: strings.docxFolderFieldLabel
+								}),
 							]
 						}
 					]

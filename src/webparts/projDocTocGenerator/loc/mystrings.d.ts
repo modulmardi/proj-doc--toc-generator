@@ -1,7 +1,8 @@
 declare interface IProjDocTocGeneratorWebPartStrings {
 	PropertyPaneDescription: string;
 	BasicGroupName: string;
-	DescriptionFieldLabel: string;
+	docxFolderFieldLabel: string;
+	tocFolderFieldLabel: string
 }
 
 declare module 'ProjDocTocGeneratorWebPartStrings' {

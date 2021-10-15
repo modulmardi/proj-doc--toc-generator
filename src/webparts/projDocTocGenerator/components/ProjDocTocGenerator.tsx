@@ -77,7 +77,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 	const initExistingFiles: () => void = () =>
 		props.context.msGraphClientFactory.getClient()
 			.then((client: MSGraphClient): void => {
-				client.api("/me/drive/root:/jsonToc:/children")
+				client.api(`/sites/root/drive/root:/${props.tocFolder}:/children`)
 					.get()
 					.then((data) => setExistingFiles([...(data.value as [])
 						.filter((item: any) => (item.name as string).match(/\.toc$/))
@@ -173,7 +173,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 					</>}
 				</Formik>
 
-				{<TocForm toc={currentToc || new Toc()} setToc={setCurrentToc} existingFiles={existingFiles} context={props.context} />}
+				{<TocForm toc={currentToc || new Toc()} setToc={setCurrentToc} existingFiles={existingFiles} context={props.context} tocFolder={props.tocFolder} docxFolder={props.docxFolder} />}
 
 			</Stack>
 		</>

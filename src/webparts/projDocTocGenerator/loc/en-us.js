@@ -2,6 +2,7 @@ define([], function() {
 	return {
 		"PropertyPaneDescription": "Description",
 		"BasicGroupName": "Group Name",
-		"DescriptionFieldLabel": "Description Field"
+		"tocFolderFieldLabel": "Название папки с сохранениями",
+		"docxFolderFieldLabel": "Название папки с отчетами"
 	}
 });
