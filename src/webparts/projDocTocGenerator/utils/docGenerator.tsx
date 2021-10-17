@@ -29,9 +29,10 @@ function angularParser(tag: string) {
 		}
 	};
 }
-const generateDocument = (toc: Toc, fileSaver: (context: WebPartContext, fileName: string, tocFolder: string, docxFolder: string, file: any, toc: Toc) => void
-	, fileName: string, tocFolder: string, docxFolder: string, context: WebPartContext) => {
-	graphFileLoader(context, '/sites/root/drive/root:/${docxFolder}/${fileName}.docx:/content', function (
+const generateDocument = (toc: Toc,
+	fileSaver: (context: WebPartContext, fileName: string, tocFolder: string, docxFolder: string, file: any, toc: Toc) => void,
+	fileName: string, tocFolder: string, docxFolder: string, context: WebPartContext) => {
+	graphFileLoader(context, '/sites/root/drive/root:/template/template011.docx:/', function (
 		error: any,
 		content: any
 	) {
@@ -39,6 +40,7 @@ const generateDocument = (toc: Toc, fileSaver: (context: WebPartContext, fileNam
 			throw error;
 		}
 		const zip = new PizZip(content);
+		
 		const doc = new Docxtemplater(zip, {
 			paragraphLoop: true,
 			linebreaks: true,

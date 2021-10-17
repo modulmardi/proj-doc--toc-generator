@@ -8,6 +8,7 @@ import { Section, Subsection, Toc } from '../model/ToC';
 import docGenerator from '../utils/docGenerator';
 import fileSaver from '../utils/fileSaver';
 import EditSectionModal from './EditSectionModal';
+import GenerateSectionsModal from './GenerateSectionsModal';
 import { stylesAddButtonBig, stylesAddButtonLateral, stylesDeleteButtonLateral, stylesEditButtonLateral } from './styles/stylesButton';
 
 interface ITocFormProps {
@@ -48,7 +49,12 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 
 	const validateCurrentFileName = (newText: string) => {
 		setFileNameError('')
-		if (isNewFile && props.existingFiles.filter((file) => file.text == newText)?.length != 0) {
+
+		if (!props.existingFiles) {
+			return
+		}
+
+		if (isNewFile && props.existingFiles?.filter((file) => file.text == newText)?.length != 0) {
 			setFileNameError('Это имя занято')
 			return
 		}
@@ -178,6 +184,12 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 						</Stack>
 
 						<h2>Разделы</h2>
+
+						<GenerateSectionsModal setTocSections={
+							(sections: Section[]) => {
+								formikProps.setFieldValue('_toc.sections', sections)
+							}
+						} />
 						<FieldArray name="_toc.sections"
 							render={arrayHelpers =>
 								<>
