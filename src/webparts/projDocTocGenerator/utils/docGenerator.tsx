@@ -30,8 +30,10 @@ function angularParser(tag: string) {
 	};
 }
 const generateDocument = (toc: Toc,
-	fileSaver: (context: WebPartContext, fileName: string, tocFolder: string, docxFolder: string, file: any, toc: Toc) => void,
-	fileName: string, tocFolder: string, docxFolder: string, context: WebPartContext) => {
+	fileSaver: (context: WebPartContext, fileName: string, tocFolder: string, docxFolder: string, file: any, toc: Toc, setOperationStatus: (message: string) => void) => void,
+	fileName: string, tocFolder: string, docxFolder: string,
+	context: WebPartContext,
+	setOperationStatus: (message: string) => void) => {
 	graphFileLoader(context, '/sites/root/drive/root:/template/template012.docx:/', function (
 		error: any,
 		content: any
@@ -40,7 +42,7 @@ const generateDocument = (toc: Toc,
 			throw error;
 		}
 		const zip = new PizZip(content);
-		
+
 		const doc = new Docxtemplater(zip, {
 			paragraphLoop: true,
 			linebreaks: true,
@@ -60,6 +62,7 @@ const generateDocument = (toc: Toc,
 						key
 					) {
 						error[key] = value[key];
+						setOperationStatus('error')
 						return error;
 					},
 						{});
@@ -78,6 +81,7 @@ const generateDocument = (toc: Toc,
 				// errorMessages is a humanly readable message looking like this:
 				// 'The tag beginning with "foobar" is unopened'
 			}
+			setOperationStatus('error')
 			throw error;
 		}
 		const out = doc.getZip().generate({
@@ -87,7 +91,8 @@ const generateDocument = (toc: Toc,
 		}); //Output the document using Data-URI
 		console.log("docGenerator", out);
 
-		fileSaver(context, fileName, tocFolder, docxFolder, out, toc)
+		fileSaver(context, fileName, tocFolder, docxFolder, out, toc, setOperationStatus)
+		setOperationStatus('success')
 		console.log(out);
 
 	});

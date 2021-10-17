@@ -1,4 +1,4 @@
-import { Depths, Dropdown, IComboBox, IComboBoxOption, IconButton, PrimaryButton, Stack, TextField, Toggle } from '@fluentui/react';
+import { Depths, Dropdown, IComboBox, IComboBoxOption, IconButton, MessageBar, MessageBarType, PrimaryButton, Stack, TextField, Toggle } from '@fluentui/react';
 import { useBoolean } from '@fluentui/react-hooks';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { FieldArray, Form, Formik, FormikHelpers } from 'formik';
@@ -18,11 +18,13 @@ interface ITocFormProps {
 	tocFolder: string
 	docxFolder: string
 	context: WebPartContext
+	fetchExistingFiles: () => void
 }
 
 
-interface Values {
+interface formikValues {
 	_toc: Toc
+	operationStatus: string
 }
 
 
@@ -43,6 +45,11 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 	const [currentEditableSection, setCurrentEditableSection] = React.useState<Section>(null);
 	const [currentEditableSectionNumber, setCurrentEditableSectionNumber] = React.useState<number>(null);
 	const [isSectionEdited, setIsSectionEdited] = React.useState<boolean>(false);
+
+	React.useEffect(() => {
+		props.fetchExistingFiles()
+	}, [currentFileName])
+
 	const replacer = React.useRef<(index: number, value: any) => void>(null)
 
 
@@ -90,7 +97,8 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 		<>
 			<Formik
 				initialValues={{
-					_toc: props.toc
+					_toc: props.toc,
+					operationStatus: ''
 				}}
 				validationSchema={yup.object().shape({
 					_toc: yup.object().shape({
@@ -120,24 +128,31 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 					}),
 				})}
 				enableReinitialize
-				onSubmit={(values: Values, formikHelpers: FormikHelpers<Values>): void | Promise<any> => {
+				onSubmit={(values: formikValues, formikHelpers: FormikHelpers<formikValues>): void | Promise<any> => {
 					validateCurrentFileName(currentFileName)
-					if (fileNameError === '' && currentFileName !== '') { return docGenerator(fillEmptySectionsWithSubsections(values._toc), fileSaver, props.tocFolder, props.docxFolder, currentFileName, props.context) }
+					if (fileNameError === '' && currentFileName !== '') {
+						return docGenerator(
+							fillEmptySectionsWithSubsections(values._toc),
+							fileSaver,
+							props.tocFolder, props.docxFolder, currentFileName,
+							props.context,
+							(message: string) => formikHelpers.setFieldValue('operationStatus', message))
+					}
 				}}
 			>
-				{(formikProps) => <>
+				{({ values, ...formikProps }) => <>
 					<Form>
 						<h2>Данные проекта</h2>
 						<Stack tokens={{ childrenGap: 10 }}>
 							<TextField placeholder="Название объекта" name={`_toc.buildingName`}
-								value={formikProps.values._toc.buildingName}
+								value={values._toc.buildingName}
 								errorMessage={(formikProps.touched?._toc?.buildingName) ? formikProps.errors?._toc?.buildingName : ''}
 
 								onBlur={formikProps.handleBlur}
 								onChange={formikProps.handleChange}
 								multiline autoAdjustHeight resizable={false} />
 							<TextField placeholder="Адрес" name={`_toc.address`}
-								value={formikProps.values._toc.address}
+								value={values._toc.address}
 								errorMessage={(formikProps.touched?._toc?.address) ? formikProps.errors?._toc?.address : ''}
 
 
@@ -146,14 +161,14 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 								multiline autoAdjustHeight resizable={false} />
 							<Stack tokens={{ childrenGap: 10 }} horizontal>
 								<TextField placeholder="Код проекта" name={`_toc.projectCode`}
-									value={formikProps.values._toc.projectCode}
+									value={values._toc.projectCode}
 									errorMessage={(formikProps.touched?._toc?.projectCode) ? formikProps.errors?._toc?.projectCode : ''}
 
 									onBlur={formikProps.handleBlur}
 									onChange={formikProps.handleChange}
 									styles={{ root: { width: '100%' } }} />
 								<TextField placeholder="Стадия проекта" name={`_toc.projectStage`}
-									value={formikProps.values._toc.projectStage}
+									value={values._toc.projectStage}
 									errorMessage={(formikProps.touched?._toc?.projectStage) ? formikProps.errors?._toc?.projectStage : ''}
 
 									onBlur={formikProps.handleBlur}
@@ -161,21 +176,21 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 									styles={{ root: { width: '100%' } }} />
 							</Stack>
 							<TextField placeholder="ГИП" name={`_toc.gipName`}
-								value={formikProps.values._toc.gipName}
+								value={values._toc.gipName}
 								errorMessage={(formikProps.touched?._toc?.gipName) ? formikProps.errors?._toc?.gipName : ''}
 
 								onBlur={formikProps.handleBlur}
 								onChange={formikProps.handleChange}
 							/>
 							<TextField placeholder="ГАП" name={`_toc.gapName`}
-								value={formikProps.values._toc.gapName}
+								value={values._toc.gapName}
 								errorMessage={(formikProps.touched?._toc?.gapName) ? formikProps.errors?._toc?.gapName : ''}
 
 								onBlur={formikProps.handleBlur}
 								onChange={formikProps.handleChange}
 							/>
 							<TextField placeholder="Н. Контр" name={`_toc.nContr`}
-								value={formikProps.values._toc.nContr}
+								value={values._toc.nContr}
 								errorMessage={(formikProps.touched?._toc?.nContr) ? formikProps.errors?._toc?.nContr : ''}
 
 								onBlur={formikProps.handleBlur}
@@ -193,15 +208,15 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 						<FieldArray name="_toc.sections"
 							render={arrayHelpers =>
 								<>
-									<EditSectionModal toc={formikProps.values._toc}
+									<EditSectionModal toc={values._toc}
 										isEditSectionModalOpen={isEditSectionModalOpen}
 										hideEditSectionModal={hideEditSectionModal}
 										currentEditableSection={currentEditableSection}
 										setIsSectionEdited={setIsSectionEdited}
 										setCurrentEditableSection={setCurrentEditableSection}
 									/>
-									{formikProps.values._toc?.sections?.length > 0 &&
-										formikProps.values._toc?.sections?.map((section, sectionId, sections) =>
+									{values._toc?.sections?.length > 0 &&
+										values._toc?.sections?.map((section, sectionId, sections) =>
 											<>
 
 
@@ -305,6 +320,19 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 						</Stack>
 
 						<PrimaryButton onClick={() => formikProps.handleSubmit()} text='Сохранить' style={{ width: '100%', marginTop: '1vh' }} />
+
+						{(values.operationStatus == 'success' &&
+							<MessageBar messageBarType={MessageBarType.success}
+								onDismiss={() => formikProps.setFieldValue('operationStatus', '')}>
+								Оглавление успешно создано
+							</MessageBar>)}
+
+						{(values.operationStatus == 'error' &&
+							<MessageBar messageBarType={MessageBarType.error}
+								onDismiss={() => formikProps.setFieldValue('operationStatus', '')}>
+								Произошла ошибка при создании оглавления
+							</MessageBar>)}
+
 					</Form>
 				</>
 				}

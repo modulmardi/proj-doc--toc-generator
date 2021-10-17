@@ -36,7 +36,9 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 	const [isCreateNewProjModalOpen, { setTrue: showCreateNewProjModal, setFalse: hideCreateNewProjModal }] = useBoolean(false);
 	const [isOpenProjModalOpen, { setTrue: showOpenProjModal, setFalse: hideOpenProjModal }] = useBoolean(false);
 
-	React.useEffect(() => initExistingFiles(), [])
+	React.useEffect(() => {
+		fetchExistingFiles()
+	}, [props.tocFolder])
 
 	React.useEffect(() => console.log(currentToc), [currentToc])
 
@@ -55,7 +57,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 			})
 	}
 
-	const initExistingFiles: () => void = () =>
+	const fetchExistingFiles: () => void = () =>
 		props.context.msGraphClientFactory.getClient()
 			.then((client: MSGraphClient): void => {
 				client.api(`/sites/root/drive/root:/${props.tocFolder ? props.tocFolder : '/'}:/children`)
@@ -108,6 +110,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 					toc={currentToc} setToc={setCurrentToc}
 					tocFolder={props.tocFolder} docxFolder={props.docxFolder}
 					existingFiles={existingFiles}
+					fetchExistingFiles={fetchExistingFiles}
 				/>}
 
 			</Stack>
