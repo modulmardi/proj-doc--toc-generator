@@ -74,13 +74,13 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
 													<IconButton key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsectionNumber].subsectionUuid}_add_left`}
 														styles={{ ...stylesAddButtonModalLateralLeft }} iconProps={{ iconName: "add", }}
 														onClick={() => {
-															arrayHelpers.insert(currentSubsectionNumber, new Subsection())
+															arrayHelpers.insert(currentSubsectionNumber, values._section.subsections[currentSubsectionNumber])
 															setModalAnimation(MotionAnimations.slideRightIn)
 														}} />
 													<IconButton key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsectionNumber].subsectionUuid}_add_right`}
 														styles={{ ...stylesAddButtonModalLateralRight }} iconProps={{ iconName: "add", }}
 														onClick={() => {
-															arrayHelpers.insert(currentSubsectionNumber + 1, new Subsection())
+															arrayHelpers.insert(currentSubsectionNumber + 1, values._section.subsections[currentSubsectionNumber])
 															setCurrentSubsection((previous) => previous + 1)
 															setModalAnimation(MotionAnimations.slideLeftIn)
 														}} />
@@ -104,7 +104,7 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
 
 														</div>
 
-														<Pagination styles={{root: {margin:'auto'}}} pageCount={values._section.subsections.length}
+														<Pagination styles={{ root: { margin: 'auto' } }} pageCount={values._section.subsections.length}
 															selectedPageIndex={currentSubsectionNumber}
 															onPageChange={(subsection) => setCurrentSubsection(subsection)}
 														/>

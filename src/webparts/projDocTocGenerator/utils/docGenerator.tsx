@@ -32,7 +32,7 @@ function angularParser(tag: string) {
 const generateDocument = (toc: Toc,
 	fileSaver: (context: WebPartContext, fileName: string, tocFolder: string, docxFolder: string, file: any, toc: Toc) => void,
 	fileName: string, tocFolder: string, docxFolder: string, context: WebPartContext) => {
-	graphFileLoader(context, '/sites/root/drive/root:/template/template011.docx:/', function (
+	graphFileLoader(context, '/sites/root/drive/root:/template/template012.docx:/', function (
 		error: any,
 		content: any
 	) {
