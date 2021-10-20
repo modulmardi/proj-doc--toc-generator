@@ -528,6 +528,7 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                     currentSubsectionNumber={
                                       currentSubsectionNumber
                                     }
+                                    errors={errors?._section}
                                   />
                                 </Stack>
                               </>

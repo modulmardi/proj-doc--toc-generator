@@ -21,3 +21,11 @@ td:empty::after {
 .row_current {
   background-color: yellow;
 }
+
+.row_error {
+  background-color: red;
+}
+
+.row_current.row_error {
+  background-color: orangered;
+}

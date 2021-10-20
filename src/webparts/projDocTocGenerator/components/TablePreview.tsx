@@ -1,18 +1,31 @@
+import { FormikErrors } from "formik";
 import React, { ReactElement } from "react";
-import { Section, Toc } from "../model/ToC";
+import { Section, Subsection, Toc } from "../model/ToC";
 import styles from "./styles/style.module.scss";
 
 interface TablePreviewProps {
   toc: Toc;
   section: Section;
   currentSubsectionNumber: number;
+  errors: FormikErrors<Section>;
 }
 
 const TablePreview = ({
   toc,
   section,
   currentSubsectionNumber,
+  errors,
 }: TablePreviewProps): ReactElement => {
+  const hasErrors = (id: number): boolean => {
+    const _subsection =
+      errors?.subsections[id] && (errors?.subsections[id] as Subsection);
+    for (const error in _subsection) {
+      if (error != "") {
+        return true;
+      }
+    }
+    return false;
+  };
   return (
     <>
       <table>
@@ -30,7 +43,11 @@ const TablePreview = ({
           </td>
         </tr>
         {currentSubsectionNumber > 0 && (
-          <tr>
+          <tr
+            className={
+              hasErrors(currentSubsectionNumber - 1) && styles.row_error
+            }
+          >
             <td>
               {section.section +
                 (section.subsections[currentSubsectionNumber - 1].subsection
@@ -126,7 +143,13 @@ const TablePreview = ({
             <td></td>
           </tr>
         )}
-        <tr className={styles.row_current}>
+        <tr
+          className={`
+            ${styles.row_current} ${
+            hasErrors(currentSubsectionNumber) && styles.row_error
+          }
+          `}
+        >
           <td>
             {section.section +
               (section.subsections[currentSubsectionNumber].subsection
@@ -212,7 +235,11 @@ const TablePreview = ({
           <td></td>
         </tr>
         {currentSubsectionNumber + 1 < section.subsections.length && (
-          <tr>
+          <tr
+            className={
+              hasErrors(currentSubsectionNumber + 1) && styles.row_error
+            }
+          >
             <td>
               {section.section +
                 (section.subsections[currentSubsectionNumber + 1].subsection
