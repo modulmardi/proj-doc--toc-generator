@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import { Section, Toc } from "../model/ToC";
-import "./styles/style.scss";
+import styles from "./styles/style.module.scss";
 
 interface TablePreviewProps {
   toc: Toc;
@@ -17,10 +17,10 @@ const TablePreview = ({
     <>
       <table>
         <tr>
-          <th style={{ width: "15%" }}>№/№</th>
-          <th style={{ width: "15%" }}>ОБОЗНАЧЕНИЕ</th>
-          <th style={{ width: "60%" }}>НАИМЕНОВАНИЕ</th>
-          <th style={{ width: "10%" }}>ПРИМЕЧАНИЕ</th>
+          <th>№/№</th>
+          <th>ОБОЗНАЧЕНИЕ</th>
+          <th>НАИМЕНОВАНИЕ</th>
+          <th>ПРИМЕЧАНИЕ</th>
         </tr>
         <tr>
           <td colSpan={4}>
@@ -126,7 +126,7 @@ const TablePreview = ({
             <td></td>
           </tr>
         )}
-        <tr className="row_current">
+        <tr className={styles.row_current}>
           <td>
             {section.section +
               (section.subsections[currentSubsectionNumber].subsection

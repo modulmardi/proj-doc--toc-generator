@@ -9,7 +9,7 @@ import { graphFileLoader } from "./fileLoaders";
 function angularParser(tag: string) {
   if (tag === ".") {
     return {
-      get: function (s: any) {
+      get: (s: any) => {
         return s;
       },
     };
@@ -18,7 +18,7 @@ function angularParser(tag: string) {
     tag.replace(/(’|‘)/g, "'").replace(/(“|”)/g, '"')
   );
   return {
-    get: function (scope: any, context: { scopeList: any; num: any }) {
+    get: (scope: any, context: { scopeList: any; num: any }) => {
       let obj = {};
       const scopeList = context.scopeList;
       const num = context.num;
@@ -49,7 +49,7 @@ const generateDocument = (
   graphFileLoader(
     context,
     "/sites/root/drive/root:/template/template012.docx:/",
-    function (error: any, content: any) {
+    (error: any, content: any) => {
       if (error) {
         throw error;
       }
@@ -69,15 +69,11 @@ const generateDocument = (
         // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
         function replaceErrors(key: any, value: { [x: string]: any }) {
           if (value instanceof Error) {
-            return Object.getOwnPropertyNames(value).reduce(function (
-              error,
-              key
-            ) {
+            return Object.getOwnPropertyNames(value).reduce((error, key) => {
               error[key] = value[key];
               setOperationStatus("error");
               return error;
-            },
-            {});
+            }, {});
           }
           return value;
         }
@@ -85,7 +81,7 @@ const generateDocument = (
 
         if (error.properties && error.properties.errors instanceof Array) {
           const errorMessages = error.properties.errors
-            .map(function (error: { properties: { explanation: any } }) {
+            .map((error: { properties: { explanation: any } }) => {
               return error.properties.explanation;
             })
             .join("\n");

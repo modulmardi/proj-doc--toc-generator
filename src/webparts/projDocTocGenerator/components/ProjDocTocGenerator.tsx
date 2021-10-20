@@ -39,7 +39,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
     pizZipfileLoader(
       existingFiles.find((file) => file.text === openingProjectName)
         ?.key as string,
-      function (error: any, content: ArrayBuffer) {
+      (error: any, content: ArrayBuffer) => {
         if (error) {
           throw error;
         }

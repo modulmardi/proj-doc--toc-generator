@@ -9,6 +9,7 @@ table {
 th {
   border: 2px black solid;
 }
+
 td {
   border: 1px black solid;
 }
@@ -17,6 +18,6 @@ td:empty::after {
   content: "\00a0";
 }
 
-tr.row_current {
+.row_current {
   background-color: yellow;
 }
