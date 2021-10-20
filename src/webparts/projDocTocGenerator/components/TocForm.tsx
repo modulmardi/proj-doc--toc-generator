@@ -35,6 +35,7 @@ interface ITocFormProps {
   tocFolder: string;
   docxFolder: string;
   context: WebPartContext;
+  currentDriveId: string;
   fetchExistingFiles: () => void;
 }
 
@@ -143,21 +144,21 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
               .string()
               .required("Поле обязательно для заполнения")
               .matches(
-                /^[а-яА-Я-]+$/,
+                /^([а-яА-Я]-?)*([а-яА-Я])+$/,
                 "Поле может содержать кириллические символы"
               ),
             gapName: yup
               .string()
               .required("Поле обязательно для заполнения")
               .matches(
-                /^[а-яА-Я-]+$/,
+                /^([а-яА-Я]-?)*([а-яА-Я])+$/,
                 "Поле может содержать кириллические символы"
               ),
             nContr: yup
               .string()
               .required("Поле обязательно для заполнения")
               .matches(
-                /^[а-яА-Я-]+$/,
+                /^([а-яА-Я]-?)*([а-яА-Я])+$/,
                 "Поле может содержать кириллические символы"
               ),
             sections: yup.array().of(
@@ -166,7 +167,7 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
                   .string()
                   .required("Поле обязательно для заполнения")
                   .matches(
-                    /^(\d+\.?)*\d$/,
+                    /^(\d+\.?)*\d+$/,
                     "Поле может содержать числа и точки между ними"
                   ),
                 sectionTitle: yup
@@ -177,30 +178,45 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
                   .string()
                   .required("Поле обязательно для заполнения")
                   .matches(
-                    /^[а-яА-Я-]+$/,
+                    /^([а-яА-Я]-?)*([а-яА-Я])+$/,
                     "Поле может содержать кириллические символы"
                   ),
                 subsections: yup.array().of(
                   yup.object().shape({
                     subsection: yup
                       .string()
-                      .matches(/^(\d*\.)*$/, "Must contain digits and dots"),
+                      .matches(
+                        /^((\d+\.?)*\d+)?$/,
+                        "Поле может содержать числа и точки между ними"
+                      ),
                     subsectionTitle: yup.string(),
                     subsectionStamp: yup.string(),
                     chapter: yup
                       .string()
-                      .matches(/(\d*\.)*/, "Must contain digits and dots"),
+                      .matches(
+                        /^((\d+\.?)*\d+)?$/,
+                        "Поле может содержать числа и точки между ними"
+                      ),
                     chapterTitle: yup.string(),
                     book: yup
                       .string()
-                      .matches(/(\d*\.)*/, "Must contain digits and dots"),
+                      .matches(
+                        /^((\d+\.?)*\d+)?$/,
+                        "Поле может содержать числа и точки между ними"
+                      ),
                     bookTitle: yup.string(),
                     block: yup
                       .string()
-                      .matches(/(\d*\.)*/, "Must contain digits and dots"),
+                      .matches(
+                        /^((\d+\.?)*\d+)?$/,
+                        "Поле может содержать числа и точки между ними"
+                      ),
                     subblock: yup
                       .string()
-                      .matches(/(\d*\.)*/, "Must contain digits and dots"),
+                      .matches(
+                        /^((\d+\.?)*\d+)?$/,
+                        "Поле может содержать числа и точки между ними"
+                      ),
                   })
                 ),
               })
@@ -221,13 +237,23 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
               props.docxFolder,
               currentFileName,
               props.context,
+              props.currentDriveId,
               (message: string) =>
                 formikHelpers.setFieldValue("operationStatus", message)
             );
           }
         }}
       >
-        {({ values, ...formikProps }) => (
+        {({
+          values,
+          touched,
+          errors,
+          handleBlur,
+          handleChange,
+          handleSubmit,
+          setFieldValue,
+          ...formikProps
+        }) => (
           <>
             <Form>
               <h2>Данные проекта</h2>
@@ -237,12 +263,12 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
                   name={`_toc.buildingName`}
                   value={values._toc.buildingName}
                   errorMessage={
-                    formikProps.touched?._toc?.buildingName
-                      ? formikProps.errors?._toc?.buildingName
+                    touched?._toc?.buildingName
+                      ? errors?._toc?.buildingName
                       : ""
                   }
-                  onBlur={formikProps.handleBlur}
-                  onChange={formikProps.handleChange}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
                   multiline
                   autoAdjustHeight
                   resizable={false}
@@ -252,12 +278,10 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
                   name={`_toc.address`}
                   value={values._toc.address}
                   errorMessage={
-                    formikProps.touched?._toc?.address
-                      ? formikProps.errors?._toc?.address
-                      : ""
+                    touched?._toc?.address ? errors?._toc?.address : ""
                   }
-                  onBlur={formikProps.handleBlur}
-                  onChange={formikProps.handleChange}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
                   multiline
                   autoAdjustHeight
                   resizable={false}
@@ -268,12 +292,12 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
                     name={`_toc.projectCode`}
                     value={values._toc.projectCode}
                     errorMessage={
-                      formikProps.touched?._toc?.projectCode
-                        ? formikProps.errors?._toc?.projectCode
+                      touched?._toc?.projectCode
+                        ? errors?._toc?.projectCode
                         : ""
                     }
-                    onBlur={formikProps.handleBlur}
-                    onChange={formikProps.handleChange}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
                     styles={{ root: { width: "100%" } }}
                   />
                   <TextField
@@ -281,12 +305,12 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
                     name={`_toc.projectStage`}
                     value={values._toc.projectStage}
                     errorMessage={
-                      formikProps.touched?._toc?.projectStage
-                        ? formikProps.errors?._toc?.projectStage
+                      touched?._toc?.projectStage
+                        ? errors?._toc?.projectStage
                         : ""
                     }
-                    onBlur={formikProps.handleBlur}
-                    onChange={formikProps.handleChange}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
                     styles={{ root: { width: "100%" } }}
                   />
                 </Stack>
@@ -295,36 +319,30 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
                   name={`_toc.gipName`}
                   value={values._toc.gipName}
                   errorMessage={
-                    formikProps.touched?._toc?.gipName
-                      ? formikProps.errors?._toc?.gipName
-                      : ""
+                    touched?._toc?.gipName ? errors?._toc?.gipName : ""
                   }
-                  onBlur={formikProps.handleBlur}
-                  onChange={formikProps.handleChange}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
                 />
                 <TextField
                   placeholder="ГАП"
                   name={`_toc.gapName`}
                   value={values._toc.gapName}
                   errorMessage={
-                    formikProps.touched?._toc?.gapName
-                      ? formikProps.errors?._toc?.gapName
-                      : ""
+                    touched?._toc?.gapName ? errors?._toc?.gapName : ""
                   }
-                  onBlur={formikProps.handleBlur}
-                  onChange={formikProps.handleChange}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
                 />
                 <TextField
                   placeholder="Н. Контр"
                   name={`_toc.nContr`}
                   value={values._toc.nContr}
                   errorMessage={
-                    formikProps.touched?._toc?.nContr
-                      ? formikProps.errors?._toc?.nContr
-                      : ""
+                    touched?._toc?.nContr ? errors?._toc?.nContr : ""
                   }
-                  onBlur={formikProps.handleBlur}
-                  onChange={formikProps.handleChange}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
                 />
               </Stack>
 
@@ -332,7 +350,7 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 
               <GenerateSectionsModal
                 setTocSections={(sections: Section[]) => {
-                  formikProps.setFieldValue("_toc.sections", sections);
+                  setFieldValue("_toc.sections", sections);
                 }}
               />
               <FieldArray
@@ -418,7 +436,6 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
                                 />
                                 <IconButton
                                   key={`stack_sec_input_${sections[sectionId].sectionUuid}_delete`}
-                                  style={{}}
                                   styles={stylesDeleteButtonLateral}
                                   iconProps={{ iconName: "delete" }}
                                   onClick={() => arrayHelpers.remove(sectionId)}
@@ -434,28 +451,38 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
                                     name={`_toc.sections.${sectionId}.section`}
                                     value={section.section}
                                     errorMessage={
-                                      formikProps.touched?._toc?.sections &&
-                                      formikProps.touched?._toc?.sections[
-                                        sectionId
-                                      ]?.section
+                                      touched?._toc?.sections &&
+                                      touched?._toc?.sections[sectionId]
+                                        ?.section
                                         ? (
-                                            formikProps.errors?._toc?.sections[
+                                            errors?._toc?.sections[
                                               sectionId
                                             ] as Section
                                           )?.section
                                         : ""
                                     }
                                     key={`stack_sec_input_${sections[sectionId].sectionUuid}_#`}
-                                    onBlur={formikProps.handleBlur}
-                                    onChange={formikProps.handleChange}
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
                                   />
                                   <TextField
                                     placeholder="Шифр раздела"
                                     name={`_toc.sections[${sectionId}].sectionStamp`}
                                     value={section.sectionStamp}
+                                    errorMessage={
+                                      touched?._toc?.sections &&
+                                      touched?._toc?.sections[sectionId]
+                                        ?.sectionStamp
+                                        ? (
+                                            errors?._toc?.sections[
+                                              sectionId
+                                            ] as Section
+                                          )?.sectionStamp
+                                        : ""
+                                    }
                                     key={`stack_sec_input_${sections[sectionId].sectionUuid}_sectionStamp`}
                                     styles={{ root: { width: "100%" } }}
-                                    onChange={formikProps.handleChange}
+                                    onChange={handleChange}
                                   />
                                 </Stack>
 
@@ -465,12 +492,11 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
                                   name={`_toc.sections[${sectionId}].sectionTitle`}
                                   value={section.sectionTitle}
                                   errorMessage={
-                                    formikProps.touched?._toc?.sections &&
-                                    formikProps.touched?._toc?.sections[
-                                      sectionId
-                                    ]?.sectionTitle
+                                    touched?._toc?.sections &&
+                                    touched?._toc?.sections[sectionId]
+                                      ?.sectionTitle
                                       ? (
-                                          formikProps.errors?._toc?.sections[
+                                          errors?._toc?.sections[
                                             sectionId
                                           ] as Section
                                         )?.sectionTitle
@@ -480,8 +506,8 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
                                   autoAdjustHeight
                                   resizable={false}
                                   styles={{ root: { width: "100%" } }}
-                                  onBlur={formikProps.handleBlur}
-                                  onChange={formikProps.handleChange}
+                                  onBlur={handleBlur}
+                                  onChange={handleChange}
                                 />
 
                                 <TextField
@@ -490,12 +516,11 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
                                   name={`_toc.sections[${sectionId}].assignedTo`}
                                   value={section.assignedTo}
                                   errorMessage={
-                                    formikProps.touched?._toc?.sections &&
-                                    formikProps.touched?._toc?.sections[
-                                      sectionId
-                                    ]?.assignedTo
+                                    touched?._toc?.sections &&
+                                    touched?._toc?.sections[sectionId]
+                                      ?.assignedTo
                                       ? (
-                                          formikProps.errors?._toc?.sections[
+                                          errors?._toc?.sections[
                                             sectionId
                                           ] as Section
                                         )?.assignedTo
@@ -505,8 +530,8 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
                                   autoAdjustHeight
                                   resizable={false}
                                   styles={{ root: { width: "100%" } }}
-                                  onBlur={formikProps.handleBlur}
-                                  onChange={formikProps.handleChange}
+                                  onBlur={handleBlur}
+                                  onChange={handleChange}
                                 />
                               </Stack>
                             </div>
@@ -566,7 +591,7 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
               </Stack>
 
               <PrimaryButton
-                onClick={() => formikProps.handleSubmit()}
+                onClick={() => handleSubmit()}
                 text="Сохранить"
                 style={{ width: "100%", marginTop: "1vh" }}
               />
@@ -574,9 +599,7 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
               {values.operationStatus == "success" && (
                 <MessageBar
                   messageBarType={MessageBarType.success}
-                  onDismiss={() =>
-                    formikProps.setFieldValue("operationStatus", "")
-                  }
+                  onDismiss={() => setFieldValue("operationStatus", "")}
                 >
                   Оглавление успешно создано
                 </MessageBar>
@@ -585,9 +608,7 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
               {values.operationStatus == "error" && (
                 <MessageBar
                   messageBarType={MessageBarType.error}
-                  onDismiss={() =>
-                    formikProps.setFieldValue("operationStatus", "")
-                  }
+                  onDismiss={() => setFieldValue("operationStatus", "")}
                 >
                   Произошла ошибка при создании оглавления
                 </MessageBar>

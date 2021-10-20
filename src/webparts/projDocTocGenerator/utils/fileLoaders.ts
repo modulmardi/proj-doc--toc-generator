@@ -16,7 +16,7 @@ export function graphFileLoader(
           id: string;
         }
       ) => {
-        console.log(jsonResponse["@microsoft.graph.downloadUrl"].toString());
+        // console.log(jsonResponse["@microsoft.graph.downloadUrl"].toString());
         pizZipfileLoader(
           jsonResponse["@microsoft.graph.downloadUrl"].toString(),
           callback

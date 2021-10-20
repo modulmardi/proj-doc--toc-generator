@@ -4,6 +4,7 @@ import { Subsection, Toc } from "../model/ToC";
 
 const fileSaver = (
   context: WebPartContext,
+  currentDriveId: string,
   tocFolder: string,
   docxFolder: string,
   fileName: string,
@@ -20,7 +21,7 @@ const fileSaver = (
     .getClient()
     .then((client: MSGraphClient): MSGraphClient => {
       client
-        .api(`/sites/root/drive/root/children`)
+        .api(`/drives/${currentDriveId}/root/children`)
         .header("Content-Type", "application/json")
         .put({
           name: docxFolder,
@@ -30,7 +31,7 @@ const fileSaver = (
     })
     .then((client: MSGraphClient): MSGraphClient => {
       client
-        .api(`/sites/root/drive/root/children`)
+        .api(`/drives/${currentDriveId}/root/children`)
         .header("Content-Type", "application/json")
         .put({
           name: tocFolder,
@@ -40,7 +41,7 @@ const fileSaver = (
     })
     .then((client: MSGraphClient): void => {
       client
-        .api(`/sites/root/drive/root:/${docxFolder}/${fileName}.docx:/content`)
+        .api(`/drives/${currentDriveId}/root:/${docxFolder}/${fileName}.docx:/content`)
         .header(
           "Content-Type",
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -48,7 +49,7 @@ const fileSaver = (
         .put(file)
         .catch(() => setOperationStatus("error"));
       client
-        .api(`/sites/root/drive/root:/${tocFolder}/${fileName}.toc:/content`)
+        .api(`/drives/${currentDriveId}/root:/${tocFolder}/${fileName}.toc:/content`)
         .header("Content-Type", "application/json")
         .put(toc)
         .catch(() => setOperationStatus("error"));

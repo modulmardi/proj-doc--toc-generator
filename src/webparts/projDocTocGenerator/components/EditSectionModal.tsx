@@ -10,6 +10,7 @@ import { Pagination } from "@uifabric/experiments/lib/Pagination";
 import { FieldArray, Form, Formik } from "formik";
 import * as React from "react";
 import { v4 as uuidv4 } from "uuid";
+import * as yup from "yup";
 import { Section, Subsection, Toc } from "../model/ToC";
 import stringToColor from "../utils/stringToColor";
 import BackContinueButtonGroup from "./BackContinueButtonGroup";
@@ -73,6 +74,52 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
           initialValues={{
             _section: props.currentEditableSection,
           }}
+          validationSchema={yup.object().shape({
+            _section: yup.object().shape({
+              assignedTo: yup.string(),
+              section: yup.string(),
+              sectionTitle: yup.string(),
+              sectionStamp: yup.string(),
+              subsections: yup.array().of(
+                yup.object().shape({
+                  subsection: yup
+                    .string()
+                    .matches(
+                      /^((\d+\.?)*\d+)?$/,
+                      "Поле может содержать числа и точки между ними"
+                    ),
+                  subsectionTitle: yup.string(),
+                  subsectionStamp: yup.string(),
+                  chapter: yup
+                    .string()
+                    .matches(
+                      /^((\d+\.?)*\d+)?$/,
+                      "Поле может содержать числа и точки между ними"
+                    ),
+                  chapterTitle: yup.string(),
+                  book: yup
+                    .string()
+                    .matches(
+                      /^((\d+\.?)*\d+)?$/,
+                      "Поле может содержать числа и точки между ними"
+                    ),
+                  bookTitle: yup.string(),
+                  block: yup
+                    .string()
+                    .matches(
+                      /^((\d+\.?)*\d+)?$/,
+                      "Поле может содержать числа и точки между ними"
+                    ),
+                  subblock: yup
+                    .string()
+                    .matches(
+                      /^((\d+\.?)*\d+)?$/,
+                      "Поле может содержать числа и точки между ними"
+                    ),
+                })
+              ),
+            }),
+          })}
           onSubmit={(values, formikHelpers): void | Promise<any> => {
             props.setCurrentEditableSection(values._section);
 
@@ -80,7 +127,15 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
             props.hideEditSectionModal();
           }}
         >
-          {({ values, ...formikProps }) => (
+          {({
+            values,
+            touched,
+            errors,
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            ...formikProps
+          }) => (
             <>
               <Form>
                 <FieldArray
@@ -117,7 +172,6 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                   setModalAnimation(
                                     MotionAnimations.slideDownOut
                                   );
-                                  console.log(currentSubsectionNumber);
                                   arrayHelpers.remove(currentSubsectionNumber);
                                   if (
                                     currentSubsectionNumber >=
@@ -231,8 +285,21 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                         currentSubsectionNumber
                                       ]?.subsectionStamp
                                     }
+                                    errorMessage={
+                                      touched?._section?.subsections &&
+                                      touched?._section?.subsections[
+                                        currentSubsectionNumber
+                                      ]?.subsectionStamp
+                                        ? (
+                                            errors?._section?.subsections[
+                                              currentSubsectionNumber
+                                            ] as Subsection
+                                          )?.subsectionStamp
+                                        : ""
+                                    }
                                     styles={{ root: { width: "100%" } }}
-                                    onChange={formikProps.handleChange}
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
                                   />
 
                                   <TextField
@@ -244,8 +311,21 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                         currentSubsectionNumber
                                       ]?.subsection
                                     }
+                                    errorMessage={
+                                      touched?._section?.subsections &&
+                                      touched?._section?.subsections[
+                                        currentSubsectionNumber
+                                      ]?.subsection
+                                        ? (
+                                            errors?._section?.subsections[
+                                              currentSubsectionNumber
+                                            ] as Subsection
+                                          )?.subsection
+                                        : ""
+                                    }
                                     styles={{ root: { width: "100%" } }}
-                                    onChange={formikProps.handleChange}
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
                                   />
 
                                   <TextField
@@ -257,12 +337,25 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                         currentSubsectionNumber
                                       ]?.subsectionTitle
                                     }
+                                    errorMessage={
+                                      touched?._section?.subsections &&
+                                      touched?._section?.subsections[
+                                        currentSubsectionNumber
+                                      ]?.subsectionTitle
+                                        ? (
+                                            errors?._section?.subsections[
+                                              currentSubsectionNumber
+                                            ] as Subsection
+                                          )?.subsectionTitle
+                                        : ""
+                                    }
                                     multiline
                                     rows={1}
                                     autoAdjustHeight
                                     resizable={false}
                                     styles={{ root: { width: "100%" } }}
-                                    onChange={formikProps.handleChange}
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
                                   />
 
                                   <TextField
@@ -274,8 +367,21 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                         currentSubsectionNumber
                                       ]?.chapter
                                     }
+                                    errorMessage={
+                                      touched?._section?.subsections &&
+                                      touched?._section?.subsections[
+                                        currentSubsectionNumber
+                                      ]?.chapter
+                                        ? (
+                                            errors?._section?.subsections[
+                                              currentSubsectionNumber
+                                            ] as Subsection
+                                          )?.chapter
+                                        : ""
+                                    }
                                     styles={{ root: { width: "100%" } }}
-                                    onChange={formikProps.handleChange}
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
                                   />
 
                                   <TextField
@@ -287,12 +393,25 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                         currentSubsectionNumber
                                       ]?.chapterTitle
                                     }
+                                    errorMessage={
+                                      touched?._section?.subsections &&
+                                      touched?._section?.subsections[
+                                        currentSubsectionNumber
+                                      ]?.chapterTitle
+                                        ? (
+                                            errors?._section?.subsections[
+                                              currentSubsectionNumber
+                                            ] as Subsection
+                                          )?.chapterTitle
+                                        : ""
+                                    }
                                     multiline
                                     rows={1}
                                     autoAdjustHeight
                                     resizable={false}
                                     styles={{ root: { width: "100%" } }}
-                                    onChange={formikProps.handleChange}
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
                                   />
 
                                   <TextField
@@ -304,8 +423,21 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                         currentSubsectionNumber
                                       ]?.book
                                     }
+                                    errorMessage={
+                                      touched?._section?.subsections &&
+                                      touched?._section?.subsections[
+                                        currentSubsectionNumber
+                                      ]?.book
+                                        ? (
+                                            errors?._section?.subsections[
+                                              currentSubsectionNumber
+                                            ] as Subsection
+                                          )?.book
+                                        : ""
+                                    }
                                     styles={{ root: { width: "100%" } }}
-                                    onChange={formikProps.handleChange}
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
                                   />
 
                                   <TextField
@@ -317,12 +449,25 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                         currentSubsectionNumber
                                       ]?.bookTitle
                                     }
+                                    errorMessage={
+                                      touched?._section?.subsections &&
+                                      touched?._section?.subsections[
+                                        currentSubsectionNumber
+                                      ]?.bookTitle
+                                        ? (
+                                            errors?._section?.subsections[
+                                              currentSubsectionNumber
+                                            ] as Subsection
+                                          )?.bookTitle
+                                        : ""
+                                    }
                                     multiline
                                     rows={1}
                                     autoAdjustHeight
                                     resizable={false}
                                     styles={{ root: { width: "100%" } }}
-                                    onChange={formikProps.handleChange}
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
                                   />
 
                                   <TextField
@@ -333,9 +478,22 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                       values._section.subsections[
                                         currentSubsectionNumber
                                       ]?.block
-                                    } //наверное должно набираться *тэгами*
+                                    }
+                                    errorMessage={
+                                      touched?._section?.subsections &&
+                                      touched?._section?.subsections[
+                                        currentSubsectionNumber
+                                      ]?.block
+                                        ? (
+                                            errors?._section?.subsections[
+                                              currentSubsectionNumber
+                                            ] as Subsection
+                                          )?.block
+                                        : ""
+                                    }
                                     styles={{ root: { width: "100%" } }}
-                                    onChange={formikProps.handleChange}
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
                                   />
 
                                   <TextField
@@ -347,8 +505,21 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                         currentSubsectionNumber
                                       ]?.subblock
                                     }
+                                    errorMessage={
+                                      touched?._section?.subsections &&
+                                      touched?._section?.subsections[
+                                        currentSubsectionNumber
+                                      ]?.subblock
+                                        ? (
+                                            errors?._section?.subsections[
+                                              currentSubsectionNumber
+                                            ] as Subsection
+                                          )?.subblock
+                                        : ""
+                                    }
                                     styles={{ root: { width: "100%" } }}
-                                    onChange={formikProps.handleChange}
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
                                   />
 
                                   <TablePreview
@@ -364,7 +535,7 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
 
                             <BackContinueButtonGroup
                               onClickBack={_hideEditSectionModal}
-                              onClickContinue={() => formikProps.handleSubmit()}
+                              onClickContinue={() => handleSubmit()}
                             />
                           </Stack>
                         </Stack>

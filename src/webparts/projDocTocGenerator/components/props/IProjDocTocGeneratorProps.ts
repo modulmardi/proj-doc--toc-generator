@@ -7,4 +7,6 @@ export interface IProjDocTocGeneratorProps {
   tocFolder: string;
 
   docxFolder: string;
+
+  currentDriveId: string;
 }

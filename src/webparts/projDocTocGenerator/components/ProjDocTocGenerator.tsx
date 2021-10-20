@@ -28,14 +28,9 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 
   React.useEffect(() => {
     fetchExistingFiles();
-  }, [props.tocFolder]);
-
-  React.useEffect(() => console.log(currentToc), [currentToc]);
+  }, [props.tocFolder, props.currentDriveId]);
 
   const downloadFileContent = () => {
-    //console.log(openingProjectName)
-    //console.log(existingFiles.find((file) => file.text === openingProjectName).key)
-
     pizZipfileLoader(
       existingFiles.find((file) => file.text === openingProjectName)
         ?.key as string,
@@ -55,7 +50,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
       .then((client: MSGraphClient): void => {
         client
           .api(
-            `/sites/root/drive/root:/${
+            `/drives/${props.currentDriveId}/root:/${
               props.tocFolder ? props.tocFolder : "/"
             }:/children`
           )
@@ -145,6 +140,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
         {
           <TocForm
             context={props.context}
+            currentDriveId={props.currentDriveId}
             toc={currentToc}
             setToc={setCurrentToc}
             tocFolder={props.tocFolder}

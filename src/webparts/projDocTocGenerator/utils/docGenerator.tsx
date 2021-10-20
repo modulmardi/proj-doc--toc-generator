@@ -33,6 +33,7 @@ const generateDocument = (
   toc: Toc,
   fileSaver: (
     context: WebPartContext,
+    currentDriveId: string,
     fileName: string,
     tocFolder: string,
     docxFolder: string,
@@ -44,6 +45,7 @@ const generateDocument = (
   tocFolder: string,
   docxFolder: string,
   context: WebPartContext,
+  currentDriveId: string,
   setOperationStatus: (message: string) => void
 ) => {
   graphFileLoader(
@@ -61,7 +63,7 @@ const generateDocument = (
         parser: angularParser,
       });
       try {
-        console.log(toc);
+        // console.log(toc);
 
         // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
         doc.render(toc);
@@ -77,7 +79,7 @@ const generateDocument = (
           }
           return value;
         }
-        console.log(JSON.stringify({ error: error }, replaceErrors));
+        // console.log(JSON.stringify({ error: error }, replaceErrors));
 
         if (error.properties && error.properties.errors instanceof Array) {
           const errorMessages = error.properties.errors
@@ -101,6 +103,7 @@ const generateDocument = (
 
       fileSaver(
         context,
+        currentDriveId,
         fileName,
         tocFolder,
         docxFolder,

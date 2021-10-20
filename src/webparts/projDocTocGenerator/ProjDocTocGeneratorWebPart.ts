@@ -17,18 +17,11 @@ export interface IProjDocTocGeneratorWebPartProps {
 
 export default class ProjDocTocGeneratorWebPart extends BaseClientSideWebPart<IProjDocTocGeneratorWebPartProps> {
   public render(): void {
-    // let client: MSGraphClient
-    // this.context.msGraphClientFactory
-    // .getClient()
-    // .then((_client: MSGraphClient): void => {
-    //   client = _client
-    // })
     const element: React.ReactElement<IProjDocTocGeneratorAppProps> =
       React.createElement(ProjDocTocGeneratorApp, {
         context: this.context,
         tocFolder: this.properties.tocFolder || "",
         docxFolder: this.properties.docxFolder || "",
-        //description: this.properties.description
       });
 
     ReactDom.render(element, this.domElement);
