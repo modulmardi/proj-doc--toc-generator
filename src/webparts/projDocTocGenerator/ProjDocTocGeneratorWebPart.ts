@@ -29,8 +29,8 @@ export default class ProjDocTocGeneratorWebPart extends BaseClientSideWebPart<IP
 			ProjDocTocGeneratorApp,
 			{
 				context: this.context,
-				tocFolder: this.properties.tocFolder,
-				docxFolder: this.properties.docxFolder,
+				tocFolder: this.properties.tocFolder || '',
+				docxFolder: this.properties.docxFolder || '',
 				//description: this.properties.description
 			}
 		);

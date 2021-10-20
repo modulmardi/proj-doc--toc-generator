@@ -106,23 +106,24 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 						address: yup.string().required('Поле обязательно для заполнения'),
 						projectCode: yup.string().required('Поле обязательно для заполнения'),
 						projectStage: yup.string().required('Поле обязательно для заполнения'),
-						gipName: yup.string().required('Поле обязательно для заполнения').matches(/^[а-яА-Я-]+$/, "Поле должно содержать кириллические символы"),
-						gapName: yup.string().required('Поле обязательно для заполнения').matches(/^[а-яА-Я-]+$/, "Поле должно содержать кириллические символы"),
-						nContr: yup.string().required('Поле обязательно для заполнения').matches(/^[а-яА-Я-]+$/, "Поле должно содержать кириллические символы"),
+						gipName: yup.string().required('Поле обязательно для заполнения').matches(/^[а-яА-Я-]+$/, "Поле может содержать кириллические символы"),
+						gapName: yup.string().required('Поле обязательно для заполнения').matches(/^[а-яА-Я-]+$/, "Поле может содержать кириллические символы"),
+						nContr: yup.string().required('Поле обязательно для заполнения').matches(/^[а-яА-Я-]+$/, "Поле может содержать кириллические символы"),
 						sections: yup.array().of(yup.object().shape({
-							section: yup.string().required('Поле обязательно для заполнения').matches(/^(\d*.)+$/, 'Must contain digits and dots'),
-							sectionTitle: yup.string(),
+							section: yup.string().required('Поле обязательно для заполнения').matches(/^(\d+\.?)*\d$/, 'Поле может содержать числа и точки между ними'),
+							sectionTitle: yup.string().required('Поле обязательно для заполнения'),
 							sectionStamp: yup.string(),
+							assignedTo: yup.string().required('Поле обязательно для заполнения').matches(/^[а-яА-Я-]+$/, "Поле может содержать кириллические символы"),
 							subsections: yup.array().of(yup.object().shape({
-								subsection: yup.string().matches(/^(\d*.)*$/, 'Must contain digits and dots'),
+								subsection: yup.string().matches(/^(\d*\.)*$/, 'Must contain digits and dots'),
 								subsectionTitle: yup.string(),
 								subsectionStamp: yup.string(),
-								chapter: yup.string().matches(/(\d*.)*/, 'Must contain digits and dots'),
+								chapter: yup.string().matches(/(\d*\.)*/, 'Must contain digits and dots'),
 								chapterTitle: yup.string(),
-								book: yup.string().matches(/(\d*.)*/, 'Must contain digits and dots'),
+								book: yup.string().matches(/(\d*\.)*/, 'Must contain digits and dots'),
 								bookTitle: yup.string(),
-								block: yup.string().matches(/(\d*.)*/, 'Must contain digits and dots'),
-								subblock: yup.string().matches(/(\d*.)*/, 'Must contain digits and dots'),
+								block: yup.string().matches(/(\d*\.)*/, 'Must contain digits and dots'),
+								subblock: yup.string().matches(/(\d*\.)*/, 'Must contain digits and dots'),
 							}))
 						}))
 					}),
@@ -200,11 +201,13 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 
 						<h2>Разделы</h2>
 
+
 						<GenerateSectionsModal setTocSections={
 							(sections: Section[]) => {
 								formikProps.setFieldValue('_toc.sections', sections)
 							}
 						} />
+						{console.log(formikProps.errors._toc)}
 						<FieldArray name="_toc.sections"
 							render={arrayHelpers =>
 								<>
@@ -257,10 +260,12 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 															onClick={() => arrayHelpers.remove(sectionId)} />
 
 														<Stack tokens={{ childrenGap: 10 }} horizontal styles={{ root: { width: '100%' } }}>
-															<TextField placeholder="#" name={`_toc.sections[${sectionId}].section`}
+															<TextField placeholder="#" name={`_toc.sections.${sectionId}.section`}
 																value={section.section}
+																errorMessage={(formikProps.touched?._toc?.sections[sectionId]?.section) ? (formikProps.errors?._toc?.sections[sectionId] as Section)?.section : ''}
 
 																key={`stack_sec_input_${sections[sectionId].sectionUuid}_#`}
+																onBlur={formikProps.handleBlur}
 																onChange={formikProps.handleChange} />
 															<TextField placeholder="Шифр раздела" name={`_toc.sections[${sectionId}].sectionStamp`}
 																value={section.sectionStamp}
@@ -272,17 +277,21 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
 														<TextField placeholder="Наименование раздела" key={`stack_sec_input_${sections[sectionId].sectionUuid}_title`}
 															name={`_toc.sections[${sectionId}].sectionTitle`}
 															value={section.sectionTitle}
+															errorMessage={(formikProps.touched?._toc?.sections[sectionId]?.sectionTitle) ? (formikProps.errors?._toc?.sections[sectionId] as Section)?.sectionTitle : ''}
 
 															multiline autoAdjustHeight resizable={false}
 															styles={{ root: { width: '100%' } }}
+															onBlur={formikProps.handleBlur}
 															onChange={formikProps.handleChange} />
 
 														<TextField placeholder="Ответственный" key={`stack_sec_input_${sections[sectionId].sectionUuid}_assignedTo`}
 															name={`_toc.sections[${sectionId}].assignedTo`}
 															value={section.assignedTo}
+															errorMessage={(formikProps.touched?._toc?.sections[sectionId]?.assignedTo) ? (formikProps.errors?._toc?.sections[sectionId] as Section)?.assignedTo : ''}
 
 															multiline autoAdjustHeight resizable={false}
 															styles={{ root: { width: '100%' } }}
+															onBlur={formikProps.handleBlur}
 															onChange={formikProps.handleChange} />
 
 													</Stack>

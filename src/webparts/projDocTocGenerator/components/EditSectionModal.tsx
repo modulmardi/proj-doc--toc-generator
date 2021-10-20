@@ -101,7 +101,7 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
 													<>
 
 
-														<div style={{ width: '100%', height: '2vh', backgroundColor: stringToColor(values._section.subsections[currentSubsectionNumber].subsectionUuid) }}>
+														<div style={{ width: '100%', height: '0.5vh', backgroundColor: stringToColor(values._section.subsections[currentSubsectionNumber].subsectionUuid) }}>
 
 														</div>
 
