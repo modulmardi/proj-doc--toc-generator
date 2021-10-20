@@ -1,190 +1,384 @@
-import { Depths, IconButton, Modal, MotionAnimations, Stack, TextField } from '@fluentui/react';
-import { Pagination } from '@uifabric/experiments/lib/Pagination';
-import { FieldArray, Form, Formik } from 'formik';
-import * as React from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { Section, Subsection, Toc } from '../model/ToC';
-import stringToColor from '../utils/stringToColor';
-import BackContinueButtonGroup from './BackContinueButtonGroup';
-import { stylesAddButtonModalCentral, stylesAddButtonModalLateralLeft, stylesAddButtonModalLateralRight, stylesDeleteButtonModal } from './styles/stylesButton';
-import TablePreview from './TablePreview';
-
+import {
+  Depths,
+  IconButton,
+  Modal,
+  MotionAnimations,
+  Stack,
+  TextField,
+} from "@fluentui/react";
+import { Pagination } from "@uifabric/experiments/lib/Pagination";
+import { FieldArray, Form, Formik } from "formik";
+import * as React from "react";
+import { v4 as uuidv4 } from "uuid";
+import { Section, Subsection, Toc } from "../model/ToC";
+import stringToColor from "../utils/stringToColor";
+import BackContinueButtonGroup from "./BackContinueButtonGroup";
+import {
+  stylesAddButtonModalCentral,
+  stylesAddButtonModalLateralLeft,
+  stylesAddButtonModalLateralRight,
+  stylesDeleteButtonModal,
+} from "./styles/stylesButton";
+import TablePreview from "./TablePreview";
 
 interface IPropEditSectionModal {
-	toc: Toc
-	isEditSectionModalOpen: boolean
-	hideEditSectionModal: () => void
-	currentEditableSection: Section
-	setCurrentEditableSection: React.Dispatch<React.SetStateAction<Section>>
-	setIsSectionEdited: React.Dispatch<React.SetStateAction<boolean>>
+  toc: Toc;
+  isEditSectionModalOpen: boolean;
+  hideEditSectionModal: () => void;
+  currentEditableSection: Section;
+  setCurrentEditableSection: React.Dispatch<React.SetStateAction<Section>>;
+  setIsSectionEdited: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
+  const [currentSubsectionNumber, setCurrentSubsection] =
+    React.useState<number>(0);
+  const [modalAnimation, setModalAnimation] = React.useState<string>(
+    MotionAnimations.slideRightIn
+  );
+  const _hideEditSectionModal = props.hideEditSectionModal;
+  React.useEffect(
+    () => setCurrentSubsection(0),
+    [props.isEditSectionModalOpen]
+  );
 
-	const [currentSubsectionNumber, setCurrentSubsection] = React.useState<number>(0)
-	const [modalAnimation, setModalAnimation] = React.useState<string>(MotionAnimations.slideRightIn)
-	const _hideEditSectionModal = props.hideEditSectionModal
-	React.useEffect(() => setCurrentSubsection(0), [props.isEditSectionModalOpen])
+  React.useEffect(() => {
+    if (modalAnimation != "") {
+      setTimeout(() => {
+        setModalAnimation("");
+      }, 300);
+    }
+  }, [modalAnimation]);
 
-	React.useEffect(() => {
-		if (modalAnimation != '') {
-			setTimeout(() => {
-				setModalAnimation('')
-			}, 300);
-		}
-	}, [modalAnimation])
+  return (
+    <>
+      <Modal
+        titleAriaId="edit"
+        isOpen={props.isEditSectionModalOpen}
+        onDismiss={props.hideEditSectionModal}
+        isBlocking={false}
+        styles={{
+          main: {
+            margin: 0,
+            padding: 0,
+            height: "100%",
+            width: "100%",
+            position: "relative",
+            backgroundColor: "transparent",
+            boxShadow: Depths.depth0,
+          },
+        }}
+      >
+        <Formik
+          initialValues={{
+            _section: props.currentEditableSection,
+          }}
+          onSubmit={(values, formikHelpers): void | Promise<any> => {
+            props.setCurrentEditableSection(values._section);
 
-	return <>
-		<Modal
-			titleAriaId="edit"
-			isOpen={props.isEditSectionModalOpen}
-			onDismiss={props.hideEditSectionModal}
-			isBlocking={false}
-			styles={{ main: { margin: 0, padding: 0, height: '100%', width: '100%', position: 'relative', backgroundColor: 'transparent', boxShadow: Depths.depth0 } }}
-		>
-			<Formik
-				initialValues={{
-					_section: props.currentEditableSection,
+            props.setIsSectionEdited(true);
+            props.hideEditSectionModal();
+          }}
+        >
+          {({ values, ...formikProps }) => (
+            <>
+              <Form>
+                <FieldArray
+                  name="_section.subsections"
+                  render={(arrayHelpers) => (
+                    <>
+                      <div
+                        style={{
+                          position: "absolute",
+                          width: "100%",
+                          height: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Stack
+                          styles={{
+                            root: {
+                              position: "relative",
+                              minWidth: "40vw",
+                              minHeight: "30vh",
+                              backgroundColor: "gray",
+                            },
+                          }}
+                        >
+                          {values?._section?.subsections?.length != 0 && (
+                            <>
+                              <IconButton
+                                key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsectionNumber].subsectionUuid}_delete`}
+                                styles={{ ...stylesDeleteButtonModal }}
+                                iconProps={{ iconName: "delete" }}
+                                onClick={() => {
+                                  setModalAnimation(
+                                    MotionAnimations.slideDownOut
+                                  );
+                                  console.log(currentSubsectionNumber);
+                                  arrayHelpers.remove(currentSubsectionNumber);
+                                  if (
+                                    currentSubsectionNumber >=
+                                      values?._section?.subsections?.length -
+                                        1 &&
+                                    !(currentSubsectionNumber == 0)
+                                  )
+                                    setCurrentSubsection(
+                                      (previous) => previous - 1
+                                    );
+                                }}
+                              />
+                              <IconButton
+                                key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsectionNumber].subsectionUuid}_add_left`}
+                                styles={{ ...stylesAddButtonModalLateralLeft }}
+                                iconProps={{ iconName: "add" }}
+                                onClick={() => {
+                                  arrayHelpers.insert(currentSubsectionNumber, {
+                                    ...values._section.subsections[
+                                      currentSubsectionNumber
+                                    ],
+                                    subsectionUuid: uuidv4(),
+                                  });
+                                  setModalAnimation(
+                                    MotionAnimations.slideRightIn
+                                  );
+                                }}
+                              />
+                              <IconButton
+                                key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsectionNumber].subsectionUuid}_add_right`}
+                                styles={{ ...stylesAddButtonModalLateralRight }}
+                                iconProps={{ iconName: "add" }}
+                                onClick={() => {
+                                  arrayHelpers.insert(
+                                    currentSubsectionNumber + 1,
+                                    {
+                                      ...values._section.subsections[
+                                        currentSubsectionNumber
+                                      ],
+                                      subsectionUuid: uuidv4(),
+                                    }
+                                  );
+                                  setCurrentSubsection(
+                                    (previous) => previous + 1
+                                  );
+                                  setModalAnimation(
+                                    MotionAnimations.slideLeftIn
+                                  );
+                                }}
+                              />
+                            </>
+                          )}
+                          <Stack
+                            styles={{
+                              root: {
+                                position: "relative",
+                                minWidth: "40vw",
+                                minHeight: "30vh",
+                                backgroundColor: "white",
+                                padding: "1vh",
+                                boxShadow: Depths.depth64,
+                                animation: modalAnimation,
+                              },
+                            }}
+                          >
+                            {values?._section?.subsections?.length == 0 && (
+                              <IconButton
+                                key={`modal_stack_subsec_input_add_central`}
+                                styles={{ ...stylesAddButtonModalCentral }}
+                                iconProps={{ iconName: "add" }}
+                                onClick={() => {
+                                  setCurrentSubsection(0);
+                                  arrayHelpers.push(new Subsection());
+                                  setModalAnimation(MotionAnimations.slideUpIn);
+                                }}
+                              />
+                            )}
+                            {values?._section?.subsections?.length > 0 && (
+                              <>
+                                <div
+                                  style={{
+                                    width: "100%",
+                                    height: "0.5vh",
+                                    backgroundColor: stringToColor(
+                                      values._section.subsections[
+                                        currentSubsectionNumber
+                                      ].subsectionUuid
+                                    ),
+                                  }}
+                                ></div>
 
-				}}
-				onSubmit={(values, formikHelpers): void | Promise<any> => {
-					props.setCurrentEditableSection(values._section)
+                                <Pagination
+                                  styles={{ root: { margin: "auto" } }}
+                                  pageCount={values._section.subsections.length}
+                                  selectedPageIndex={currentSubsectionNumber}
+                                  onPageChange={(subsection) =>
+                                    setCurrentSubsection(subsection)
+                                  }
+                                />
 
-					props.setIsSectionEdited(true)
-					props.hideEditSectionModal()
-				}}>
-				{({ values, ...formikProps }) => <>
-					<Form>
+                                <Stack
+                                  tokens={{ childrenGap: 10 }}
+                                  styles={{ root: { marginBottom: "10vh" } }}
+                                >
+                                  <TextField
+                                    placeholder="Шифр конкретного подраздела"
+                                    name={`_section.subsections[${currentSubsectionNumber}].subsectionStamp`}
+                                    key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber].subsectionUuid}_subsectionStamp`}
+                                    value={
+                                      values._section.subsections[
+                                        currentSubsectionNumber
+                                      ]?.subsectionStamp
+                                    }
+                                    styles={{ root: { width: "100%" } }}
+                                    onChange={formikProps.handleChange}
+                                  />
 
-						<FieldArray
-							name='_section.subsections'
-							render={arrayHelpers =>
-								<>
-									<div style={{ position: 'absolute', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-										<Stack styles={{ root: { position: 'relative', minWidth: '40vw', minHeight: '30vh', backgroundColor: 'gray' } }}>
-											{values?._section?.subsections?.length != 0 &&
-												<>
-													<IconButton key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsectionNumber].subsectionUuid}_delete`}
-														styles={{ ...stylesDeleteButtonModal }} iconProps={{ iconName: "delete", }}
-														onClick={() => {
-															setModalAnimation(MotionAnimations.slideDownOut)
-															console.log(currentSubsectionNumber,);
-															arrayHelpers.remove(currentSubsectionNumber)
-															if ((currentSubsectionNumber >= values?._section?.subsections?.length - 1) && !(currentSubsectionNumber == 0)) setCurrentSubsection((previous) => previous - 1)
-														}} />
-													<IconButton key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsectionNumber].subsectionUuid}_add_left`}
-														styles={{ ...stylesAddButtonModalLateralLeft }} iconProps={{ iconName: "add", }}
-														onClick={() => {
-															arrayHelpers.insert(currentSubsectionNumber, { ...values._section.subsections[currentSubsectionNumber], subsectionUuid: uuidv4() })
-															setModalAnimation(MotionAnimations.slideRightIn)
-														}} />
-													<IconButton key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsectionNumber].subsectionUuid}_add_right`}
-														styles={{ ...stylesAddButtonModalLateralRight }} iconProps={{ iconName: "add", }}
-														onClick={() => {
-															arrayHelpers.insert(currentSubsectionNumber + 1, { ...values._section.subsections[currentSubsectionNumber], subsectionUuid: uuidv4() })
-															setCurrentSubsection((previous) => previous + 1)
-															setModalAnimation(MotionAnimations.slideLeftIn)
-														}} />
-												</>
-											}
-											<Stack styles={{ root: { position: 'relative', minWidth: '40vw', minHeight: '30vh', backgroundColor: 'white', padding: '1vh', boxShadow: Depths.depth64, animation: modalAnimation } }}>
-												{values?._section?.subsections?.length == 0 &&
-													<IconButton key={`modal_stack_subsec_input_add_central`}
-														styles={{ ...stylesAddButtonModalCentral }} iconProps={{ iconName: "add", }}
-														onClick={() => {
-															setCurrentSubsection(0);
-															arrayHelpers.push(new Subsection())
-															setModalAnimation(MotionAnimations.slideUpIn)
-														}} />
-												}
-												{values?._section?.subsections?.length > 0 &&
-													<>
+                                  <TextField
+                                    placeholder="Подраздел #"
+                                    name={`_section.subsections[${currentSubsectionNumber}].subsection`}
+                                    key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_#`}
+                                    value={
+                                      values._section.subsections[
+                                        currentSubsectionNumber
+                                      ]?.subsection
+                                    }
+                                    styles={{ root: { width: "100%" } }}
+                                    onChange={formikProps.handleChange}
+                                  />
 
+                                  <TextField
+                                    placeholder="Наименование подраздела"
+                                    name={`_section.subsections[${currentSubsectionNumber}].subsectionTitle`}
+                                    key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_subsectionTitle`}
+                                    value={
+                                      values._section.subsections[
+                                        currentSubsectionNumber
+                                      ]?.subsectionTitle
+                                    }
+                                    multiline
+                                    rows={1}
+                                    autoAdjustHeight
+                                    resizable={false}
+                                    styles={{ root: { width: "100%" } }}
+                                    onChange={formikProps.handleChange}
+                                  />
 
-														<div style={{ width: '100%', height: '0.5vh', backgroundColor: stringToColor(values._section.subsections[currentSubsectionNumber].subsectionUuid) }}>
+                                  <TextField
+                                    placeholder="Часть #"
+                                    name={`_section.subsections[${currentSubsectionNumber}].chapter`}
+                                    key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_chapter`}
+                                    value={
+                                      values._section.subsections[
+                                        currentSubsectionNumber
+                                      ]?.chapter
+                                    }
+                                    styles={{ root: { width: "100%" } }}
+                                    onChange={formikProps.handleChange}
+                                  />
 
-														</div>
+                                  <TextField
+                                    placeholder="Наименование части"
+                                    name={`_section.subsections[${currentSubsectionNumber}].chapterTitle`}
+                                    key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_chapterTitle`}
+                                    value={
+                                      values._section.subsections[
+                                        currentSubsectionNumber
+                                      ]?.chapterTitle
+                                    }
+                                    multiline
+                                    rows={1}
+                                    autoAdjustHeight
+                                    resizable={false}
+                                    styles={{ root: { width: "100%" } }}
+                                    onChange={formikProps.handleChange}
+                                  />
 
-														<Pagination styles={{ root: { margin: 'auto' } }} pageCount={values._section.subsections.length}
-															selectedPageIndex={currentSubsectionNumber}
-															onPageChange={(subsection) => setCurrentSubsection(subsection)}
-														/>
+                                  <TextField
+                                    placeholder="Книга #"
+                                    name={`_section.subsections[${currentSubsectionNumber}].book`}
+                                    key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_book`}
+                                    value={
+                                      values._section.subsections[
+                                        currentSubsectionNumber
+                                      ]?.book
+                                    }
+                                    styles={{ root: { width: "100%" } }}
+                                    onChange={formikProps.handleChange}
+                                  />
 
+                                  <TextField
+                                    placeholder="Название книги"
+                                    name={`_section.subsections[${currentSubsectionNumber}].bookTitle`}
+                                    key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_bookTitle`}
+                                    value={
+                                      values._section.subsections[
+                                        currentSubsectionNumber
+                                      ]?.bookTitle
+                                    }
+                                    multiline
+                                    rows={1}
+                                    autoAdjustHeight
+                                    resizable={false}
+                                    styles={{ root: { width: "100%" } }}
+                                    onChange={formikProps.handleChange}
+                                  />
 
-														<Stack tokens={{ childrenGap: 10 }} styles={{ root: { marginBottom: '10vh' } }} >
-															<TextField placeholder="Шифр конкретного подраздела" name={`_section.subsections[${currentSubsectionNumber}].subsectionStamp`}
-																key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber].subsectionUuid}_subsectionStamp`}
-																value={values._section.subsections[currentSubsectionNumber]?.subsectionStamp}
+                                  <TextField
+                                    placeholder="Корпус"
+                                    name={`_section.subsections[${currentSubsectionNumber}].block`}
+                                    key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_block`}
+                                    value={
+                                      values._section.subsections[
+                                        currentSubsectionNumber
+                                      ]?.block
+                                    } //наверное должно набираться *тэгами*
+                                    styles={{ root: { width: "100%" } }}
+                                    onChange={formikProps.handleChange}
+                                  />
 
-																styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
+                                  <TextField
+                                    placeholder="Подкорпус"
+                                    name={`_section.subsections[${currentSubsectionNumber}].subblock`}
+                                    key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_subblock`}
+                                    value={
+                                      values._section.subsections[
+                                        currentSubsectionNumber
+                                      ]?.subblock
+                                    }
+                                    styles={{ root: { width: "100%" } }}
+                                    onChange={formikProps.handleChange}
+                                  />
 
-															<TextField placeholder="Подраздел #" name={`_section.subsections[${currentSubsectionNumber}].subsection`}
-																key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_#`}
-																value={values._section.subsections[currentSubsectionNumber]?.subsection}
+                                  <TablePreview
+                                    toc={props.toc}
+                                    section={values._section}
+                                    currentSubsectionNumber={
+                                      currentSubsectionNumber
+                                    }
+                                  />
+                                </Stack>
+                              </>
+                            )}
 
-																styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
+                            <BackContinueButtonGroup
+                              onClickBack={_hideEditSectionModal}
+                              onClickContinue={() => formikProps.handleSubmit()}
+                            />
+                          </Stack>
+                        </Stack>
+                      </div>
+                    </>
+                  )}
+                />
+              </Form>
+            </>
+          )}
+        </Formik>
+      </Modal>
+    </>
+  );
+};
 
-															<TextField placeholder="Наименование подраздела" name={`_section.subsections[${currentSubsectionNumber}].subsectionTitle`}
-																key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_subsectionTitle`}
-																value={values._section.subsections[currentSubsectionNumber]?.subsectionTitle}
-
-																multiline rows={1} autoAdjustHeight resizable={false} styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
-
-															<TextField placeholder="Часть #" name={`_section.subsections[${currentSubsectionNumber}].chapter`}
-																key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_chapter`}
-																value={values._section.subsections[currentSubsectionNumber]?.chapter}
-
-																styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
-
-															<TextField placeholder="Наименование части" name={`_section.subsections[${currentSubsectionNumber}].chapterTitle`}
-																key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_chapterTitle`}
-																value={values._section.subsections[currentSubsectionNumber]?.chapterTitle}
-
-																multiline rows={1} autoAdjustHeight resizable={false} styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
-
-															<TextField placeholder="Книга #" name={`_section.subsections[${currentSubsectionNumber}].book`}
-																key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_book`}
-																value={values._section.subsections[currentSubsectionNumber]?.book}
-
-																styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
-
-															<TextField placeholder="Название книги" name={`_section.subsections[${currentSubsectionNumber}].bookTitle`}
-																key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_bookTitle`}
-																value={values._section.subsections[currentSubsectionNumber]?.bookTitle}
-
-																multiline rows={1} autoAdjustHeight resizable={false} styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
-
-															<TextField placeholder="Корпус" name={`_section.subsections[${currentSubsectionNumber}].block`}
-																key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_block`}
-																value={values._section.subsections[currentSubsectionNumber]?.block} //наверное должно набираться *тэгами*
-
-																styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
-
-															<TextField placeholder="Подкорпус" name={`_section.subsections[${currentSubsectionNumber}].subblock`}
-																key={`modal_stack_subsec_input_${values._section.subsections[currentSubsectionNumber]?.subsectionUuid}_subblock`}
-																value={values._section.subsections[currentSubsectionNumber]?.subblock}
-
-																styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
-
-															<TablePreview toc={props.toc} section={values._section} currentSubsectionNumber={currentSubsectionNumber} />
-														</Stack>
-
-
-													</>}
-
-												<BackContinueButtonGroup onClickBack={_hideEditSectionModal}
-													onClickContinue={() => formikProps.handleSubmit()} />
-
-											</Stack>
-										</Stack>
-									</div>
-								</>} />
-					</Form>
-				</>}
-
-			</Formik>
-		</Modal>
-	</>
-}
-
-export default EditSectionModal
+export default EditSectionModal;

@@ -1,353 +1,603 @@
-import { Depths, Dropdown, IComboBox, IComboBoxOption, IconButton, MessageBar, MessageBarType, PrimaryButton, Stack, TextField, Toggle } from '@fluentui/react';
-import { useBoolean } from '@fluentui/react-hooks';
-import { WebPartContext } from '@microsoft/sp-webpart-base';
-import { FieldArray, Form, Formik, FormikHelpers } from 'formik';
-import * as React from 'react';
-import * as yup from 'yup';
-import { Section, Subsection, Toc } from '../model/ToC';
-import docGenerator from '../utils/docGenerator';
-import fileSaver from '../utils/fileSaver';
-import EditSectionModal from './EditSectionModal';
-import GenerateSectionsModal from './GenerateSectionsModal';
-import { stylesAddButtonBig, stylesAddButtonLateral, stylesDeleteButtonLateral, stylesEditButtonLateral } from './styles/stylesButton';
+import {
+  Depths,
+  Dropdown,
+  IComboBox,
+  IComboBoxOption,
+  IconButton,
+  MessageBar,
+  MessageBarType,
+  PrimaryButton,
+  Stack,
+  TextField,
+  Toggle,
+} from "@fluentui/react";
+import { useBoolean } from "@fluentui/react-hooks";
+import { WebPartContext } from "@microsoft/sp-webpart-base";
+import { FieldArray, Form, Formik, FormikHelpers } from "formik";
+import * as React from "react";
+import * as yup from "yup";
+import { Section, Subsection, Toc } from "../model/ToC";
+import docGenerator from "../utils/docGenerator";
+import fileSaver from "../utils/fileSaver";
+import EditSectionModal from "./EditSectionModal";
+import GenerateSectionsModal from "./GenerateSectionsModal";
+import {
+  stylesAddButtonBig,
+  stylesAddButtonLateral,
+  stylesDeleteButtonLateral,
+  stylesEditButtonLateral,
+} from "./styles/stylesButton";
 
 interface ITocFormProps {
-	toc: Toc
-	setToc: React.Dispatch<React.SetStateAction<Toc>>
-	existingFiles: IComboBoxOption[]
-	tocFolder: string
-	docxFolder: string
-	context: WebPartContext
-	fetchExistingFiles: () => void
+  toc: Toc;
+  setToc: React.Dispatch<React.SetStateAction<Toc>>;
+  existingFiles: IComboBoxOption[];
+  tocFolder: string;
+  docxFolder: string;
+  context: WebPartContext;
+  fetchExistingFiles: () => void;
 }
-
 
 interface formikValues {
-	_toc: Toc
-	operationStatus: string
+  _toc: Toc;
+  operationStatus: string;
 }
-
 
 function fillEmptySectionsWithSubsections(_toc: Toc): Toc {
-	_toc.sections = _toc.sections
-		.map((section) => section.subsections.length > 0 ? section : { ...section, subsections: [new Subsection] })
-	return _toc
+  _toc.sections = _toc.sections.map((section) =>
+    section.subsections.length > 0
+      ? section
+      : { ...section, subsections: [new Subsection()] }
+  );
+  return _toc;
 }
 
-
 const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
-	const [isEditSectionModalOpen, { setTrue: showEditSectionModal, setFalse: hideEditSectionModal }] = useBoolean(false);
+  const [
+    isEditSectionModalOpen,
+    { setTrue: showEditSectionModal, setFalse: hideEditSectionModal },
+  ] = useBoolean(false);
 
-	const [isNewFile, { toggle: toggleIsNewFile }] = useBoolean(true);
-	const [currentFileName, setCurrentFileName] = React.useState<string>('');
-	const [fileNameError, setFileNameError] = React.useState('')
+  const [isNewFile, { toggle: toggleIsNewFile }] = useBoolean(true);
+  const [currentFileName, setCurrentFileName] = React.useState<string>("");
+  const [fileNameError, setFileNameError] = React.useState("");
 
-	const [currentEditableSection, setCurrentEditableSection] = React.useState<Section>(null);
-	const [currentEditableSectionNumber, setCurrentEditableSectionNumber] = React.useState<number>(null);
-	const [isSectionEdited, setIsSectionEdited] = React.useState<boolean>(false);
+  const [currentEditableSection, setCurrentEditableSection] =
+    React.useState<Section>(null);
+  const [currentEditableSectionNumber, setCurrentEditableSectionNumber] =
+    React.useState<number>(null);
+  const [isSectionEdited, setIsSectionEdited] = React.useState<boolean>(false);
 
-	React.useEffect(() => {
-		props.fetchExistingFiles()
-	}, [currentFileName])
+  React.useEffect(() => {
+    props.fetchExistingFiles();
+  }, [currentFileName]);
 
-	const replacer = React.useRef<(index: number, value: any) => void>(null)
+  const replacer = React.useRef<(index: number, value: any) => void>(null);
 
+  const validateCurrentFileName = (newText: string) => {
+    setFileNameError("");
 
+    if (!props.existingFiles) {
+      return;
+    }
 
-	const validateCurrentFileName = (newText: string) => {
-		setFileNameError('')
+    if (
+      isNewFile &&
+      props.existingFiles?.filter((file) => file.text == newText)?.length != 0
+    ) {
+      setFileNameError("Это имя занято");
+      return;
+    }
+    if (newText.length == 0) {
+      setFileNameError("Поле обязательно для заполнения");
+    }
+  };
+  const onNewFileNameChange = (
+    e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>,
+    newText: string
+  ): void => {
+    setCurrentFileName(newText);
+    validateCurrentFileName(newText);
+  };
+  const onExistingFileNameChange = (
+    e: React.FormEvent<IComboBox | HTMLOptionElement | HTMLDivElement>,
+    option: IComboBoxOption
+  ): void => {
+    setCurrentFileName(option.text);
+  };
 
-		if (!props.existingFiles) {
-			return
-		}
+  const onNewFileToggleChange = () => {
+    isNewFile
+      ? setCurrentFileName(props.existingFiles[0].text)
+      : setCurrentFileName("");
+    toggleIsNewFile();
+  };
 
-		if (isNewFile && props.existingFiles?.filter((file) => file.text == newText)?.length != 0) {
-			setFileNameError('Это имя занято')
-			return
-		}
-		if (newText.length == 0) {
-			setFileNameError('Поле обязательно для заполнения')
-		}
-	}
-	const onNewFileNameChange = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newText: string): void => {
-		setCurrentFileName(newText)
-		validateCurrentFileName(newText)
-	}
-	const onExistingFileNameChange = (e: React.FormEvent<IComboBox | HTMLOptionElement | HTMLDivElement>, option: IComboBoxOption): void => {
-		setCurrentFileName(option.text)
-	}
+  React.useEffect(() => {
+    if (isSectionEdited) {
+      replacer.current(currentEditableSectionNumber, currentEditableSection);
+      setIsSectionEdited(false);
+    }
+  }, [isSectionEdited]);
 
+  return (
+    <>
+      <Formik
+        initialValues={{
+          _toc: props.toc,
+          operationStatus: "",
+        }}
+        validationSchema={yup.object().shape({
+          _toc: yup.object().shape({
+            buildingName: yup
+              .string()
+              .required("Поле обязательно для заполнения"),
+            address: yup.string().required("Поле обязательно для заполнения"),
+            projectCode: yup
+              .string()
+              .required("Поле обязательно для заполнения"),
+            projectStage: yup
+              .string()
+              .required("Поле обязательно для заполнения"),
+            gipName: yup
+              .string()
+              .required("Поле обязательно для заполнения")
+              .matches(
+                /^[а-яА-Я-]+$/,
+                "Поле может содержать кириллические символы"
+              ),
+            gapName: yup
+              .string()
+              .required("Поле обязательно для заполнения")
+              .matches(
+                /^[а-яА-Я-]+$/,
+                "Поле может содержать кириллические символы"
+              ),
+            nContr: yup
+              .string()
+              .required("Поле обязательно для заполнения")
+              .matches(
+                /^[а-яА-Я-]+$/,
+                "Поле может содержать кириллические символы"
+              ),
+            sections: yup.array().of(
+              yup.object().shape({
+                section: yup
+                  .string()
+                  .required("Поле обязательно для заполнения")
+                  .matches(
+                    /^(\d+\.?)*\d$/,
+                    "Поле может содержать числа и точки между ними"
+                  ),
+                sectionTitle: yup
+                  .string()
+                  .required("Поле обязательно для заполнения"),
+                sectionStamp: yup.string(),
+                assignedTo: yup
+                  .string()
+                  .required("Поле обязательно для заполнения")
+                  .matches(
+                    /^[а-яА-Я-]+$/,
+                    "Поле может содержать кириллические символы"
+                  ),
+                subsections: yup.array().of(
+                  yup.object().shape({
+                    subsection: yup
+                      .string()
+                      .matches(/^(\d*\.)*$/, "Must contain digits and dots"),
+                    subsectionTitle: yup.string(),
+                    subsectionStamp: yup.string(),
+                    chapter: yup
+                      .string()
+                      .matches(/(\d*\.)*/, "Must contain digits and dots"),
+                    chapterTitle: yup.string(),
+                    book: yup
+                      .string()
+                      .matches(/(\d*\.)*/, "Must contain digits and dots"),
+                    bookTitle: yup.string(),
+                    block: yup
+                      .string()
+                      .matches(/(\d*\.)*/, "Must contain digits and dots"),
+                    subblock: yup
+                      .string()
+                      .matches(/(\d*\.)*/, "Must contain digits and dots"),
+                  })
+                ),
+              })
+            ),
+          }),
+        })}
+        enableReinitialize
+        onSubmit={(
+          values: formikValues,
+          formikHelpers: FormikHelpers<formikValues>
+        ): void | Promise<any> => {
+          validateCurrentFileName(currentFileName);
+          if (fileNameError === "" && currentFileName !== "") {
+            return docGenerator(
+              fillEmptySectionsWithSubsections(values._toc),
+              fileSaver,
+              props.tocFolder,
+              props.docxFolder,
+              currentFileName,
+              props.context,
+              (message: string) =>
+                formikHelpers.setFieldValue("operationStatus", message)
+            );
+          }
+        }}
+      >
+        {({ values, ...formikProps }) => (
+          <>
+            <Form>
+              <h2>Данные проекта</h2>
+              <Stack tokens={{ childrenGap: 10 }}>
+                <TextField
+                  placeholder="Название объекта"
+                  name={`_toc.buildingName`}
+                  value={values._toc.buildingName}
+                  errorMessage={
+                    formikProps.touched?._toc?.buildingName
+                      ? formikProps.errors?._toc?.buildingName
+                      : ""
+                  }
+                  onBlur={formikProps.handleBlur}
+                  onChange={formikProps.handleChange}
+                  multiline
+                  autoAdjustHeight
+                  resizable={false}
+                />
+                <TextField
+                  placeholder="Адрес"
+                  name={`_toc.address`}
+                  value={values._toc.address}
+                  errorMessage={
+                    formikProps.touched?._toc?.address
+                      ? formikProps.errors?._toc?.address
+                      : ""
+                  }
+                  onBlur={formikProps.handleBlur}
+                  onChange={formikProps.handleChange}
+                  multiline
+                  autoAdjustHeight
+                  resizable={false}
+                />
+                <Stack tokens={{ childrenGap: 10 }} horizontal>
+                  <TextField
+                    placeholder="Код проекта"
+                    name={`_toc.projectCode`}
+                    value={values._toc.projectCode}
+                    errorMessage={
+                      formikProps.touched?._toc?.projectCode
+                        ? formikProps.errors?._toc?.projectCode
+                        : ""
+                    }
+                    onBlur={formikProps.handleBlur}
+                    onChange={formikProps.handleChange}
+                    styles={{ root: { width: "100%" } }}
+                  />
+                  <TextField
+                    placeholder="Стадия проекта"
+                    name={`_toc.projectStage`}
+                    value={values._toc.projectStage}
+                    errorMessage={
+                      formikProps.touched?._toc?.projectStage
+                        ? formikProps.errors?._toc?.projectStage
+                        : ""
+                    }
+                    onBlur={formikProps.handleBlur}
+                    onChange={formikProps.handleChange}
+                    styles={{ root: { width: "100%" } }}
+                  />
+                </Stack>
+                <TextField
+                  placeholder="ГИП"
+                  name={`_toc.gipName`}
+                  value={values._toc.gipName}
+                  errorMessage={
+                    formikProps.touched?._toc?.gipName
+                      ? formikProps.errors?._toc?.gipName
+                      : ""
+                  }
+                  onBlur={formikProps.handleBlur}
+                  onChange={formikProps.handleChange}
+                />
+                <TextField
+                  placeholder="ГАП"
+                  name={`_toc.gapName`}
+                  value={values._toc.gapName}
+                  errorMessage={
+                    formikProps.touched?._toc?.gapName
+                      ? formikProps.errors?._toc?.gapName
+                      : ""
+                  }
+                  onBlur={formikProps.handleBlur}
+                  onChange={formikProps.handleChange}
+                />
+                <TextField
+                  placeholder="Н. Контр"
+                  name={`_toc.nContr`}
+                  value={values._toc.nContr}
+                  errorMessage={
+                    formikProps.touched?._toc?.nContr
+                      ? formikProps.errors?._toc?.nContr
+                      : ""
+                  }
+                  onBlur={formikProps.handleBlur}
+                  onChange={formikProps.handleChange}
+                />
+              </Stack>
 
-	const onNewFileToggleChange = () => {
-		isNewFile ? setCurrentFileName(props.existingFiles[0].text) : setCurrentFileName('')
-		toggleIsNewFile()
-	}
+              <h2>Разделы</h2>
 
+              <GenerateSectionsModal
+                setTocSections={(sections: Section[]) => {
+                  formikProps.setFieldValue("_toc.sections", sections);
+                }}
+              />
+              <FieldArray
+                name="_toc.sections"
+                render={(arrayHelpers) => (
+                  <>
+                    <EditSectionModal
+                      toc={values._toc}
+                      isEditSectionModalOpen={isEditSectionModalOpen}
+                      hideEditSectionModal={hideEditSectionModal}
+                      currentEditableSection={currentEditableSection}
+                      setIsSectionEdited={setIsSectionEdited}
+                      setCurrentEditableSection={setCurrentEditableSection}
+                    />
+                    {values._toc?.sections?.length > 0 &&
+                      values._toc?.sections?.map(
+                        (section, sectionId, sections) => (
+                          <>
+                            <Stack
+                              key={`stack_sec_add_top`}
+                              tokens={{ padding: "0" }}
+                              style={{
+                                boxShadow: Depths.depth8,
+                                display: "flow",
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              {sectionId == 0 && (
+                                <IconButton
+                                  styles={stylesAddButtonBig}
+                                  iconProps={{ iconName: "add" }}
+                                  onClick={() =>
+                                    arrayHelpers.insert(
+                                      sectionId,
+                                      new Section()
+                                    )
+                                  }
+                                />
+                              )}
+                            </Stack>
+                            <div style={{ position: "relative" }}>
+                              <Stack
+                                key={`stack_sec_input_${sections[sectionId].sectionUuid}`}
+                                tokens={{ padding: "2vh", childrenGap: 10 }}
+                                style={{
+                                  boxShadow: Depths.depth8,
+                                  display: "flow",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                {sectionId > 0 && (
+                                  <IconButton
+                                    key={`stack_sec_input_${sections[sectionId].sectionUuid}_add`}
+                                    styles={{ ...stylesAddButtonLateral }}
+                                    iconProps={{ iconName: "add" }}
+                                    onClick={() =>
+                                      arrayHelpers.insert(
+                                        sectionId,
+                                        new Section()
+                                      )
+                                    }
+                                  />
+                                )}
+                                <IconButton
+                                  key={`stack_sec_input_${sections[sectionId].sectionUuid}_edit`}
+                                  styles={stylesEditButtonLateral}
+                                  iconProps={{ iconName: "edit" }}
+                                  onClick={() => {
+                                    setCurrentEditableSection(section);
+                                    setCurrentEditableSectionNumber(sectionId);
+                                    replacer.current = arrayHelpers.replace;
+                                    if (section.subsections.length == 0) {
+                                      const _section = section;
+                                      _section.subsections.push(
+                                        new Subsection()
+                                      );
+                                      arrayHelpers.replace(sectionId, _section);
+                                    }
+                                    showEditSectionModal();
+                                  }}
+                                />
+                                <IconButton
+                                  key={`stack_sec_input_${sections[sectionId].sectionUuid}_delete`}
+                                  style={{}}
+                                  styles={stylesDeleteButtonLateral}
+                                  iconProps={{ iconName: "delete" }}
+                                  onClick={() => arrayHelpers.remove(sectionId)}
+                                />
 
-	React.useEffect(
-		() => {
-			if (isSectionEdited) {
-				replacer.current(currentEditableSectionNumber, currentEditableSection); setIsSectionEdited(false)
-			}
-		}
-		, [isSectionEdited]
-	)
+                                <Stack
+                                  tokens={{ childrenGap: 10 }}
+                                  horizontal
+                                  styles={{ root: { width: "100%" } }}
+                                >
+                                  <TextField
+                                    placeholder="#"
+                                    name={`_toc.sections.${sectionId}.section`}
+                                    value={section.section}
+                                    errorMessage={
+                                      formikProps.touched?._toc?.sections &&
+                                      formikProps.touched?._toc?.sections[
+                                        sectionId
+                                      ]?.section
+                                        ? (
+                                            formikProps.errors?._toc?.sections[
+                                              sectionId
+                                            ] as Section
+                                          )?.section
+                                        : ""
+                                    }
+                                    key={`stack_sec_input_${sections[sectionId].sectionUuid}_#`}
+                                    onBlur={formikProps.handleBlur}
+                                    onChange={formikProps.handleChange}
+                                  />
+                                  <TextField
+                                    placeholder="Шифр раздела"
+                                    name={`_toc.sections[${sectionId}].sectionStamp`}
+                                    value={section.sectionStamp}
+                                    key={`stack_sec_input_${sections[sectionId].sectionUuid}_sectionStamp`}
+                                    styles={{ root: { width: "100%" } }}
+                                    onChange={formikProps.handleChange}
+                                  />
+                                </Stack>
 
-	return (
-		<>
-			<Formik
-				initialValues={{
-					_toc: props.toc,
-					operationStatus: ''
-				}}
-				validationSchema={yup.object().shape({
-					_toc: yup.object().shape({
-						buildingName: yup.string().required('Поле обязательно для заполнения'),
-						address: yup.string().required('Поле обязательно для заполнения'),
-						projectCode: yup.string().required('Поле обязательно для заполнения'),
-						projectStage: yup.string().required('Поле обязательно для заполнения'),
-						gipName: yup.string().required('Поле обязательно для заполнения').matches(/^[а-яА-Я-]+$/, "Поле может содержать кириллические символы"),
-						gapName: yup.string().required('Поле обязательно для заполнения').matches(/^[а-яА-Я-]+$/, "Поле может содержать кириллические символы"),
-						nContr: yup.string().required('Поле обязательно для заполнения').matches(/^[а-яА-Я-]+$/, "Поле может содержать кириллические символы"),
-						sections: yup.array().of(yup.object().shape({
-							section: yup.string().required('Поле обязательно для заполнения').matches(/^(\d+\.?)*\d$/, 'Поле может содержать числа и точки между ними'),
-							sectionTitle: yup.string().required('Поле обязательно для заполнения'),
-							sectionStamp: yup.string(),
-							assignedTo: yup.string().required('Поле обязательно для заполнения').matches(/^[а-яА-Я-]+$/, "Поле может содержать кириллические символы"),
-							subsections: yup.array().of(yup.object().shape({
-								subsection: yup.string().matches(/^(\d*\.)*$/, 'Must contain digits and dots'),
-								subsectionTitle: yup.string(),
-								subsectionStamp: yup.string(),
-								chapter: yup.string().matches(/(\d*\.)*/, 'Must contain digits and dots'),
-								chapterTitle: yup.string(),
-								book: yup.string().matches(/(\d*\.)*/, 'Must contain digits and dots'),
-								bookTitle: yup.string(),
-								block: yup.string().matches(/(\d*\.)*/, 'Must contain digits and dots'),
-								subblock: yup.string().matches(/(\d*\.)*/, 'Must contain digits and dots'),
-							}))
-						}))
-					}),
-				})}
-				enableReinitialize
-				onSubmit={(values: formikValues, formikHelpers: FormikHelpers<formikValues>): void | Promise<any> => {
-					validateCurrentFileName(currentFileName)
-					if (fileNameError === '' && currentFileName !== '') {
-						return docGenerator(
-							fillEmptySectionsWithSubsections(values._toc),
-							fileSaver,
-							props.tocFolder, props.docxFolder, currentFileName,
-							props.context,
-							(message: string) => formikHelpers.setFieldValue('operationStatus', message))
-					}
-				}}
-			>
-				{({ values, ...formikProps }) => <>
-					<Form>
-						<h2>Данные проекта</h2>
-						<Stack tokens={{ childrenGap: 10 }}>
-							<TextField placeholder="Название объекта" name={`_toc.buildingName`}
-								value={values._toc.buildingName}
-								errorMessage={(formikProps.touched?._toc?.buildingName) ? formikProps.errors?._toc?.buildingName : ''}
+                                <TextField
+                                  placeholder="Наименование раздела"
+                                  key={`stack_sec_input_${sections[sectionId].sectionUuid}_title`}
+                                  name={`_toc.sections[${sectionId}].sectionTitle`}
+                                  value={section.sectionTitle}
+                                  errorMessage={
+                                    formikProps.touched?._toc?.sections &&
+                                    formikProps.touched?._toc?.sections[
+                                      sectionId
+                                    ]?.sectionTitle
+                                      ? (
+                                          formikProps.errors?._toc?.sections[
+                                            sectionId
+                                          ] as Section
+                                        )?.sectionTitle
+                                      : ""
+                                  }
+                                  multiline
+                                  autoAdjustHeight
+                                  resizable={false}
+                                  styles={{ root: { width: "100%" } }}
+                                  onBlur={formikProps.handleBlur}
+                                  onChange={formikProps.handleChange}
+                                />
 
-								onBlur={formikProps.handleBlur}
-								onChange={formikProps.handleChange}
-								multiline autoAdjustHeight resizable={false} />
-							<TextField placeholder="Адрес" name={`_toc.address`}
-								value={values._toc.address}
-								errorMessage={(formikProps.touched?._toc?.address) ? formikProps.errors?._toc?.address : ''}
+                                <TextField
+                                  placeholder="Ответственный"
+                                  key={`stack_sec_input_${sections[sectionId].sectionUuid}_assignedTo`}
+                                  name={`_toc.sections[${sectionId}].assignedTo`}
+                                  value={section.assignedTo}
+                                  errorMessage={
+                                    formikProps.touched?._toc?.sections &&
+                                    formikProps.touched?._toc?.sections[
+                                      sectionId
+                                    ]?.assignedTo
+                                      ? (
+                                          formikProps.errors?._toc?.sections[
+                                            sectionId
+                                          ] as Section
+                                        )?.assignedTo
+                                      : ""
+                                  }
+                                  multiline
+                                  autoAdjustHeight
+                                  resizable={false}
+                                  styles={{ root: { width: "100%" } }}
+                                  onBlur={formikProps.handleBlur}
+                                  onChange={formikProps.handleChange}
+                                />
+                              </Stack>
+                            </div>
+                          </>
+                        )
+                      )}
 
+                    <Stack
+                      key={`stack_sec_add_bottom`}
+                      tokens={{ padding: "0" }}
+                      style={{
+                        boxShadow: Depths.depth8,
+                        display: "flow",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <IconButton
+                        styles={stylesAddButtonBig}
+                        iconProps={{ iconName: "add" }}
+                        onClick={() => arrayHelpers.push(new Section())}
+                      />
+                    </Stack>
+                  </>
+                )}
+              />
+              <Stack horizontal styles={{ root: { marginTop: "2vh" } }}>
+                {isNewFile ? (
+                  <TextField
+                    placeholder="Сохранить как"
+                    errorMessage={fileNameError}
+                    onChange={onNewFileNameChange}
+                    value={currentFileName}
+                    styles={{ root: { width: "100%" } }}
+                  />
+                ) : (
+                  <Dropdown
+                    styles={{ root: { width: "100%" } }}
+                    placeholder="Сохранить как"
+                    onChange={onExistingFileNameChange}
+                    options={
+                      props.existingFiles?.length
+                        ? props.existingFiles
+                        : [{ key: null, text: "No files found" }]
+                    }
+                    disabled={!props.existingFiles?.length}
+                    selectedKey={
+                      props.existingFiles?.length
+                        ? props.existingFiles.find(
+                            (file) => file.text === currentFileName
+                          )?.key
+                        : null
+                    }
+                  />
+                )}
+                <Toggle onChange={onNewFileToggleChange} />
+              </Stack>
 
-								onBlur={formikProps.handleBlur}
-								onChange={formikProps.handleChange}
-								multiline autoAdjustHeight resizable={false} />
-							<Stack tokens={{ childrenGap: 10 }} horizontal>
-								<TextField placeholder="Код проекта" name={`_toc.projectCode`}
-									value={values._toc.projectCode}
-									errorMessage={(formikProps.touched?._toc?.projectCode) ? formikProps.errors?._toc?.projectCode : ''}
+              <PrimaryButton
+                onClick={() => formikProps.handleSubmit()}
+                text="Сохранить"
+                style={{ width: "100%", marginTop: "1vh" }}
+              />
 
-									onBlur={formikProps.handleBlur}
-									onChange={formikProps.handleChange}
-									styles={{ root: { width: '100%' } }} />
-								<TextField placeholder="Стадия проекта" name={`_toc.projectStage`}
-									value={values._toc.projectStage}
-									errorMessage={(formikProps.touched?._toc?.projectStage) ? formikProps.errors?._toc?.projectStage : ''}
+              {values.operationStatus == "success" && (
+                <MessageBar
+                  messageBarType={MessageBarType.success}
+                  onDismiss={() =>
+                    formikProps.setFieldValue("operationStatus", "")
+                  }
+                >
+                  Оглавление успешно создано
+                </MessageBar>
+              )}
 
-									onBlur={formikProps.handleBlur}
-									onChange={formikProps.handleChange}
-									styles={{ root: { width: '100%' } }} />
-							</Stack>
-							<TextField placeholder="ГИП" name={`_toc.gipName`}
-								value={values._toc.gipName}
-								errorMessage={(formikProps.touched?._toc?.gipName) ? formikProps.errors?._toc?.gipName : ''}
-
-								onBlur={formikProps.handleBlur}
-								onChange={formikProps.handleChange}
-							/>
-							<TextField placeholder="ГАП" name={`_toc.gapName`}
-								value={values._toc.gapName}
-								errorMessage={(formikProps.touched?._toc?.gapName) ? formikProps.errors?._toc?.gapName : ''}
-
-								onBlur={formikProps.handleBlur}
-								onChange={formikProps.handleChange}
-							/>
-							<TextField placeholder="Н. Контр" name={`_toc.nContr`}
-								value={values._toc.nContr}
-								errorMessage={(formikProps.touched?._toc?.nContr) ? formikProps.errors?._toc?.nContr : ''}
-
-								onBlur={formikProps.handleBlur}
-								onChange={formikProps.handleChange}
-							/>
-						</Stack>
-
-						<h2>Разделы</h2>
-
-
-						<GenerateSectionsModal setTocSections={
-							(sections: Section[]) => {
-								formikProps.setFieldValue('_toc.sections', sections)
-							}
-						} />
-						{console.log(formikProps.errors._toc)}
-						<FieldArray name="_toc.sections"
-							render={arrayHelpers =>
-								<>
-									<EditSectionModal toc={values._toc}
-										isEditSectionModalOpen={isEditSectionModalOpen}
-										hideEditSectionModal={hideEditSectionModal}
-										currentEditableSection={currentEditableSection}
-										setIsSectionEdited={setIsSectionEdited}
-										setCurrentEditableSection={setCurrentEditableSection}
-									/>
-									{values._toc?.sections?.length > 0 &&
-										values._toc?.sections?.map((section, sectionId, sections) =>
-											<>
-
-
-
-												< Stack key={`stack_sec_add_top`}
-													tokens={{ padding: '0' }}
-													style={{ boxShadow: Depths.depth8, display: 'flow', alignItems: 'center', justifyContent: 'center' }}
-												>
-													{(sectionId == 0) && <IconButton styles={stylesAddButtonBig} iconProps={{ iconName: "add", }}
-														onClick={() => arrayHelpers.insert(sectionId, new Section())} />}
-												</Stack>
-												<div style={{ position: 'relative' }}>
-													<Stack key={`stack_sec_input_${sections[sectionId].sectionUuid}`}
-														tokens={{ padding: '2vh', childrenGap: 10 }}
-														style={{ boxShadow: Depths.depth8, display: 'flow', alignItems: 'center', justifyContent: 'center' }}
-													>
-														{(sectionId > 0) && <IconButton key={`stack_sec_input_${sections[sectionId].sectionUuid}_add`}
-															styles={{ ...stylesAddButtonLateral }} iconProps={{ iconName: "add", }}
-															onClick={() => arrayHelpers.insert(sectionId, new Section())} />}
-														<IconButton key={`stack_sec_input_${sections[sectionId].sectionUuid}_edit`}
-															styles={stylesEditButtonLateral}
-															iconProps={{ iconName: "edit", }}
-															onClick={() => {
-																setCurrentEditableSection(section)
-																setCurrentEditableSectionNumber(sectionId)
-																replacer.current = arrayHelpers.replace
-																if (section.subsections.length == 0) {
-																	const _section = section
-																	_section.subsections.push(new Subsection)
-																	arrayHelpers.replace(sectionId, _section)
-																}
-																showEditSectionModal()
-															}} />
-														<IconButton key={`stack_sec_input_${sections[sectionId].sectionUuid}_delete`}
-															style={{}}
-															styles={stylesDeleteButtonLateral}
-															iconProps={{ iconName: "delete", }}
-															onClick={() => arrayHelpers.remove(sectionId)} />
-
-														<Stack tokens={{ childrenGap: 10 }} horizontal styles={{ root: { width: '100%' } }}>
-															<TextField placeholder="#" name={`_toc.sections.${sectionId}.section`}
-																value={section.section}
-																errorMessage={(formikProps.touched?._toc?.sections[sectionId]?.section) ? (formikProps.errors?._toc?.sections[sectionId] as Section)?.section : ''}
-
-																key={`stack_sec_input_${sections[sectionId].sectionUuid}_#`}
-																onBlur={formikProps.handleBlur}
-																onChange={formikProps.handleChange} />
-															<TextField placeholder="Шифр раздела" name={`_toc.sections[${sectionId}].sectionStamp`}
-																value={section.sectionStamp}
-
-																key={`stack_sec_input_${sections[sectionId].sectionUuid}_sectionStamp`}
-																styles={{ root: { width: '100%' } }} onChange={formikProps.handleChange} />
-														</Stack>
-
-														<TextField placeholder="Наименование раздела" key={`stack_sec_input_${sections[sectionId].sectionUuid}_title`}
-															name={`_toc.sections[${sectionId}].sectionTitle`}
-															value={section.sectionTitle}
-															errorMessage={(formikProps.touched?._toc?.sections[sectionId]?.sectionTitle) ? (formikProps.errors?._toc?.sections[sectionId] as Section)?.sectionTitle : ''}
-
-															multiline autoAdjustHeight resizable={false}
-															styles={{ root: { width: '100%' } }}
-															onBlur={formikProps.handleBlur}
-															onChange={formikProps.handleChange} />
-
-														<TextField placeholder="Ответственный" key={`stack_sec_input_${sections[sectionId].sectionUuid}_assignedTo`}
-															name={`_toc.sections[${sectionId}].assignedTo`}
-															value={section.assignedTo}
-															errorMessage={(formikProps.touched?._toc?.sections[sectionId]?.assignedTo) ? (formikProps.errors?._toc?.sections[sectionId] as Section)?.assignedTo : ''}
-
-															multiline autoAdjustHeight resizable={false}
-															styles={{ root: { width: '100%' } }}
-															onBlur={formikProps.handleBlur}
-															onChange={formikProps.handleChange} />
-
-													</Stack>
-
-												</div>
-											</>
-										)}
-
-									< Stack key={`stack_sec_add_bottom`}
-										tokens={{ padding: '0' }}
-										style={{ boxShadow: Depths.depth8, display: 'flow', alignItems: 'center', justifyContent: 'center' }}
-									>
-										<IconButton styles={stylesAddButtonBig} iconProps={{ iconName: "add", }}
-											onClick={() => arrayHelpers.push(new Section())} />
-									</Stack>
-								</>}
-						/>
-						<Stack horizontal styles={{ root: { marginTop: '2vh' } }}>
-							{isNewFile ?
-								<TextField placeholder='Сохранить как' errorMessage={fileNameError} onChange={onNewFileNameChange} value={currentFileName}
-									styles={{ root: { width: '100%' } }} />
-								:
-								<Dropdown styles={{ root: { width: '100%' } }} placeholder='Сохранить как' onChange={onExistingFileNameChange}
-									options={props.existingFiles?.length ?
-										props.existingFiles
-										:
-										[{ key: null, text: "No files found" }]}
-									disabled={!props.existingFiles?.length}
-									selectedKey={props.existingFiles?.length ?
-										props.existingFiles.find((file) => file.text === currentFileName)?.key
-										:
-										null} />
-							}
-							<Toggle onChange={onNewFileToggleChange} />
-						</Stack>
-
-						<PrimaryButton onClick={() => formikProps.handleSubmit()} text='Сохранить' style={{ width: '100%', marginTop: '1vh' }} />
-
-						{(values.operationStatus == 'success' &&
-							<MessageBar messageBarType={MessageBarType.success}
-								onDismiss={() => formikProps.setFieldValue('operationStatus', '')}>
-								Оглавление успешно создано
-							</MessageBar>)}
-
-						{(values.operationStatus == 'error' &&
-							<MessageBar messageBarType={MessageBarType.error}
-								onDismiss={() => formikProps.setFieldValue('operationStatus', '')}>
-								Произошла ошибка при создании оглавления
-							</MessageBar>)}
-
-					</Form>
-				</>
-				}
-			</Formik>
-		</>
-	)
+              {values.operationStatus == "error" && (
+                <MessageBar
+                  messageBarType={MessageBarType.error}
+                  onDismiss={() =>
+                    formikProps.setFieldValue("operationStatus", "")
+                  }
+                >
+                  Произошла ошибка при создании оглавления
+                </MessageBar>
+              )}
+            </Form>
+          </>
+        )}
+      </Formik>
+    </>
+  );
 };
 
 export default TocForm;

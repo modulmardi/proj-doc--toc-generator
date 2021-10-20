@@ -1,22 +1,22 @@
 @import url("https://fonts.googleapis.com/css2?family=PT+Sans+Narrow&display=swap");
 
 table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: "PT Sans Narrow", sans-serif;
+  width: 100%;
+  border-collapse: collapse;
+  font-family: "PT Sans Narrow", sans-serif;
 }
 
 th {
-    border: 2px black solid;
+  border: 2px black solid;
 }
 td {
-    border: 1px black solid;
+  border: 1px black solid;
 }
 
 td:empty::after {
-    content: "\00a0";
+  content: "\00a0";
 }
 
 tr.row_current {
-    background-color: yellow;
+  background-color: yellow;
 }

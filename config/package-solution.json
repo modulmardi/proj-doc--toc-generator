@@ -6,6 +6,13 @@
     "id": "7c233485-a856-40d9-b933-fb2bf2fc8842",
     "version": "1.0.0.0",
     "includeClientSideAssets": true,
+    "webApiPermissionRequests": [
+      {
+        "resource": "Microsoft Graph",
+
+        "scope": "Sites.ReadWrite.All"
+      }
+    ],
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
     "developer": {
