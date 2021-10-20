@@ -1,6 +1,5 @@
-import { Depths, Dropdown, IComboBoxOption, Modal, PrimaryButton, Stack } from '@fluentui/react';
+import { Depths, Dropdown, IComboBoxOption, Modal, PrimaryButton, Separator, Stack } from '@fluentui/react';
 import { useBoolean } from '@fluentui/react-hooks';
-import { createTheme, FontSizes, ITheme } from '@fluentui/react/lib/Styling';
 import { MSGraphClient } from '@microsoft/sp-http';
 import * as React from 'react';
 import { Toc } from '../model/ToC';
@@ -9,22 +8,8 @@ import BackContinueButtonGroup from './BackContinueButtonGroup';
 import { IProjDocTocGeneratorProps } from './props/IProjDocTocGeneratorProps';
 import TocForm from './TocForm';
 
-const theme: ITheme = createTheme({
-	fonts: {
-		medium: {
-			fontFamily: 'Monaco, Menlo, Consolas',
-			fontSize: FontSizes.size32,
-		},
-	},
-});
-const stackTokens = { childrenGap: 10 };
 
 
-interface Values {
-	newProjectTemplateChecks: boolean[]
-
-	toc: Toc
-}
 
 const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 
@@ -32,8 +17,6 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 	const [existingFiles, setExistingFiles] = React.useState<IComboBoxOption[]>()
 
 	const [openingProjectName, setOpeningProjectName] = React.useState<string>()
-
-	const [isCreateNewProjModalOpen, { setTrue: showCreateNewProjModal, setFalse: hideCreateNewProjModal }] = useBoolean(false);
 	const [isOpenProjModalOpen, { setTrue: showOpenProjModal, setFalse: hideOpenProjModal }] = useBoolean(false);
 
 	React.useEffect(() => {
@@ -79,8 +62,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 	return (
 		<>
 			<Stack tokens={{ padding: '2vh' }} style={{ boxShadow: Depths.depth8, display: 'flow', alignItems: 'center', justifyContent: 'center' }}>
-				<h1 {...theme}>Генератор проектной документации</h1>
-
+				<Separator styles={{root: {fontSize: '2em'}}}>Генератор проектной документации</Separator>
 				<PrimaryButton text="Открыть существующий проект" onClick={showOpenProjModal} />
 
 				<Modal
@@ -91,7 +73,7 @@ const ProjDocTocGenerator: React.FC<IProjDocTocGeneratorProps> = (props) => {
 					styles={{ main: { height: 'wrap-content', width: '20vw', borderRadius: '0,5vh', padding: '2vh 2vw', position: 'relative' } }}
 				>
 					<Stack>
-						<h2 {...theme}>Выберите проект</h2>
+						<h2>Выберите проект</h2>
 						<Dropdown styles={{ root: { width: '100%' } }} placeholder='Имя проекта' onChange={onOpeningProjectNameChange}
 							options={existingFiles?.length ?
 								existingFiles

@@ -17,11 +17,11 @@
   "preconfiguredEntries": [{
     "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
     "group": { "default": "Other" },
-    "title": { "default": "ProjDocTocGenerator" },
-    "description": { "default": "Generates project documentation&#39;s table of contents" },
+    "title": { "default": "Генератор проектной документации" },
+    "description": { "default": "Генерирует оглавление проектной документации" },
     "officeFabricIconFontName": "Page",
     "properties": {
-      "description": "ProjDocTocGenerator"
+      "description": "Генератор проектной документации"
     }
   }]
 }

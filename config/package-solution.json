@@ -4,7 +4,7 @@
     "title": "Генератор проектной документации",
     "name": "ProjectTocGenerator",
     "id": "7c233485-a856-40d9-b933-fb2bf2fc8842",
-    "version": "1.0.0.1",
+    "version": "1.0.0.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,

@@ -2,12 +2,13 @@ import { Depths, IconButton, Modal, MotionAnimations, Stack, TextField } from '@
 import { Pagination } from '@uifabric/experiments/lib/Pagination';
 import { FieldArray, Form, Formik } from 'formik';
 import * as React from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { Section, Subsection, Toc } from '../model/ToC';
+import stringToColor from '../utils/stringToColor';
 import BackContinueButtonGroup from './BackContinueButtonGroup';
-
-import stringToColor from '../utils/stringToColor'
 import { stylesAddButtonModalCentral, stylesAddButtonModalLateralLeft, stylesAddButtonModalLateralRight, stylesDeleteButtonModal } from './styles/stylesButton';
 import TablePreview from './TablePreview';
+
 
 interface IPropEditSectionModal {
 	toc: Toc
@@ -74,13 +75,13 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
 													<IconButton key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsectionNumber].subsectionUuid}_add_left`}
 														styles={{ ...stylesAddButtonModalLateralLeft }} iconProps={{ iconName: "add", }}
 														onClick={() => {
-															arrayHelpers.insert(currentSubsectionNumber, values._section.subsections[currentSubsectionNumber])
+															arrayHelpers.insert(currentSubsectionNumber, { ...values._section.subsections[currentSubsectionNumber], subsectionUuid: uuidv4() })
 															setModalAnimation(MotionAnimations.slideRightIn)
 														}} />
 													<IconButton key={`modal_stack_subsec_sec_input_${values._section.subsections[currentSubsectionNumber].subsectionUuid}_add_right`}
 														styles={{ ...stylesAddButtonModalLateralRight }} iconProps={{ iconName: "add", }}
 														onClick={() => {
-															arrayHelpers.insert(currentSubsectionNumber + 1, values._section.subsections[currentSubsectionNumber])
+															arrayHelpers.insert(currentSubsectionNumber + 1, { ...values._section.subsections[currentSubsectionNumber], subsectionUuid: uuidv4() })
 															setCurrentSubsection((previous) => previous + 1)
 															setModalAnimation(MotionAnimations.slideLeftIn)
 														}} />
