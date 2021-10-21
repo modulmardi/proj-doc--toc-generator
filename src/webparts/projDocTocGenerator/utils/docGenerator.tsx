@@ -50,10 +50,16 @@ const generateDocument = (
 ) => {
   graphFileLoader(
     context,
-    "/sites/root/drive/root:/template/template012.docx:/",
-    (error: any, content: any) => {
-      if (error) {
-        throw error;
+    setOperationStatus,
+    `/drives/${currentDriveId}/root:/template/template012.docx:/`,
+    (graphError: any, content: any) => {
+      console.log(`graphError: ${graphError}`);
+      console.log(`content: ${content}`);
+
+      if (graphError) {
+        console.error("Ошибка скачивания шаблона");
+        setOperationStatus("error");
+        throw graphError;
       }
       const zip = new PizZip(content);
 
@@ -63,13 +69,11 @@ const generateDocument = (
         parser: angularParser,
       });
       try {
-        // console.log(toc);
-
         // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
         doc.render(toc);
-      } catch (error) {
+      } catch (renderingError) {
         // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
-        function replaceErrors(key: any, value: { [x: string]: any }) {
+        function replaceErrors(errorKey: any, value: { [x: string]: any }) {
           if (value instanceof Error) {
             return Object.getOwnPropertyNames(value).reduce((error, key) => {
               error[key] = value[key];
@@ -79,10 +83,13 @@ const generateDocument = (
           }
           return value;
         }
-        // console.log(JSON.stringify({ error: error }, replaceErrors));
+        console.log(JSON.stringify({ error: renderingError }, replaceErrors));
 
-        if (error.properties && error.properties.errors instanceof Array) {
-          const errorMessages = error.properties.errors
+        if (
+          renderingError.properties &&
+          renderingError.properties.errors instanceof Array
+        ) {
+          const errorMessages = renderingError.properties.errors
             .map((error: { properties: { explanation: any } }) => {
               return error.properties.explanation;
             })
@@ -92,7 +99,7 @@ const generateDocument = (
           // 'The tag beginning with "foobar" is unopened'
         }
         setOperationStatus("error");
-        throw error;
+        throw renderingError;
       }
       const out = doc.getZip().generate({
         type: "blob",

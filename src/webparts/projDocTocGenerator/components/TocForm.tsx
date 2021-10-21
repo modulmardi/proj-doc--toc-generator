@@ -230,17 +230,21 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
         ): void | Promise<any> => {
           validateCurrentFileName(currentFileName);
           if (fileNameError === "" && currentFileName !== "") {
-            return docGenerator(
-              fillEmptySectionsWithSubsections(values._toc),
-              fileSaver,
-              props.tocFolder,
-              props.docxFolder,
-              currentFileName,
-              props.context,
-              props.currentDriveId,
-              (message: string) =>
-                formikHelpers.setFieldValue("operationStatus", message)
-            );
+            try {
+              return docGenerator(
+                fillEmptySectionsWithSubsections(values._toc),
+                fileSaver,
+                props.tocFolder,
+                props.docxFolder,
+                currentFileName,
+                props.context,
+                props.currentDriveId,
+                (message: string) =>
+                  formikHelpers.setFieldValue("operationStatus", message)
+              );
+            } catch (docGeneratorError) {
+              formikHelpers.setFieldValue("operationStatus", "error");
+            }
           }
         }}
       >
