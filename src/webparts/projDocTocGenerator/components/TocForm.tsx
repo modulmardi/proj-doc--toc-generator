@@ -13,7 +13,7 @@ import {
 } from "@fluentui/react";
 import { useBoolean } from "@fluentui/react-hooks";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
-import { FieldArray, Form, Formik, FormikHelpers } from "formik";
+import { ErrorMessage, FieldArray, Form, Formik, FormikHelpers } from "formik";
 import * as React from "react";
 import * as yup from "yup";
 import { Section, Subsection, Toc } from "../model/ToC";
@@ -53,6 +53,8 @@ function fillEmptySectionsWithSubsections(_toc: Toc): Toc {
   return _toc;
 }
 
+const requiredFieldMessage = "Поле обязательно для заполнения";
+
 const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
   const [
     isEditSectionModalOpen,
@@ -90,7 +92,7 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
       return;
     }
     if (newText.length == 0) {
-      setFileNameError("Поле обязательно для заполнения");
+      setFileNameError(requiredFieldMessage);
     }
   };
   const onNewFileNameChange = (
@@ -130,33 +132,27 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
         }}
         validationSchema={yup.object().shape({
           _toc: yup.object().shape({
-            buildingName: yup
-              .string()
-              .required("Поле обязательно для заполнения"),
-            address: yup.string().required("Поле обязательно для заполнения"),
-            projectCode: yup
-              .string()
-              .required("Поле обязательно для заполнения"),
-            projectStage: yup
-              .string()
-              .required("Поле обязательно для заполнения"),
+            buildingName: yup.string().required(requiredFieldMessage),
+            address: yup.string().required(requiredFieldMessage),
+            projectCode: yup.string().required(requiredFieldMessage),
+            projectStage: yup.string().required(requiredFieldMessage),
             gipName: yup
               .string()
-              .required("Поле обязательно для заполнения")
+              .required(requiredFieldMessage)
               .matches(
                 /^([а-яА-Я]-?)*([а-яА-Я])+$/,
                 "Поле может содержать кириллические символы"
               ),
             gapName: yup
               .string()
-              .required("Поле обязательно для заполнения")
+              .required(requiredFieldMessage)
               .matches(
                 /^([а-яА-Я]-?)*([а-яА-Я])+$/,
                 "Поле может содержать кириллические символы"
               ),
             nContr: yup
               .string()
-              .required("Поле обязательно для заполнения")
+              .required(requiredFieldMessage)
               .matches(
                 /^([а-яА-Я]-?)*([а-яА-Я])+$/,
                 "Поле может содержать кириллические символы"
@@ -165,18 +161,16 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
               yup.object().shape({
                 section: yup
                   .string()
-                  .required("Поле обязательно для заполнения")
+                  .required(requiredFieldMessage)
                   .matches(
                     /^(\d+\.?)*\d+$/,
                     "Поле может содержать числа и точки между ними"
                   ),
-                sectionTitle: yup
-                  .string()
-                  .required("Поле обязательно для заполнения"),
+                sectionTitle: yup.string().required(requiredFieldMessage),
                 sectionStamp: yup.string(),
                 assignedTo: yup
                   .string()
-                  .required("Поле обязательно для заполнения")
+                  .required(requiredFieldMessage)
                   .matches(
                     /^([а-яА-Я]-?)*([а-яА-Я])+$/,
                     "Поле может содержать кириллические символы"
@@ -266,87 +260,124 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
                   placeholder="Название объекта"
                   name={`_toc.buildingName`}
                   value={values._toc.buildingName}
-                  errorMessage={
-                    touched?._toc?.buildingName
-                      ? errors?._toc?.buildingName
-                      : ""
-                  }
                   onBlur={handleBlur}
                   onChange={handleChange}
                   multiline
                   autoAdjustHeight
                   resizable={false}
                 />
+                <ErrorMessage
+                  render={(msg) => (
+                    <>
+                      <span style={{ color: "red " }}>{msg}</span>
+                    </>
+                  )}
+                  name={`_toc.buildingName`}
+                />
+
                 <TextField
                   placeholder="Адрес"
                   name={`_toc.address`}
                   value={values._toc.address}
-                  errorMessage={
-                    touched?._toc?.address ? errors?._toc?.address : ""
-                  }
                   onBlur={handleBlur}
                   onChange={handleChange}
                   multiline
                   autoAdjustHeight
                   resizable={false}
                 />
+                <ErrorMessage
+                  render={(msg) => (
+                    <>
+                      <span style={{ color: "red " }}>{msg}</span>
+                    </>
+                  )}
+                  name={`_toc.address`}
+                />
+
                 <Stack tokens={{ childrenGap: 10 }} horizontal>
-                  <TextField
-                    placeholder="Код проекта"
-                    name={`_toc.projectCode`}
-                    value={values._toc.projectCode}
-                    errorMessage={
-                      touched?._toc?.projectCode
-                        ? errors?._toc?.projectCode
-                        : ""
-                    }
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    styles={{ root: { width: "100%" } }}
-                  />
-                  <TextField
-                    placeholder="Стадия проекта"
-                    name={`_toc.projectStage`}
-                    value={values._toc.projectStage}
-                    errorMessage={
-                      touched?._toc?.projectStage
-                        ? errors?._toc?.projectStage
-                        : ""
-                    }
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    styles={{ root: { width: "100%" } }}
-                  />
+                  <Stack styles={{ root: { width: "100%" } }}>
+                    <TextField
+                      placeholder="Код проекта"
+                      name={`_toc.projectCode`}
+                      value={values._toc.projectCode}
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      styles={{ root: { width: "100%" } }}
+                    />
+                    <ErrorMessage
+                      render={(msg) => (
+                        <>
+                          <span style={{ color: "red " }}>{msg}</span>
+                        </>
+                      )}
+                      name={`_toc.projectCode`}
+                    />
+                  </Stack>
+                  <Stack styles={{ root: { width: "100%" } }}>
+                    <TextField
+                      placeholder="Стадия проекта"
+                      name={`_toc.projectStage`}
+                      value={values._toc.projectStage}
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      styles={{ root: { width: "100%" } }}
+                    />
+                    <ErrorMessage
+                      render={(msg) => (
+                        <>
+                          <span style={{ color: "red " }}>{msg}</span>
+                        </>
+                      )}
+                      name={`_toc.projectStage`}
+                    />
+                  </Stack>
                 </Stack>
                 <TextField
                   placeholder="ГИП"
                   name={`_toc.gipName`}
                   value={values._toc.gipName}
-                  errorMessage={
-                    touched?._toc?.gipName ? errors?._toc?.gipName : ""
-                  }
                   onBlur={handleBlur}
                   onChange={handleChange}
                 />
+                <ErrorMessage
+                  render={(msg) => (
+                    <>
+                      <span style={{ color: "red " }}>{msg}</span>
+                    </>
+                  )}
+                  name={`_toc.gipName`}
+                />
+
                 <TextField
                   placeholder="ГАП"
                   name={`_toc.gapName`}
                   value={values._toc.gapName}
-                  errorMessage={
-                    touched?._toc?.gapName ? errors?._toc?.gapName : ""
-                  }
                   onBlur={handleBlur}
                   onChange={handleChange}
                 />
+                <ErrorMessage
+                  render={(msg) => (
+                    <>
+                      <span style={{ color: "red " }}>{msg}</span>
+                    </>
+                  )}
+                  name={`_toc.gapName`}
+                />
+
                 <TextField
                   placeholder="Н. Контр"
                   name={`_toc.nContr`}
                   value={values._toc.nContr}
-                  errorMessage={
-                    touched?._toc?.nContr ? errors?._toc?.nContr : ""
-                  }
                   onBlur={handleBlur}
                   onChange={handleChange}
+                />
+                <ErrorMessage
+                  render={(msg) => (
+                    <>
+                      <span style={{ color: "red " }}>{msg}</span>
+                    </>
+                  )}
+                  name={`_toc.nContr`}
                 />
               </Stack>
 
@@ -450,93 +481,102 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
                                   horizontal
                                   styles={{ root: { width: "100%" } }}
                                 >
+                                  <Stack horizontalAlign="start">
+                                    <TextField
+                                      placeholder="#"
+                                      name={`_toc.sections.${sectionId}.section`}
+                                      value={section.section}
+                                      key={`stack_sec_input_${sections[sectionId].sectionUuid}_#`}
+                                      onBlur={handleBlur}
+                                      onChange={handleChange}
+                                    />
+                                    <ErrorMessage
+                                      render={(msg) => (
+                                        <>
+                                          <span style={{ color: "red " }}>
+                                            {msg}
+                                          </span>
+                                        </>
+                                      )}
+                                      name={`_toc.sections.${sectionId}.section`}
+                                    />
+                                  </Stack>
+                                  <Stack>
+                                    <TextField
+                                      placeholder="Шифр раздела"
+                                      name={`_toc.sections[${sectionId}].sectionStamp`}
+                                      value={section.sectionStamp}
+                                      key={`stack_sec_input_${sections[sectionId].sectionUuid}_sectionStamp`}
+                                      styles={{ root: { width: "100%" } }}
+                                      onChange={handleChange}
+                                    />
+                                    <ErrorMessage
+                                      render={(msg) => (
+                                        <>
+                                          <span style={{ color: "red " }}>
+                                            {msg}
+                                          </span>
+                                        </>
+                                      )}
+                                      name={`_toc.sections.${sectionId}.sectionStamp`}
+                                    />
+                                  </Stack>
+                                </Stack>
+                                <Stack
+                                  horizontalAlign="start"
+                                  styles={{ root: { width: "100%" } }}
+                                >
                                   <TextField
-                                    placeholder="#"
-                                    name={`_toc.sections.${sectionId}.section`}
-                                    value={section.section}
-                                    errorMessage={
-                                      touched?._toc?.sections &&
-                                      touched?._toc?.sections[sectionId]
-                                        ?.section
-                                        ? (
-                                            errors?._toc?.sections[
-                                              sectionId
-                                            ] as Section
-                                          )?.section
-                                        : ""
-                                    }
-                                    key={`stack_sec_input_${sections[sectionId].sectionUuid}_#`}
+                                    placeholder="Наименование раздела"
+                                    key={`stack_sec_input_${sections[sectionId].sectionUuid}_title`}
+                                    name={`_toc.sections[${sectionId}].sectionTitle`}
+                                    value={section.sectionTitle}
+                                    multiline
+                                    autoAdjustHeight
+                                    resizable={false}
+                                    styles={{ root: { width: "100%" } }}
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                   />
-                                  <TextField
-                                    placeholder="Шифр раздела"
-                                    name={`_toc.sections[${sectionId}].sectionStamp`}
-                                    value={section.sectionStamp}
-                                    errorMessage={
-                                      touched?._toc?.sections &&
-                                      touched?._toc?.sections[sectionId]
-                                        ?.sectionStamp
-                                        ? (
-                                            errors?._toc?.sections[
-                                              sectionId
-                                            ] as Section
-                                          )?.sectionStamp
-                                        : ""
-                                    }
-                                    key={`stack_sec_input_${sections[sectionId].sectionUuid}_sectionStamp`}
-                                    styles={{ root: { width: "100%" } }}
-                                    onChange={handleChange}
+
+                                  <ErrorMessage
+                                    render={(msg) => (
+                                      <>
+                                        <span style={{ color: "red " }}>
+                                          {msg}
+                                        </span>
+                                      </>
+                                    )}
+                                    name={`_toc.sections.${sectionId}.sectionTitle`}
                                   />
                                 </Stack>
-
-                                <TextField
-                                  placeholder="Наименование раздела"
-                                  key={`stack_sec_input_${sections[sectionId].sectionUuid}_title`}
-                                  name={`_toc.sections[${sectionId}].sectionTitle`}
-                                  value={section.sectionTitle}
-                                  errorMessage={
-                                    touched?._toc?.sections &&
-                                    touched?._toc?.sections[sectionId]
-                                      ?.sectionTitle
-                                      ? (
-                                          errors?._toc?.sections[
-                                            sectionId
-                                          ] as Section
-                                        )?.sectionTitle
-                                      : ""
-                                  }
-                                  multiline
-                                  autoAdjustHeight
-                                  resizable={false}
+                                <Stack
+                                  horizontalAlign="start"
                                   styles={{ root: { width: "100%" } }}
-                                  onBlur={handleBlur}
-                                  onChange={handleChange}
-                                />
-
-                                <TextField
-                                  placeholder="Ответственный"
-                                  key={`stack_sec_input_${sections[sectionId].sectionUuid}_assignedTo`}
-                                  name={`_toc.sections[${sectionId}].assignedTo`}
-                                  value={section.assignedTo}
-                                  errorMessage={
-                                    touched?._toc?.sections &&
-                                    touched?._toc?.sections[sectionId]
-                                      ?.assignedTo
-                                      ? (
-                                          errors?._toc?.sections[
-                                            sectionId
-                                          ] as Section
-                                        )?.assignedTo
-                                      : ""
-                                  }
-                                  multiline
-                                  autoAdjustHeight
-                                  resizable={false}
-                                  styles={{ root: { width: "100%" } }}
-                                  onBlur={handleBlur}
-                                  onChange={handleChange}
-                                />
+                                >
+                                  <TextField
+                                    placeholder="Ответственный"
+                                    key={`stack_sec_input_${sections[sectionId].sectionUuid}_assignedTo`}
+                                    name={`_toc.sections[${sectionId}].assignedTo`}
+                                    value={section.assignedTo}
+                                    multiline
+                                    autoAdjustHeight
+                                    resizable={false}
+                                    styles={{ root: { width: "100%" } }}
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                  />
+                                  <ErrorMessage
+                                    render={(msg) => (
+                                      <>
+                                        <span style={{ color: "red " }}>
+                                          {msg}
+                                        </span>
+                                      </>
+                                    )}
+                                    name={`_toc.sections.${sectionId}.assignedTo`}
+                                  />
+                                </Stack>
                               </Stack>
                             </div>
                           </>

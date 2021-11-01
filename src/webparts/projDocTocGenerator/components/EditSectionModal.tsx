@@ -7,7 +7,7 @@ import {
   TextField,
 } from "@fluentui/react";
 import { Pagination } from "@uifabric/experiments/lib/Pagination";
-import { FieldArray, Form, Formik } from "formik";
+import { ErrorMessage, FieldArray, Form, Formik } from "formik";
 import * as React from "react";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
@@ -285,21 +285,17 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                         currentSubsectionNumber
                                       ]?.subsectionStamp
                                     }
-                                    errorMessage={
-                                      touched?._section?.subsections &&
-                                      touched?._section?.subsections[
-                                        currentSubsectionNumber
-                                      ]?.subsectionStamp
-                                        ? (
-                                            errors?._section?.subsections[
-                                              currentSubsectionNumber
-                                            ] as Subsection
-                                          )?.subsectionStamp
-                                        : ""
-                                    }
                                     styles={{ root: { width: "100%" } }}
                                     onBlur={handleBlur}
                                     onChange={handleChange}
+                                  />
+                                  <ErrorMessage
+                                    render={(msg) => (
+                                      <>
+                                        <span style={{ color: "red "}}>{msg}</span>
+                                      </>
+                                    )}
+                                    name={`_section.subsections[${currentSubsectionNumber}].subsectionStamp`}
                                   />
 
                                   <TextField
@@ -311,21 +307,17 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                         currentSubsectionNumber
                                       ]?.subsection
                                     }
-                                    errorMessage={
-                                      touched?._section?.subsections &&
-                                      touched?._section?.subsections[
-                                        currentSubsectionNumber
-                                      ]?.subsection
-                                        ? (
-                                            errors?._section?.subsections[
-                                              currentSubsectionNumber
-                                            ] as Subsection
-                                          )?.subsection
-                                        : ""
-                                    }
                                     styles={{ root: { width: "100%" } }}
                                     onBlur={handleBlur}
                                     onChange={handleChange}
+                                  />
+                                  <ErrorMessage
+                                    render={(msg) => (
+                                      <>
+                                        <span style={{ color: "red "}}>{msg}</span>
+                                      </>
+                                    )}
+                                    name={`_section.subsections[${currentSubsectionNumber}].subsection`}
                                   />
 
                                   <TextField
@@ -337,18 +329,6 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                         currentSubsectionNumber
                                       ]?.subsectionTitle
                                     }
-                                    errorMessage={
-                                      touched?._section?.subsections &&
-                                      touched?._section?.subsections[
-                                        currentSubsectionNumber
-                                      ]?.subsectionTitle
-                                        ? (
-                                            errors?._section?.subsections[
-                                              currentSubsectionNumber
-                                            ] as Subsection
-                                          )?.subsectionTitle
-                                        : ""
-                                    }
                                     multiline
                                     rows={1}
                                     autoAdjustHeight
@@ -356,6 +336,14 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                     styles={{ root: { width: "100%" } }}
                                     onBlur={handleBlur}
                                     onChange={handleChange}
+                                  />
+                                  <ErrorMessage
+                                    render={(msg) => (
+                                      <>
+                                        <span style={{ color: "red "}}>{msg}</span>
+                                      </>
+                                    )}
+                                    name={`_section.subsections[${currentSubsectionNumber}].subsectionTitle`}
                                   />
 
                                   <TextField
@@ -367,21 +355,17 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                         currentSubsectionNumber
                                       ]?.chapter
                                     }
-                                    errorMessage={
-                                      touched?._section?.subsections &&
-                                      touched?._section?.subsections[
-                                        currentSubsectionNumber
-                                      ]?.chapter
-                                        ? (
-                                            errors?._section?.subsections[
-                                              currentSubsectionNumber
-                                            ] as Subsection
-                                          )?.chapter
-                                        : ""
-                                    }
                                     styles={{ root: { width: "100%" } }}
                                     onBlur={handleBlur}
                                     onChange={handleChange}
+                                  />
+                                  <ErrorMessage
+                                    render={(msg) => (
+                                      <>
+                                        <span style={{ color: "red "}}>{msg}</span>
+                                      </>
+                                    )}
+                                    name={`_section.subsections[${currentSubsectionNumber}].chapter`}
                                   />
 
                                   <TextField
@@ -393,18 +377,6 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                         currentSubsectionNumber
                                       ]?.chapterTitle
                                     }
-                                    errorMessage={
-                                      touched?._section?.subsections &&
-                                      touched?._section?.subsections[
-                                        currentSubsectionNumber
-                                      ]?.chapterTitle
-                                        ? (
-                                            errors?._section?.subsections[
-                                              currentSubsectionNumber
-                                            ] as Subsection
-                                          )?.chapterTitle
-                                        : ""
-                                    }
                                     multiline
                                     rows={1}
                                     autoAdjustHeight
@@ -412,6 +384,14 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                     styles={{ root: { width: "100%" } }}
                                     onBlur={handleBlur}
                                     onChange={handleChange}
+                                  />
+                                  <ErrorMessage
+                                    render={(msg) => (
+                                      <>
+                                        <span style={{ color: "red "}}>{msg}</span>
+                                      </>
+                                    )}
+                                    name={`_section.subsections[${currentSubsectionNumber}].chapterTitle`}
                                   />
 
                                   <TextField
@@ -423,21 +403,17 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                         currentSubsectionNumber
                                       ]?.book
                                     }
-                                    errorMessage={
-                                      touched?._section?.subsections &&
-                                      touched?._section?.subsections[
-                                        currentSubsectionNumber
-                                      ]?.book
-                                        ? (
-                                            errors?._section?.subsections[
-                                              currentSubsectionNumber
-                                            ] as Subsection
-                                          )?.book
-                                        : ""
-                                    }
                                     styles={{ root: { width: "100%" } }}
                                     onBlur={handleBlur}
                                     onChange={handleChange}
+                                  />
+                                  <ErrorMessage
+                                    render={(msg) => (
+                                      <>
+                                        <span style={{ color: "red "}}>{msg}</span>
+                                      </>
+                                    )}
+                                    name={`_section.subsections[${currentSubsectionNumber}].book`}
                                   />
 
                                   <TextField
@@ -449,18 +425,6 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                         currentSubsectionNumber
                                       ]?.bookTitle
                                     }
-                                    errorMessage={
-                                      touched?._section?.subsections &&
-                                      touched?._section?.subsections[
-                                        currentSubsectionNumber
-                                      ]?.bookTitle
-                                        ? (
-                                            errors?._section?.subsections[
-                                              currentSubsectionNumber
-                                            ] as Subsection
-                                          )?.bookTitle
-                                        : ""
-                                    }
                                     multiline
                                     rows={1}
                                     autoAdjustHeight
@@ -468,6 +432,14 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                     styles={{ root: { width: "100%" } }}
                                     onBlur={handleBlur}
                                     onChange={handleChange}
+                                  />
+                                  <ErrorMessage
+                                    render={(msg) => (
+                                      <>
+                                        <span style={{ color: "red "}}>{msg}</span>
+                                      </>
+                                    )}
+                                    name={`_section.subsections[${currentSubsectionNumber}].bookTitle`}
                                   />
 
                                   <TextField
@@ -479,21 +451,17 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                         currentSubsectionNumber
                                       ]?.block
                                     }
-                                    errorMessage={
-                                      touched?._section?.subsections &&
-                                      touched?._section?.subsections[
-                                        currentSubsectionNumber
-                                      ]?.block
-                                        ? (
-                                            errors?._section?.subsections[
-                                              currentSubsectionNumber
-                                            ] as Subsection
-                                          )?.block
-                                        : ""
-                                    }
                                     styles={{ root: { width: "100%" } }}
                                     onBlur={handleBlur}
                                     onChange={handleChange}
+                                  />
+                                  <ErrorMessage
+                                    render={(msg) => (
+                                      <>
+                                        <span style={{ color: "red "}}>{msg}</span>
+                                      </>
+                                    )}
+                                    name={`_section.subsections[${currentSubsectionNumber}].block`}
                                   />
 
                                   <TextField
@@ -505,21 +473,17 @@ const EditSectionModal: React.FC<IPropEditSectionModal> = (props) => {
                                         currentSubsectionNumber
                                       ]?.subblock
                                     }
-                                    errorMessage={
-                                      touched?._section?.subsections &&
-                                      touched?._section?.subsections[
-                                        currentSubsectionNumber
-                                      ]?.subblock
-                                        ? (
-                                            errors?._section?.subsections[
-                                              currentSubsectionNumber
-                                            ] as Subsection
-                                          )?.subblock
-                                        : ""
-                                    }
                                     styles={{ root: { width: "100%" } }}
                                     onBlur={handleBlur}
                                     onChange={handleChange}
+                                  />
+                                  <ErrorMessage
+                                    render={(msg) => (
+                                      <>
+                                        <span style={{ color: "red "}}>{msg}</span>
+                                      </>
+                                    )}
+                                    name={`_section.subsections[${currentSubsectionNumber}].subblock`}
                                   />
 
                                   <TablePreview
