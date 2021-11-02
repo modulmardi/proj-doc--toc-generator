@@ -150,16 +150,24 @@ const generateDocument = (
         setOperationStatus("error");
         throw graphError;
       }
-      const zip = new PizZip(content);
       toc.sections.forEach((section) => {
         section.subsections.forEach((subsection) => {
           {
+            const zip = new PizZip(content);
             const doc = new Docxtemplater(zip, {
               paragraphLoop: true,
               linebreaks: true,
               parser: angularParser,
             });
             try {
+              console.log("Генерация титульников ", {
+                ...toc,
+                sections: undefined,
+                ...section,
+                subsections: undefined,
+                ...subsection,
+              });
+
               // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
               doc.render({
                 ...toc,
