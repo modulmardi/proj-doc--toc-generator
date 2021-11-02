@@ -9,7 +9,7 @@ import {
   PrimaryButton,
   Stack,
   TextField,
-  Toggle,
+  Toggle
 } from "@fluentui/react";
 import { useBoolean } from "@fluentui/react-hooks";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
@@ -18,14 +18,14 @@ import * as React from "react";
 import * as yup from "yup";
 import { Section, Subsection, Toc } from "../model/ToC";
 import docGenerator from "../utils/docGenerator";
-import fileSaver from "../utils/fileSaver";
+import { docxFileUploader, jsonTocFileUploader } from "../utils/fileSaver";
 import EditSectionModal from "./EditSectionModal";
 import GenerateSectionsModal from "./GenerateSectionsModal";
 import {
   stylesAddButtonBig,
   stylesAddButtonLateral,
   stylesDeleteButtonLateral,
-  stylesEditButtonLateral,
+  stylesEditButtonLateral
 } from "./styles/stylesButton";
 
 interface ITocFormProps {
@@ -226,13 +226,14 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
           if (fileNameError === "" && currentFileName !== "") {
             try {
               return docGenerator(
-                fillEmptySectionsWithSubsections(values._toc),
-                fileSaver,
-                props.tocFolder,
-                props.docxFolder,
-                currentFileName,
                 props.context,
                 props.currentDriveId,
+                currentFileName,
+                props.tocFolder,
+                props.docxFolder,
+                fillEmptySectionsWithSubsections(values._toc),
+                jsonTocFileUploader,
+                docxFileUploader,
                 (message: string) =>
                   formikHelpers.setFieldValue("operationStatus", message)
               );
