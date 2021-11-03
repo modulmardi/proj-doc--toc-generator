@@ -9,7 +9,7 @@ import {
   PrimaryButton,
   Stack,
   TextField,
-  Toggle
+  Toggle,
 } from "@fluentui/react";
 import { useBoolean } from "@fluentui/react-hooks";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
@@ -25,7 +25,7 @@ import {
   stylesAddButtonBig,
   stylesAddButtonLateral,
   stylesDeleteButtonLateral,
-  stylesEditButtonLateral
+  stylesEditButtonLateral,
 } from "./styles/stylesButton";
 
 interface ITocFormProps {
@@ -140,22 +140,22 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
               .string()
               .required(requiredFieldMessage)
               .matches(
-                /^([а-яА-Я]-?)*([а-яА-Я])+$/,
-                "Поле может содержать кириллические символы"
+                /^([а-яА-Я]-?)*([а-яА-Я])+\s[А-Я].[А-Я].]$/,
+                "Поле может содержать фамилию и инициалы"
               ),
             gapName: yup
               .string()
               .required(requiredFieldMessage)
               .matches(
-                /^([а-яА-Я]-?)*([а-яА-Я])+$/,
-                "Поле может содержать кириллические символы"
+                /^([а-яА-Я]-?)*([а-яА-Я])+\s[А-Я].[А-Я].]$/,
+                "Поле может содержать фамилию и инициалы"
               ),
             nContr: yup
               .string()
               .required(requiredFieldMessage)
               .matches(
-                /^([а-яА-Я]-?)*([а-яА-Я])+$/,
-                "Поле может содержать кириллические символы"
+                /^([а-яА-Я]-?)*([а-яА-Я])+\s[А-Я].[А-Я].]$/,
+                "Поле может содержать фамилию и инициалы"
               ),
             sections: yup.array().of(
               yup.object().shape({
