@@ -54,6 +54,8 @@ function fillEmptySectionsWithSubsections(_toc: Toc): Toc {
 }
 
 const requiredFieldMessage = "Поле обязательно для заполнения";
+const surnameWithInitialsRegex =
+  /^([А-Я][а-я]*(-?[А-Я][а-я]*)? [А-Я]\.\s?[А-Я]\.)$/;
 
 const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
   const [
@@ -140,21 +142,21 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
               .string()
               .required(requiredFieldMessage)
               .matches(
-                /^([а-яА-Я]-?)*([а-яА-Я])+\s[А-Я].[А-Я].]$/,
+                surnameWithInitialsRegex,
                 "Поле может содержать фамилию и инициалы"
               ),
             gapName: yup
               .string()
               .required(requiredFieldMessage)
               .matches(
-                /^([а-яА-Я]-?)*([а-яА-Я])+\s[А-Я].[А-Я].]$/,
+                surnameWithInitialsRegex,
                 "Поле может содержать фамилию и инициалы"
               ),
             nContr: yup
               .string()
               .required(requiredFieldMessage)
               .matches(
-                /^([а-яА-Я]-?)*([а-яА-Я])+\s[А-Я].[А-Я].]$/,
+                surnameWithInitialsRegex,
                 "Поле может содержать фамилию и инициалы"
               ),
             sections: yup.array().of(
@@ -172,8 +174,8 @@ const TocForm: React.FC<ITocFormProps> = (props: ITocFormProps) => {
                   .string()
                   .required(requiredFieldMessage)
                   .matches(
-                    /^([а-яА-Я]-?)*([а-яА-Я])+$/,
-                    "Поле может содержать кириллические символы"
+                    surnameWithInitialsRegex,
+                    "Поле может содержать фамилию и инициалы"
                   ),
                 subsections: yup.array().of(
                   yup.object().shape({

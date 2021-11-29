@@ -7,21 +7,26 @@ const ProjDocTocGeneratorApp: React.FC<IProjDocTocGeneratorAppProps> = (
   props
 ) => {
   const [currentDriveId, setCurrentDriveId] = React.useState<string>("");
-  props.context.msGraphClientFactory.getClient().then((client: MSGraphClient) =>
-    client
-      .api(
-        "https://graph.microsoft.com/v1.0/sites/root" +
-          (props.context.pageContext.site.serverRelativeUrl !== "/"
-            ? ":" + props.context.pageContext.site.serverRelativeUrl + ":/"
-            : "/") +
-          "drive"
-      )
-      .get()
-      .then((data: { id: string }) => setCurrentDriveId(data.id))
-  );
+  try {
+    props.context.msGraphClientFactory
+      .getClient()
+      .then((client: MSGraphClient) =>
+        client
+          .api(
+            "https://graph.microsoft.com/v1.0/sites/root" +
+              (props.context.pageContext.site.serverRelativeUrl !== "/"
+                ? ":" + props.context.pageContext.site.serverRelativeUrl + ":/"
+                : "/") +
+              "drive"
+          )
+          .get()
+          .then((data: { id: string }) => setCurrentDriveId(data.id))
+      );
+  } catch {}
 
   return (
     <>
+      {console.log(props.context.pageContext.site)}
       <ProjDocTocGenerator
         context={props.context}
         currentDriveId={currentDriveId}
